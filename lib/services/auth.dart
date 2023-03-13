@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-
 import '../models/user.dart';
 
 class Auth extends ChangeNotifier {
@@ -9,7 +8,7 @@ class Auth extends ChangeNotifier {
   late User _user;
 
   bool get isLoggedIn => _isLoggedIn;
-  bool get user => _user;
+  User get user => _user;
 
 
   void login() async {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/HomeScreen.dart';
+import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    MultiProvider(providers: [
-
-    ],
-      child: const MyApp(),
-    ),
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => Auth())
+  ],
+    child: const MyApp(),
+  ),
   );
 }
 
