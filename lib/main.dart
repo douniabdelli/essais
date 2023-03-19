@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mgtrisque_visitepreliminaire/screens/HomeScreen.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/get_started.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -19,11 +20,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Visite Préliminaire',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(title: 'Visite préliminaire (MgtRisque)'),
+      home: GetStarted(),
     );
   }
 }

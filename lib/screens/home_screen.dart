@@ -1,5 +1,9 @@
+import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
+
+import '../services/dio.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.title});
@@ -86,6 +90,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Image.network(
                     'https://thumbs.dreamstime.com/b/businessman-icon-vector-male-avatar-profile-image-profile-businessman-icon-vector-male-avatar-profile-image-182095609.jpg',
                   ),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                    );
+                  },
+                  leading: Icon(Icons.login),
+                  title: Text('Login'),
                 ),
                 ListTile(
                   onTap: () {},
