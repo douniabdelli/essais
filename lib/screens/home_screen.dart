@@ -1,11 +1,9 @@
-import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:provider/provider.dart';
-
-import '../services/dio.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.title});
@@ -18,6 +16,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _advancedDrawerController = AdvancedDrawerController();
+  int _currentIndex = 1;
+  final List<Widget> bottomBarWidgets = [
+    Center(
+      child: Container(
+        height: 300,
+        width: 300,
+        color: Colors.blue,
+      ),
+    ),
+    Center(
+      child: Container(
+        height: 300,
+        width: 300,
+        color: Colors.purple,
+      ),
+    ),
+    Center(
+      child: Container(
+        height: 300,
+        width: 300,
+        color: Colors.red,
+      ),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
       animationDuration: const Duration(milliseconds: 300),
       animateChildDecoration: true,
       rtlOpening: false,
-      // openScale: 1.0,
+      openScale: 1.0,
+      openRatio: 0.65,
       disabledGestures: false,
       childDecoration: const BoxDecoration(
-        // NOTICE: Uncomment if you want to add shadow behind the page.
-        // Keep in mind that it may cause animation jerks.
-        // boxShadow: <BoxShadow>[
-        //   BoxShadow(
-        //     color: Colors.black12,
-        //     blurRadius: 0.0,
-        //   ),
-        // ],
         borderRadius: const BorderRadius.all(Radius.circular(16)),
       ),
       child: Scaffold(
+        backgroundColor: const Color(0xffe4e9f9),
         appBar: AppBar(
           title: const Text('Visite Préliminaire'),
           leading: IconButton(
@@ -60,13 +76,42 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        body: Center(
-          child: Container(
-            child: Text(
-              'Home Screen',
-            ),
+        bottomNavigationBar: SalomonBottomBar(
+          margin: EdgeInsets.symmetric(horizontal: 30.0),
+          currentIndex: _currentIndex,
+          onTap: (i) => setState(
+            () => _currentIndex = i,
           ),
+          items: [
+            /// Home
+            SalomonBottomBarItem(
+              icon: Image.asset(
+                'assets/images/syncing.png',
+              ),
+              title: Text("Synchronisation"),
+              selectedColor: Colors.blueAccent,
+            ),
+
+            /// Likes
+            SalomonBottomBarItem(
+              icon: Image.asset(
+                'assets/images/affaires.png',
+              ),
+              title: Text("Affaires"),
+              selectedColor: Colors.purple,
+            ),
+
+            /// Visite preliminaire
+            SalomonBottomBarItem(
+              icon: Image.asset(
+                'assets/images/visite.png',
+              ),
+              title: Text("Visite"),
+              selectedColor: Colors.redAccent,
+            ),
+          ],
         ),
+        body: bottomBarWidgets[_currentIndex]
       ),
       drawer: SafeArea(
         child: Container(
@@ -111,7 +156,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ListTile(
                   onTap: () async {
                     await Provider.of<Auth>(context, listen: false).logout();
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   },
                   leading: Icon(Icons.logout),
                   title: Text('Logout'),
@@ -126,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     margin: const EdgeInsets.symmetric(
                       vertical: 16.0,
                     ),
-                    child: Text('Terms of Service | Privacy Policy'),
+                    child: Text('CTC Algerie'),
                   ),
                 ),
               ],
