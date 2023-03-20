@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:mgtrisque_visitepreliminaire/models/user.dart';
+
 class User {
   String Matricule;
   String Nom;
@@ -36,4 +40,23 @@ class User {
         GroupSec = json['GroupSec'] == null ? '' : json['GroupSec'],
         GroupSousSec = json['GroupSousSec'] == null ? '' : json['GroupSousSec']
   ;
+
+  static Map<String, dynamic> toMap(User model) => 
+      <String, dynamic> {
+        'Matricule': model.Matricule,
+        'Nom': model.Nom,
+        'Nomjeunefille': model.Nomjeunefille,
+        'Prenom': model.Prenom,
+        'Structure': model.Structure,
+        'DirectionAntenne': model.DirectionAntenne,
+        'Service': model.Service,
+        'Fonction': model.Fonction,
+        'GroupSec': model.GroupSec,
+        'GroupSousSec': model.GroupSousSec,
+      };
+  
+  static String serialize(User model) => json.encode(User.toMap(model));
+  
+  static User deserialize(String json) => User.fromJson(jsonDecode(json));
+
 }

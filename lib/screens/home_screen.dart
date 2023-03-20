@@ -2,6 +2,8 @@ import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:provider/provider.dart';
 
 import '../services/dio.dart';
 
@@ -92,15 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 ListTile(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
-                  },
-                  leading: Icon(Icons.login),
-                  title: Text('Login'),
-                ),
-                ListTile(
                   onTap: () {},
                   leading: Icon(Icons.home),
                   title: Text('Home'),
@@ -114,6 +107,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {},
                   leading: Icon(Icons.settings),
                   title: Text('Settings'),
+                ),
+                ListTile(
+                  onTap: () async {
+                    await Provider.of<Auth>(context, listen: false).logout();
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+                  },
+                  leading: Icon(Icons.logout),
+                  title: Text('Logout'),
                 ),
                 Spacer(),
                 DefaultTextStyle(

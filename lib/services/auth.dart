@@ -5,25 +5,36 @@ import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
 import '../models/user.dart';
 
 class Auth extends ChangeNotifier {
-  late bool _isLoggedIn = false;
+  late bool? _isLoggedIn = false;
   late String? _token = null;
   late User? _user = null;
 
   final storage = new FlutterSecureStorage();
 
-  bool get isLoggedIn => _isLoggedIn;
+  bool? get isLoggedIn => _isLoggedIn;
   User? get user => _user;
+
+  checkLoggedUser() async {
+    try {
+      String? status = await storage.read(key: 'isLoggedIn');
+      String? token = await storage.read(key: 'token');
+      _isLoggedIn = ((status != null) && (status == 'isLoggedIn')) ? true : false;
+      if((_isLoggedIn != null) && (_isLoggedIn == true)){
+        await tryToken(token: token ?? '');
+      }
+    } catch(e){
+      print(e);
+    }
+  }
 
   login({required Map credentials}) async {
     try {
-      print("***  * login *  ***");
       Dio.Response response = await dio()
           .post(
             '/token',
             data: credentials
           );
       String token = response.data.toString();
-      print("***  * token : $token *  ***");
       await tryToken(token: token);
       return token;
     } catch(e){
@@ -36,7 +47,6 @@ class Auth extends ChangeNotifier {
       return;
     else {
       try {
-        print("***  * tryToken : $token *  ***");
         Dio.Response response = await dio()
             .get(
               '/user',
@@ -46,11 +56,11 @@ class Auth extends ChangeNotifier {
                   }
               )
             );
-        print("***  * tryToken : $response *  ***");
         _isLoggedIn = true;
         _user = User.fromJson(response.data);
         _token = token;
         await storeToken(token: token);
+        await storeUser(user: _user);
         notifyListeners();
       } catch (e) {
         print(e);
@@ -58,21 +68,20 @@ class Auth extends ChangeNotifier {
     }
   }
 
-  storeToken({required String token}) async {
+  storeToken({required String? token}) async {
     await storage.write(key: 'token', value: token);
+  }
+
+  storeUser({required User? user}) async {
+    if(user != null) {
+      await storage.write(key: 'user', value: User.serialize(user));
+      await storage.write(key: 'isLoggedIn', value: 'loggedIn');
+    }
   }
 
   logout() async {
     try {
-      Dio.Response response = await dio().delete(
-          '/user/revoke',
-        options: Dio.Options(
-          headers: {
-            'Authorization': 'Bearer $_token'
-          }
-        )
-      );
-      cleanUp();
+      await cleanUp();
       notifyListeners();
     } catch(e) {
       print(e);
@@ -83,6 +92,8 @@ class Auth extends ChangeNotifier {
     _user = null;
     _isLoggedIn = false;
     _token = null;
+    await storage.delete(key: 'isLoggedIn');
+    await storage.delete(key: 'user');
     await storage.delete(key: 'token');
   }
 

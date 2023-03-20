@@ -1,22 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/get_started.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (context) => Auth())
-  ],
-    child: const MyApp(),
-  ),
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final storage = new FlutterSecureStorage();
+  final Auth _auth = Auth();
+  await _auth.checkLoggedUser();
+  String? _isLoggedIn = await storage.read(key: 'isLoggedIn');
+  String? _token = await storage.read(key: 'token');
+
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => Auth())],
+      child: (_isLoggedIn != null)
+          ? const MyApp(isLoggedIn: 'isLoggedIn',)
+          : const MyApp(isLoggedIn: '',),
+    ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final String isLoggedIn;
+  const MyApp({
+    required this.isLoggedIn,
+    super.key,
+  });
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,9 +43,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: GetStarted(),
+      home: (widget.isLoggedIn == 'isLoggedIn') ? HomeScreen(title: 'Visite Préliminaire') : GetStarted(),
     );
   }
 }
-
-

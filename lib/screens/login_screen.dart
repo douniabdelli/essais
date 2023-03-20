@@ -199,6 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Container(
                                 width: double.infinity,
                                 child: TextFormField(
+                                  obscureText: true,
                                   controller: _passwordController,
                                   validator: (String? value) {
                                     if(value != null && value.isEmpty)
