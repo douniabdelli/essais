@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -22,8 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    _matriculeController.text = '00000';
-    _passwordController.text = '1111';
+    _matriculeController.text = '00052';
+    _passwordController.text = '123456';
     _isSigning = false;
     super.initState();
   }
@@ -280,15 +281,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             };
                             if (_formKey.currentState!.validate()) {
                               String? token = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
-                              setState(() {
-                                _isSigning = false;
-                              });
+                              // setState(() {
+                              //   _isSigning = false;
+                              // });
                               if(token != null) {
+                                await Provider.of<Affaires>(context, listen: false).getAffaires(token: token);
                                 Navigator.pop(context);
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const HomeScreen(
-                                        title:
-                                            'Visite Préliminaire (MgtRisque)')));
+                                    builder: (context) => const HomeScreen()));
                               }
                               else {
                                 setState(() {

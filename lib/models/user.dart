@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:mgtrisque_visitepreliminaire/models/user.dart';
-
 class User {
   String Matricule;
   String Nom;

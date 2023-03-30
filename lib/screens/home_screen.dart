@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/affaires_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/sync_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/visite_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.title});
-
-  final String title;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -16,30 +18,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _advancedDrawerController = AdvancedDrawerController();
-  int _currentIndex = 1;
-  final List<Widget> bottomBarWidgets = [
-    Center(
-      child: Container(
-        height: 300,
-        width: 300,
-        color: Colors.blue,
-      ),
-    ),
-    Center(
-      child: Container(
-        height: 300,
-        width: 300,
-        color: Colors.purple,
-      ),
-    ),
-    Center(
-      child: Container(
-        height: 300,
-        width: 300,
-        color: Colors.red,
-      ),
-    ),
-  ];
+    int _currentIndex = 1;
+    final List<Widget> bottomBarWidgets = [
+      SyncScreen(),
+      AffairesScreen(),
+      VisiteScreen(),
+    ];
+    final List<String> bottomBarNames = [
+      'Synchronisation',
+      'Affaires',
+      'Visite Préliminaire'
+    ];
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xffe4e9f9),
         appBar: AppBar(
-          title: const Text('Visite Préliminaire'),
+          title: Text('${Provider.of<GlobalProvider>(context, listen: false).screenTitle}'),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -79,11 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
         bottomNavigationBar: SalomonBottomBar(
           margin: EdgeInsets.symmetric(horizontal: 30.0),
           currentIndex: _currentIndex,
-          onTap: (i) => setState(
-            () => _currentIndex = i,
-          ),
+          onTap: (i) {
+              setState(
+                () => _currentIndex = i,
+              );
+              Provider.of<GlobalProvider>(context, listen: false).setScreenTitle = bottomBarNames[i];
+            },
           items: [
-            /// Home
+            /// Synchronisation
             SalomonBottomBarItem(
               icon: Image.asset(
                 'assets/images/syncing.png',
@@ -92,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
               selectedColor: Colors.blueAccent,
             ),
 
-            /// Likes
+            /// Affaires
             SalomonBottomBarItem(
               icon: Image.asset(
                 'assets/images/affaires.png',
@@ -127,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 128.0,
                   margin: const EdgeInsets.only(
                     top: 24.0,
-                    bottom: 64.0,
+                    bottom: 34.0,
                   ),
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
@@ -137,6 +129,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Image.network(
                     'https://thumbs.dreamstime.com/b/businessman-icon-vector-male-avatar-profile-image-profile-businessman-icon-vector-male-avatar-profile-image-182095609.jpg',
                   ),
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.only(
+                    bottom: 64.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Text(
+                        '${Provider.of<Auth>(context, listen: false).user?.Nom} ${Provider.of<Auth>(context, listen: false).user?.Prenom}',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  )
                 ),
                 ListTile(
                   onTap: () {},

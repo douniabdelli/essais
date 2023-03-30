@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/get_started.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -15,7 +17,11 @@ void main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (context) => Auth())],
+      providers: [
+        ChangeNotifierProvider(create: (context) => Auth()),
+        ChangeNotifierProvider(create: (context) => GlobalProvider()),
+        ChangeNotifierProvider(create: (context) => Affaires()),
+      ],
       child: (_isLoggedIn != null)
           ? const MyApp(isLoggedIn: 'isLoggedIn',)
           : const MyApp(isLoggedIn: '',),
@@ -43,7 +49,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: (widget.isLoggedIn == 'isLoggedIn') ? HomeScreen(title: 'Visite Préliminaire') : GetStarted(),
+      home: (widget.isLoggedIn == 'isLoggedIn') ? HomeScreen() : GetStarted(),
     );
   }
 }
