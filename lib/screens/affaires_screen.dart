@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:provider/provider.dart';
 
@@ -15,12 +11,11 @@ class AffairesScreen extends StatefulWidget {
 }
 
 class _AffairesScreenState extends State<AffairesScreen> {
-  TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    late List affaires = Provider.of<Affaires>(context).affaires;
+    late List affaires = Provider.of<Affaires>(context, listen: true).foundAffaires;
     var colors = [
       Colors.red,
       Colors.blue,
@@ -31,28 +26,9 @@ class _AffairesScreenState extends State<AffairesScreen> {
     return SingleChildScrollView(
       child: Container(
         width: size.width,
-        height: size.height,
+        height: size.height-135.0,
         child: Column(
           children: [
-            Container(
-              height: 70,
-              width: size.width,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: AnimSearchBar(
-                  width: size.width,
-                  textController: _searchController,
-                  suffixIcon: Icon(Icons.search),
-                  onSuffixTap: () {
-                    // todo: search
-                    print('------------ Search : ${_searchController.text} ------------');
-                  },
-                  onSubmitted: (String value) {
-                    print('+ ${value} +');
-                  },
-                ),
-              ),
-            ),
           Expanded(
               child: ListView.custom(
                   childrenDelegate: SliverChildBuilderDelegate(
@@ -68,30 +44,85 @@ class _AffairesScreenState extends State<AffairesScreen> {
                           horizontal: 8.0,
                           vertical: 8.0
                         ),
-                        child: Text('${affaires[index%affaires.length].Code_Affaire}'),
+                        child: Row(
+                          children: [
+                            Material(
+                              type: MaterialType.transparency,
+                              child: Ink(
+                                decoration: BoxDecoration(
+                                  border: Border.all(width: 1.5),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: InkWell(
+                                  onTap: () {
+                                    // todo: select affaire
+                                    print('test');
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(2.0),
+                                    child: Icon(
+                                      Icons.check,
+                                      size: 25.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10.0),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${affaires[index%affaires.length].Code_Affaire}',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15.0
+                                  ),
+                                ),
+                                Container(
+                                  child: Text(
+                                    affaires[index%affaires.length].NbrSite > 1 ? 'Multi' : 'Mono',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15.0
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.amber,
+                                    borderRadius: BorderRadius.circular(8.0)
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 5.0,
+                                    vertical: 1.0
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(width: 10.0),
+                            Expanded(
+                              child: RichText(
+                                text: TextSpan(
+                                  text: '${affaires[index%affaires.length].IntituleAffaire}',
+                                  style: TextStyle(
+                                    color: Colors.black
+                                  )
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         decoration: BoxDecoration(
-                          color: colors[index%affaires.length],
+                          color: Colors.blueGrey.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(8.0)
                         ),
                       );
                     },
-                    childCount: affaires.length*55,
-
+                    childCount: affaires.length*5,
                   )
               )
           ),
-          // Expanded(
-          //   child: ListView.builder(
-          //       itemCount: affaires.length,
-          //       itemBuilder: (context, index) {
-          //         return Container(
-          //           height: 75.0,
-          //           width: size.width,
-          //           child: Text('${affaires[index].Code_Affaire}'),
-          //         );
-          //       }
-          //     ),
-          //   ),
           ],
         ),
       ),

@@ -1,9 +1,11 @@
+import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/affaires_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/sync_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/visite_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:provider/provider.dart';
@@ -29,9 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
       'Affaires',
       'Visite Préliminaire'
     ];
+  TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+    final String _screenTitle = Provider.of<GlobalProvider>(context, listen: false).screenTitle;
     return AdvancedDrawer(
       backdropColor: Colors.teal,
       controller: _advancedDrawerController,
@@ -49,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xffe4e9f9),
         appBar: AppBar(
           title: Text('${Provider.of<GlobalProvider>(context, listen: false).screenTitle}'),
+          titleSpacing: 0.0,
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -64,6 +70,36 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          actions: [
+            if(_screenTitle == 'Affaires')
+              Container(
+                width: MediaQuery.of(context).size.width*1/2,
+                child: AnimatedSearchBar(
+                    label: "Cherchez une affaire",
+                    controller: _searchController,
+                    labelStyle: TextStyle(fontSize: 16),
+                    searchStyle: TextStyle(color: Colors.white),
+                    cursorColor: Colors.white,
+                    textInputAction: TextInputAction.done,
+                    searchDecoration: InputDecoration(
+                      hintText: "Search",
+                      alignLabelWithHint: true,
+                      fillColor: Colors.white,
+                      focusColor: Colors.white,
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: InputBorder.none,
+                    ),
+                    onChanged: (value) {
+                      print("value on Change");
+                      Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
+                    },
+                    onFieldSubmitted: (value) {
+                      print("value on Field Submitted");
+                      Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
+                    }
+                ),
+              ),
+          ],
         ),
         bottomNavigationBar: SalomonBottomBar(
           margin: EdgeInsets.symmetric(horizontal: 30.0),
@@ -103,7 +139,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        body: bottomBarWidgets[_currentIndex]
+        body: IndexedStack(
+          index: _currentIndex,
+          children: bottomBarWidgets,
+        ),
       ),
       drawer: SafeArea(
         child: Container(
