@@ -12,7 +12,11 @@ import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String isNotFirstTime;
+  const HomeScreen({
+    super.key,
+    required this.isNotFirstTime
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,23 +24,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _advancedDrawerController = AdvancedDrawerController();
-    int _currentIndex = 1;
-    final List<Widget> bottomBarWidgets = [
-      SyncScreen(),
-      AffairesScreen(),
-      VisiteScreen(),
-    ];
-    final List<String> bottomBarNames = [
-      'Synchronisation',
-      'Affaires',
-      'Visite Préliminaire'
-    ];
+  int _currentIndex = 1;
+  final List<Widget> bottomBarWidgets = [
+    SyncScreen(),
+    AffairesScreen(),
+    VisiteScreen(),
+  ];
+  final List<String> bottomBarNames = [
+    'Synchronisation',
+    'Affaires',
+    'Visite préliminaire'
+  ];
   TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    final String _screenTitle = Provider.of<GlobalProvider>(context, listen: false).screenTitle;
+    final String _screenTitle = Provider.of<GlobalProvider>(context, listen: true).screenTitle;
     return AdvancedDrawer(
       backdropColor: Colors.teal,
       controller: _advancedDrawerController,
@@ -53,8 +57,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xffe4e9f9),
         appBar: AppBar(
-          title: Text('${Provider.of<GlobalProvider>(context, listen: false).screenTitle}'),
+          title: Text(
+              '${Provider.of<GlobalProvider>(context, listen: true).screenTitle}'),
           titleSpacing: 0.0,
+          backgroundColor: _screenTitle == 'Affaires'
+              ? Colors.purple.withOpacity(0.7)
+              : (_screenTitle == 'Synchronisation'
+                  ? Colors.blueAccent.withOpacity(0.7)
+                  : Colors.redAccent.withOpacity(0.7)),
           leading: IconButton(
             onPressed: _handleMenuButtonPressed,
             icon: ValueListenableBuilder<AdvancedDrawerValue>(
@@ -71,9 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           actions: [
-            if(_screenTitle == 'Affaires')
+            if (_screenTitle == 'Affaires')
               Container(
-                width: MediaQuery.of(context).size.width*1/2,
+                width: MediaQuery.of(context).size.width * 1 / 2,
                 child: AnimatedSearchBar(
                     label: "Cherchez une affaire",
                     controller: _searchController,
@@ -91,25 +101,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     onChanged: (value) {
                       print("value on Change");
-                      Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
+                      Provider.of<Affaires>(context, listen: false)
+                          .setfoundAffaires = value;
                     },
                     onFieldSubmitted: (value) {
                       print("value on Field Submitted");
-                      Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
-                    }
-                ),
+                      Provider.of<Affaires>(context, listen: false)
+                          .setfoundAffaires = value;
+                    }),
               ),
           ],
         ),
         bottomNavigationBar: SalomonBottomBar(
           margin: EdgeInsets.symmetric(horizontal: 30.0),
-          currentIndex: _currentIndex,
+          currentIndex:
+              Provider.of<GlobalProvider>(context, listen: true).currentIndex,
           onTap: (i) {
-              setState(
-                () => _currentIndex = i,
-              );
-              Provider.of<GlobalProvider>(context, listen: false).setScreenTitle = bottomBarNames[i];
-            },
+            setState(
+              () => _currentIndex = i,
+            );
+            Provider.of<GlobalProvider>(context, listen: false)
+                .setCurrentIndex = i;
+            Provider.of<GlobalProvider>(context, listen: false).setScreenTitle =
+                bottomBarNames[i];
+          },
           items: [
             /// Synchronisation
             SalomonBottomBarItem(
@@ -140,7 +155,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: IndexedStack(
-          index: _currentIndex,
+          index:
+              Provider.of<GlobalProvider>(context, listen: true).currentIndex,
           children: bottomBarWidgets,
         ),
       ),
@@ -170,23 +186,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Container(
-                  width: MediaQuery.of(context).size.width,
-                  margin: const EdgeInsets.only(
-                    bottom: 64.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text(
-                        '${Provider.of<Auth>(context, listen: false).user?.Nom} ${Provider.of<Auth>(context, listen: false).user?.Prenom}',
-                        style: TextStyle(
-                          color: Colors.white,
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.only(
+                      bottom: 64.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          '${Provider.of<Auth>(context, listen: false).user?.Nom} ${Provider.of<Auth>(context, listen: false).user?.Prenom}',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                    ],
-                  )
-                ),
+                      ],
+                    )),
                 ListTile(
                   onTap: () {},
                   leading: Icon(Icons.home),
@@ -206,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () async {
                     await Provider.of<Auth>(context, listen: false).logout();
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => LoginScreen()));
+                        MaterialPageRoute(builder: (context) => LoginScreen(isNotFirstTime: widget.isNotFirstTime)));
                   },
                   leading: Icon(Icons.logout),
                   title: Text('Logout'),

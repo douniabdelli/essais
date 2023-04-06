@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'dart:convert' show utf8;
 
+import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
+
 class Affaire {
-  String Code_Affaire;
-  String IntituleAffaire;
-  int NbrSite;
+  final String Code_Affaire;
+  final String IntituleAffaire;
+  final int NbrSite;
 
 
-  Affaire({
+  const Affaire({
     required this.Code_Affaire,
     required this.IntituleAffaire,
     required this.NbrSite,

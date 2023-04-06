@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
+import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:provider/provider.dart';
 
 class AffairesScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     late List affaires = Provider.of<Affaires>(context, listen: true).foundAffaires;
+    late String _selectedAffaire = Provider.of<GlobalProvider>(context, listen: false).selectedAffaire;
     var colors = [
       Colors.red,
       Colors.blue,
@@ -27,6 +29,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
       child: Container(
         width: size.width,
         height: size.height-135.0,
+        color: Colors.purple.withOpacity(0.1),
         child: Column(
           children: [
           Expanded(
@@ -50,20 +53,33 @@ class _AffairesScreenState extends State<AffairesScreen> {
                               type: MaterialType.transparency,
                               child: Ink(
                                 decoration: BoxDecoration(
-                                  border: Border.all(width: 1.5),
+                                  border: Border.all(
+                                    width: 1.5,
+                                    color: Colors.purple.withOpacity(0.6),
+                                  ),
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 child: InkWell(
                                   onTap: () {
                                     // todo: select affaire
-                                    print('test');
+                                    print('test : ${affaires[index%affaires.length].Code_Affaire}');
+                                    Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires[index%affaires.length].Code_Affaire
+                                      ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
+                                      : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires[index%affaires.length].Code_Affaire;
+
+                                    if(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires[index%affaires.length].Code_Affaire) {
+                                      Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 2;
+                                      Provider.of<GlobalProvider>(context, listen: false).setScreenTitle = 'Visite Préliminaire';
+                                    }
                                   },
                                   child: Padding(
                                     padding: EdgeInsets.all(2.0),
                                     child: Icon(
-                                      Icons.check,
+                                      Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires[index%affaires.length].Code_Affaire
+                                      ? Icons.double_arrow
+                                      : Icons.check,
                                       size: 25.0,
-                                      color: Colors.black,
+                                        color: Colors.purple.withOpacity(0.6)
                                     ),
                                   ),
                                 ),
@@ -114,8 +130,14 @@ class _AffairesScreenState extends State<AffairesScreen> {
                           ],
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.blueGrey.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8.0)
+                          color: Colors.white.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(
+                            width: Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires[index%affaires.length].Code_Affaire
+                              ? 2.0
+                              : 0.0,
+                            color: Colors.purple.withOpacity(0.6)
+                          )
                         ),
                       );
                     },

@@ -6,12 +6,14 @@ import '../models/user.dart';
 
 class Auth extends ChangeNotifier {
   late bool? _isLoggedIn = false;
+  late bool? _isNotFirstTime = false;
   late String? _token = null;
   late User? _user = null;
 
   final storage = new FlutterSecureStorage();
 
   bool? get isLoggedIn => _isLoggedIn;
+  bool? get isNotFirstTime => _isNotFirstTime;
   User? get user => _user;
 
   checkLoggedUser() async {
@@ -74,6 +76,7 @@ class Auth extends ChangeNotifier {
 
   storeUser({required User? user}) async {
     if(user != null) {
+      await storage.write(key: 'isNotFirstTime', value: 'isNotFirstTime');
       await storage.write(key: 'user', value: User.serialize(user));
       await storage.write(key: 'isLoggedIn', value: 'loggedIn');
     }
@@ -92,6 +95,7 @@ class Auth extends ChangeNotifier {
     _user = null;
     _isLoggedIn = false;
     _token = null;
+    await storage.delete(key: 'isNotFirstTime');
     await storage.delete(key: 'isLoggedIn');
     await storage.delete(key: 'user');
     await storage.delete(key: 'token');

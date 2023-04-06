@@ -4,7 +4,10 @@ import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 class GetStarted extends StatelessWidget {
   GetStarted({
     Key? key,
+    required this.isNotFirstTime
   }) : super(key: key);
+
+  final String isNotFirstTime;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +102,7 @@ class GetStarted extends StatelessWidget {
                           child: TextButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => LoginScreen()));
+                                  builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime)));
                             },
                             child: Text(
                               'Commencer',

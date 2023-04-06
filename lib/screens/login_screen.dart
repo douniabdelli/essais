@@ -5,8 +5,10 @@ import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
+  final String isNotFirstTime;
   LoginScreen({
     Key? key,
+    required this.isNotFirstTime,
   }) : super(key: key);
 
   @override
@@ -18,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isSigning = false;
-
   bool get getIsSigning => _isSigning;
 
   @override
@@ -288,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 await Provider.of<Affaires>(context, listen: false).getAffaires(token: token);
                                 Navigator.pop(context);
                                 Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => const HomeScreen()));
+                                    builder: (context) => const HomeScreen(isNotFirstTime: '',)));
                               }
                               else {
                                 setState(() {

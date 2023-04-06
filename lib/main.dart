@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/get_started.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
@@ -13,6 +14,7 @@ void main() async {
   final Auth _auth = Auth();
   await _auth.checkLoggedUser();
   String? _isLoggedIn = await storage.read(key: 'isLoggedIn');
+  String? _isNotFirstTime = await storage.read(key: 'isNotFirstTime');
   String? _token = await storage.read(key: 'token');
 
   runApp(
@@ -23,16 +25,26 @@ void main() async {
         ChangeNotifierProvider(create: (context) => Affaires()),
       ],
       child: (_isLoggedIn != null)
-          ? const MyApp(isLoggedIn: 'isLoggedIn',)
-          : const MyApp(isLoggedIn: '',),
+          ? (
+              (_isNotFirstTime != null)
+                  ? const MyApp(isLoggedIn: 'isLoggedIn', isNotFirstTime: 'isNotFirstTime',)
+                  : const MyApp(isLoggedIn: 'isLoggedIn', isNotFirstTime: '',)
+            )
+          : (
+              (_isNotFirstTime != null)
+                  ? const MyApp(isLoggedIn: '', isNotFirstTime: 'isNotFirstTime',)
+                  : const MyApp(isLoggedIn: '', isNotFirstTime: '',)
+            ),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
   final String isLoggedIn;
+  final String isNotFirstTime;
   const MyApp({
     required this.isLoggedIn,
+    required this.isNotFirstTime,
     super.key,
   });
 
@@ -49,7 +61,17 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: (widget.isLoggedIn == 'isLoggedIn') ? HomeScreen() : GetStarted(),
+      home: (widget.isLoggedIn == 'isLoggedIn')
+          ? (
+              (widget.isNotFirstTime == 'isNotFirstTime')
+                  ? HomeScreen(isNotFirstTime: 'isNotFirstTime')
+                  : HomeScreen(isNotFirstTime: '')
+            )
+          : (
+              (widget.isNotFirstTime == 'isNotFirstTime')
+                  ? LoginScreen(isNotFirstTime: 'isNotFirstTime')
+                  : GetStarted(isNotFirstTime: '')
+          ),
     );
   }
 }
