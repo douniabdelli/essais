@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:convert' show utf8;
 
-import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
-
 class Affaire {
   final String Code_Affaire;
   final String IntituleAffaire;

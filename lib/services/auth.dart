@@ -76,7 +76,6 @@ class Auth extends ChangeNotifier {
 
   storeUser({required User? user}) async {
     if(user != null) {
-      await storage.write(key: 'isNotFirstTime', value: 'isNotFirstTime');
       await storage.write(key: 'user', value: User.serialize(user));
       await storage.write(key: 'isLoggedIn', value: 'loggedIn');
     }

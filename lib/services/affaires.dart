@@ -22,7 +22,20 @@ class Affaires extends ChangeNotifier {
       final storage = new FlutterSecureStorage();
       String? _isNotFirstTime = await storage.read(key: 'isNotFirstTime');
       print('isNotFirstTime : ${_isNotFirstTime}');
-        if(_isNotFirstTime != null && _isNotFirstTime == 'isNotFirstTime'){
+      Dio.Response response = await dio()
+          .get(
+          '/affaires',
+          options: Dio.Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+              'Charset': 'utf-8'
+            },
+          )
+      );
+      _affaires = response.data.map((data) => Affaire.fromJson(data)).toList();
+      await VisitePreliminaireDatabase.instance.createAffaires(response.data.map((data) => Affaire.fromJson(data)).toList());
+      if(_isNotFirstTime != null && _isNotFirstTime == 'isNotFirstTime'){
         // todo: get data from local database
         _affaires = await VisitePreliminaireDatabase.instance.getAffaires();
       } else {
@@ -40,6 +53,7 @@ class Affaires extends ChangeNotifier {
         );
         _affaires = response.data.map((data) => Affaire.fromJson(data)).toList();
         await VisitePreliminaireDatabase.instance.createAffaires(response.data.map((data) => Affaire.fromJson(data)).toList());
+        await storage.write(key: 'isNotFirstTime', value: 'isNotFirstTime');
       }
       _foundAffaires = _affaires;
     } catch (e) {
