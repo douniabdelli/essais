@@ -1,4 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
+import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
+import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
+import 'package:provider/provider.dart';
 
 class VisiteScreen extends StatefulWidget {
   const VisiteScreen({Key? key}) : super(key: key);
@@ -9,67 +16,51 @@ class VisiteScreen extends StatefulWidget {
 
 class _VisiteScreenState extends State<VisiteScreen> {
   final _formKey = GlobalKey<FormState>();
-  DateTime selectedDate = DateTime.now();
-  int _stepIndex = 0;
-  late String _terrain_accessible = '';
-  // todo: using textEditingController
-  //final _terrain_accessible = TextEditingController();
-  final _terrain_accessible_input_controller = TextEditingController();
-
-
-  late String _terrain_cloture = '';
-  final _terrain_cloture_input_controller = TextEditingController();
-
-  late String _terrain_nu = '';
-  final _terrain_nu_input_controller = TextEditingController();
-
-  late String _presence_vegetation = '';
-  final _presence_vegetation_input_controller = TextEditingController();
-
-  late String _presence_pylones = '';
-  final _presence_pylones_input_controller = TextEditingController();
-
-  late String _existence_mitoyennete_habitation = '';
-  final _existence_mitoyennete_habitation_input_controller = TextEditingController();
-
-  late String _existence_voirie_mitoyennete = '';
-  final _existence_voirie_mitoyennete_input_controller = TextEditingController();
-
-  late String _presence_remblais = '';
-  final _presence_remblais_input_controller = TextEditingController();
-
-  late String _presence_sources_eau_cavite = '';
-  final _presence_sources_eau_cavite_input_controller = TextEditingController();
-
-  late String _terrain_inondable = '';
-  final _terrain_inondable_input_controller = TextEditingController();
-
-  late String _terrain_pente = '';
-  final _terrain_pente_input_controller = TextEditingController();
-
-  late String _risque_instabilite = '';
-  final _risque_instabilite_input_controller = TextEditingController();
-
-  late String _terrassements_entames = '';
-  final _terrassements_entames_input_controller = TextEditingController();
-
-  final _observations_complementaires_input_controller = TextEditingController();
 
   late String _conclusion_1 = '';
   late String _conclusion_2 = '';
   late bool _conclusion_3 = false;
 
+  ImagePicker imagePicker = ImagePicker();
+
+  _imageFromCamera() async {
+    try {
+      PickedFile? capturedImage = await imagePicker.getImage(source: ImageSource.camera);
+      final File imagePath = File(capturedImage!.path);
+      if (capturedImage == null)
+        showAlert(
+            bContext: context,
+            title: "Error choosing file",
+            content: "No file was selected");
+      else
+          Provider.of<GlobalProvider>(context, listen: false).setSiteImage = imagePath;
+    } catch (e) {
+      showAlert(
+          bContext: context, title: "Error capturing image file", content: e.toString());
+    }
+  }
+
+  _imageFromGallery() async {
+    PickedFile? uploadedImage = await imagePicker.getImage(source: ImageSource.gallery);
+    final File imagePath = File(uploadedImage!.path);
+
+    if (uploadedImage == null)
+      showAlert(
+          bContext: context,
+          title: "Error choosing file",
+          content: "No file was selected");
+    else
+      Provider.of<GlobalProvider>(context, listen: false).setSiteImage = imagePath;
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: selectedDate,
+        initialDate: Provider.of<GlobalProvider>(context, listen: false).selectedDate,
         firstDate: DateTime(1971),
         lastDate: DateTime(DateTime.now().year + 1));
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
+    if (picked != null && picked != Provider.of<GlobalProvider>(context, listen: false).selectedDate)
+        Provider.of<GlobalProvider>(context, listen: false).setSelectedDate = picked;
   }
 
   @override
@@ -78,6 +69,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
     return Container(
       width: size.width,
       height: size.height,
+      color: Colors.redAccent.withOpacity(0.1),
       child: Column(
         children: [
           Row(
@@ -98,7 +90,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                 child: Row(
                   children: [
                     Text(
-                        '${selectedDate.day} / ${selectedDate.month} / ${selectedDate.year}'),
+                        '${Provider.of<GlobalProvider>(context, listen: true).selectedDate.day} / '
+                            '${Provider.of<GlobalProvider>(context, listen: true).selectedDate.month} / '
+                            '${Provider.of<GlobalProvider>(context, listen: true).selectedDate.year}'
+                    ),
                     SizedBox(
                       width: 10.0,
                     ),
@@ -112,20 +107,19 @@ class _VisiteScreenState extends State<VisiteScreen> {
             child: Form(
               key: _formKey,
               child: Stepper(
-                currentStep: _stepIndex,
+                currentStep: Provider.of<GlobalProvider>(context, listen: true).stepIndex,
                 controlsBuilder: (context, _) {
                   return Container(
                     margin: EdgeInsets.only(top: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if(_stepIndex > 0)
+                        if(Provider.of<GlobalProvider>(context, listen: true).stepIndex > 0)
                           ElevatedButton(
                             onPressed: () => {
-                              if (_stepIndex > 0)
-                                setState(() {
-                                  _stepIndex -= 1;
-                                })
+                              if (Provider.of<GlobalProvider>(context, listen: false).stepIndex > 0)
+                                  Provider.of<GlobalProvider>(context, listen: false).setStepIndex =
+                                      Provider.of<GlobalProvider>(context, listen: false).stepIndex - 1
                             },
                             style: ElevatedButton.styleFrom(
                                 primary: Theme.of(context).secondaryHeaderColor),
@@ -140,13 +134,12 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ],
                             ),
                         ),
-                        if(_stepIndex < 5)
+                        if(Provider.of<GlobalProvider>(context, listen: true).stepIndex < 6)
                           ElevatedButton(
                             onPressed: () => {
-                              if (_stepIndex < 5)
-                                setState(() {
-                                  _stepIndex += 1;
-                                })
+                              if (Provider.of<GlobalProvider>(context, listen: false).stepIndex < 6)
+                                  Provider.of<GlobalProvider>(context, listen: false).setStepIndex =
+                                      Provider.of<GlobalProvider>(context, listen: false).stepIndex + 1
                             },
                             child: Row(
                               children: [
@@ -161,9 +154,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                   );
                 },
                 onStepTapped: (int index) {
-                  setState(() {
-                    _stepIndex = index;
-                  });
+                    Provider.of<GlobalProvider>(context, listen: false).setStepIndex = index;
                 },
                 type: StepperType.vertical,
                 steps: <Step>[
@@ -171,106 +162,100 @@ class _VisiteScreenState extends State<VisiteScreen> {
                       title: Text(
                         'Conditions du site',
                         style: TextStyle(
-                            color:
-                                (_stepIndex >= 0) ? Colors.blue : Colors.black),
+                          color: (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 0) ? Colors.blue : Colors.black,
+                          fontSize: 18.0
+                        ),
                       ),
                       content: Container(
-                          width: size.width,
+
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               // Terrain accessible
-                              Column(
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: Container(
-                                          child: Text(
-                                            'Terrain accessible',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
+                                  Expanded(
+                                    child: Container(
+                                      padding: EdgeInsets.only(right: 8.0),
+                                      child: Text(
+                                        'Terrain accessible',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Transform.scale(
-                                                scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Oui'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Oui',
-                                                    groupValue: _terrain_accessible,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _terrain_accessible = value!;
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Transform.scale(
+                                            scale: 0.8,
+                                            child: Radio(
+                                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              value: 'Oui',
+                                              groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleController.text,
+                                              onChanged: (value) {
+                                                Provider.of<GlobalProvider>(context, listen: false).setTerrainAccessibleController = value;
+                                              },
                                             ),
-                                            Expanded(
-                                              child: Transform.scale(
-                                                scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Non'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Non',
-                                                    groupValue: _terrain_accessible,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _terrain_accessible = value!;
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
+                                          ),
+                                          Text('Oui'),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Transform.scale(
+                                            scale: 0.8,
+                                            child: Radio(
+                                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              value: 'Non',
+                                              groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleController.text,
+                                              onChanged: (value) {
+                                                Provider.of<GlobalProvider>(context, listen: false).setTerrainAccessibleController = value;
+                                              },
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                          Text('Non'),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                  TextFormField(
-                                    controller: _terrain_accessible_input_controller,
-                                    decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                          color: Color(0xff707070),
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(7.0),
-                                        borderSide: BorderSide(
-                                            color: Color(0xff707070),
-                                            width: 1.5
-                                        ),
-                                      ),
-                                    ),
-                                    style: TextStyle(
-                                      fontFamily: 'Arial',
-                                      fontSize: 15,
-                                      color: const Color(0xff707070),
-                                    ),
-                                    textAlign: TextAlign.start,
-                                    minLines: 1,
-                                    maxLines: 2,
-                                  ),
                                 ],
+                              ),
+                              TextFormField(
+                                controller: Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleInputController,
+                                decoration: InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    borderSide: BorderSide(
+                                      color: Color(0xff707070),
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                    borderSide: BorderSide(
+                                        color: Color(0xff707070),
+                                        width: 1.5
+                                    ),
+                                  ),
+                                ),
+                                style: TextStyle(
+                                  fontFamily: 'Arial',
+                                  fontSize: 15,
+                                  color: const Color(0xff707070),
+                                ),
+                                textAlign: TextAlign.start,
+                                minLines: 1,
+                                maxLines: 2,
+                              ),
+
+                              Divider(
+                                color: Colors.black26,
+                                thickness: 1.0,
+                                indent: 50.0,
+                                endIndent: 50.0,
+                                height: 20.0,
                               ),
 
                               // Terrain cloturé
@@ -279,8 +264,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   Row(
                                     children: [
                                       Expanded(
-                                        flex: 3,
                                         child: Container(
+                                          padding: EdgeInsets.only(right: 8.0),
                                           child: Text(
                                             'Terrain clôturé',
                                             style: TextStyle(
@@ -289,57 +274,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                           ),
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Transform.scale(
+                                      Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Transform.scale(
                                                 scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Oui'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Oui',
-                                                    groupValue: _terrain_cloture,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _terrain_cloture = value!;
-                                                      });
-                                                    },
-                                                  ),
+                                                child: Radio(
+                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  value: 'Oui',
+                                                  groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainClotureController.text,
+                                                  onChanged: (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setTerrainClotureController = value;
+                                                  },
                                                 ),
                                               ),
-                                            ),
-                                            Expanded(
-                                              child: Transform.scale(
+                                              Text('Oui'),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Transform.scale(
                                                 scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Non'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Non',
-                                                    groupValue: _terrain_cloture,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _terrain_cloture = value!;
-                                                      });
-                                                    },
-                                                  ),
+                                                child: Radio(
+                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  value: 'Non',
+                                                  groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainClotureController.text,
+                                                  onChanged: (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setTerrainClotureController = value;
+                                                  },
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
+                                              Text('Non'),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                   TextFormField(
-                                    controller: _terrain_cloture_input_controller,
+                                    controller: Provider.of<GlobalProvider>(context, listen: true).terrainClotureInputController,
                                     decoration: InputDecoration(
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(7.0),
@@ -367,14 +341,22 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 ],
                               ),
 
+                              Divider(
+                                color: Colors.black26,
+                                thickness: 1.0,
+                                indent: 50.0,
+                                endIndent: 50.0,
+                                height: 20.0,
+                              ),
+
                               // Terrain nu
                               Column(
                                 children: [
                                   Row(
                                     children: [
                                       Expanded(
-                                        flex: 3,
                                         child: Container(
+                                          padding: EdgeInsets.only(right: 8.0),
                                           child: Text(
                                             'Terrain nu',
                                             style: TextStyle(
@@ -383,57 +365,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                           ),
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Transform.scale(
+                                      Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Transform.scale(
                                                 scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Oui'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Oui',
-                                                    groupValue: _terrain_nu,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _terrain_nu = value!;
-                                                      });
-                                                    },
-                                                  ),
+                                                child: Radio(
+                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  value: 'Oui',
+                                                  groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainNuController.text,
+                                                  onChanged: (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setTerrainNuController = value;
+                                                  },
                                                 ),
                                               ),
-                                            ),
-                                            Expanded(
-                                              child: Transform.scale(
+                                              Text('Oui'),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Transform.scale(
                                                 scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Non'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Non',
-                                                    groupValue: _terrain_nu,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _terrain_nu = value!;
-                                                      });
-                                                    },
-                                                  ),
+                                                child: Radio(
+                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  value: 'Non',
+                                                  groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainNuController.text,
+                                                  onChanged: (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setTerrainNuController = value;
+                                                  },
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
+                                              Text('Non'),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                   TextFormField(
-                                    controller: _terrain_nu_input_controller,
+                                    controller: Provider.of<GlobalProvider>(context, listen: true).terrainNuInputController,
                                     decoration: InputDecoration(
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(7.0),
@@ -461,14 +432,22 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 ],
                               ),
 
+                              Divider(
+                                color: Colors.black26,
+                                thickness: 1.0,
+                                indent: 50.0,
+                                endIndent: 50.0,
+                                height: 20.0,
+                              ),
+
                               // Terrain nu
                               Column(
                                 children: [
                                   Row(
                                     children: [
                                       Expanded(
-                                        flex: 3,
                                         child: Container(
+                                          padding: EdgeInsets.only(right: 8.0),
                                           child: Text(
                                             'Présence de végétation',
                                             style: TextStyle(
@@ -477,57 +456,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                           ),
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 5,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Transform.scale(
+                                      Row(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Transform.scale(
                                                 scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Oui'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Oui',
-                                                    groupValue: _presence_vegetation,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _presence_vegetation = value!;
-                                                      });
-                                                    },
-                                                  ),
+                                                child: Radio(
+                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  value: 'Oui',
+                                                  groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceVegetationController.text,
+                                                  onChanged: (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setPresenceVegetationController = value;
+                                                  },
                                                 ),
                                               ),
-                                            ),
-                                            Expanded(
-                                              child: Transform.scale(
+                                              Text('Oui'),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Transform.scale(
                                                 scale: 0.8,
-                                                child: ListTile(
-                                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                  horizontalTitleGap: -5.0,
-                                                  title: const Text('Non'),
-                                                  leading: Radio(
-                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                    value: 'Non',
-                                                    groupValue: _presence_vegetation,
-                                                    onChanged: (String? value) {
-                                                      setState(() {
-                                                        _presence_vegetation = value!;
-                                                      });
-                                                    },
-                                                  ),
+                                                child: Radio(
+                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  value: 'Non',
+                                                  groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceVegetationController.text,
+                                                  onChanged: (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setPresenceVegetationController = value;
+                                                  },
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
+                                              Text('Non'),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                   TextFormField(
-                                    controller: _presence_vegetation_input_controller,
+                                    controller: Provider.of<GlobalProvider>(context, listen: true).presenceVegetationInputController,
                                     decoration: InputDecoration(
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(7.0),
@@ -557,17 +525,19 @@ class _VisiteScreenState extends State<VisiteScreen> {
                             ],
                           ),
                       ),
-                      isActive: _stepIndex >= 0,
-                      state: (_stepIndex == 0)
+                      isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 0,
+                      state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 0)
                           ? StepState.editing
-                          : ((_stepIndex > 0) ? StepState.complete : StepState.disabled)
+                          : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 0) ? StepState.complete : StepState.disabled)
                   ),
                   Step(
                       title: Text(
                         'Contraintes',
                         style: TextStyle(
                             color:
-                                (_stepIndex >= 1) ? Colors.blue : Colors.black),
+                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 1) ? Colors.blue : Colors.black,
+                            fontSize: 18.0
+                        ),
                       ),
                       content: Container(
                         width: size.width,
@@ -580,8 +550,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Présence de pylônes',
                                           style: TextStyle(
@@ -590,57 +560,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _presence_pylones,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _presence_pylones = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).presencePylonesController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setPresencePylonesController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _presence_pylones,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _presence_pylones = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).presencePylonesController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setPresencePylonesController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _presence_pylones_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).presencePylonesInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -666,6 +625,14 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   maxLines: 2,
                                 ),
                               ],
+                            ),
+
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
                             ),
 
                             // Existence de mitoyenneté (habitation)
@@ -674,8 +641,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Existence de mitoyenneté (habitation)',
                                           style: TextStyle(
@@ -684,57 +651,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _existence_mitoyennete_habitation,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _existence_mitoyennete_habitation = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setExistenceMitoyenneteHabitationController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _existence_mitoyennete_habitation,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _existence_mitoyennete_habitation = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setExistenceMitoyenneteHabitationController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _existence_mitoyennete_habitation_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -760,6 +716,14 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   maxLines: 2,
                                 ),
                               ],
+                            ),
+
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
                             ),
 
                             // Existence d'une voirie mitoyenneté
@@ -768,8 +732,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Existence d\'une voirie mitoyenneté',
                                           style: TextStyle(
@@ -778,57 +742,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _existence_voirie_mitoyennete,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _existence_voirie_mitoyennete = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setExistenceVoirieMitoyenneteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _existence_voirie_mitoyennete,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _existence_voirie_mitoyennete = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setExistenceVoirieMitoyenneteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _existence_voirie_mitoyennete_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -854,6 +807,14 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   maxLines: 2,
                                 ),
                               ],
+                            ),
+
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
                             ),
 
                             // Présence de remblais
@@ -862,8 +823,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Présence de remblais',
                                           style: TextStyle(
@@ -872,57 +833,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _presence_remblais,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _presence_remblais = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setPresenceRemblaisController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _presence_remblais,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _presence_remblais = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setPresenceRemblaisController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _presence_remblais_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -950,14 +900,22 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ],
                             ),
 
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
+                            ),
+
                             // Présence de sources, cours d\'eau ou cavité (Enquête chez les habitants)
                             Column(
                               children: [
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Présence de sources, cours d\'eau ou cavité (Enquête chez les habitants)',
                                           style: TextStyle(
@@ -966,57 +924,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _presence_sources_eau_cavite,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _presence_sources_eau_cavite = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setPresenceSourcesEauCaviteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _presence_sources_eau_cavite,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _presence_sources_eau_cavite = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setPresenceSourcesEauCaviteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _presence_sources_eau_cavite_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -1047,17 +994,18 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           ],
                         ),
                       ),
-                      isActive: _stepIndex >= 1,
-                      state: (_stepIndex == 1)
+                      isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 1,
+                      state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 1)
                           ? StepState.editing
-                          : ((_stepIndex > 1) ? StepState.complete : StepState.disabled)
+                          : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 1) ? StepState.complete : StepState.disabled)
                   ),
                   Step(
                       title: Text(
                         'Risques',
                         style: TextStyle(
                             color:
-                                (_stepIndex >= 2) ? Colors.blue : Colors.black),
+                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 2) ? Colors.blue : Colors.black,
+                            fontSize: 18.0),
                       ),
                       content: Container(
                         width: size.width,
@@ -1070,8 +1018,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Terrain inondable',
                                           style: TextStyle(
@@ -1080,57 +1028,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _terrain_inondable,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _terrain_inondable = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainInondableController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setTerrainInondableController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _terrain_inondable,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _terrain_inondable = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainInondableController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setTerrainInondableController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _terrain_inondable_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).terrainInondableInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -1156,6 +1093,14 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   maxLines: 2,
                                 ),
                               ],
+                            ),
+
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
                             ),
 
                             // Terrain en pente
@@ -1164,8 +1109,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Terrain en pente',
                                           style: TextStyle(
@@ -1174,57 +1119,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _terrain_pente,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _terrain_pente = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainPenteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setTerrainPenteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _terrain_pente,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _terrain_pente = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainPenteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setTerrainPenteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _terrain_pente_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).terrainPenteInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -1250,6 +1184,14 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   maxLines: 2,
                                 ),
                               ],
+                            ),
+
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
                             ),
 
                             // Risque d'instabilité
@@ -1258,8 +1200,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Risque d\'instabilité',
                                           style: TextStyle(
@@ -1268,57 +1210,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _risque_instabilite,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _risque_instabilite = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setRisqueInstabiliteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _risque_instabilite,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _risque_instabilite = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setRisqueInstabiliteController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _risque_instabilite_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -1346,14 +1277,22 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ],
                             ),
 
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
+                            ),
+
                             // Terrassements entamés
                             Column(
                               children: [
                                 Row(
                                   children: [
                                     Expanded(
-                                      flex: 3,
                                       child: Container(
+                                        padding: EdgeInsets.only(right: 8.0),
                                         child: Text(
                                           'Terrassements entamés',
                                           style: TextStyle(
@@ -1362,57 +1301,46 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Transform.scale(
+                                    Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Oui'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Oui',
-                                                  groupValue: _terrassements_entames,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _terrassements_entames = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Oui',
+                                                  groupValue: Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesController.text,
+                                                  onChanged: (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setTerrassementsEntamesController = value;
+                                                  }
                                               ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: Transform.scale(
+                                            Text('Oui'),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Transform.scale(
                                               scale: 0.8,
-                                              child: ListTile(
-                                                visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                                horizontalTitleGap: -5.0,
-                                                title: const Text('Non'),
-                                                leading: Radio(
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                  value: 'Non',
-                                                  groupValue: _terrassements_entames,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _terrassements_entames = value!;
-                                                    });
-                                                  },
-                                                ),
+                                              child: Radio(
+                                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                value: 'Non',
+                                                groupValue: Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesController.text,
+                                                onChanged: (value) {
+                                                  Provider.of<GlobalProvider>(context, listen: false).setTerrassementsEntamesController = value;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
+                                            Text('Non'),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                                 TextFormField(
-                                  controller: _terrassements_entames_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -1443,17 +1371,18 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           ],
                         ),
                       ),
-                      isActive: _stepIndex >= 2,
-                      state: (_stepIndex == 2)
+                      isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 2,
+                      state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 2)
                           ? StepState.editing
-                          : ((_stepIndex > 2) ? StepState.complete : StepState.disabled)
+                          : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 2) ? StepState.complete : StepState.disabled)
                   ),
                   Step(
                       title: Text(
                         'Observations complémentaires',
                         style: TextStyle(
                             color:
-                                (_stepIndex >= 3) ? Colors.blue : Colors.black),
+                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 3) ? Colors.blue : Colors.black,
+                            fontSize: 18.0),
                       ),
                       content: Container(
                         width: size.width,
@@ -1474,7 +1403,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   ),
                                 ),
                                 TextFormField(
-                                  controller: _observations_complementaires_input_controller,
+                                  controller: Provider.of<GlobalProvider>(context, listen: true).observationsComplementairesInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(7.0),
@@ -1504,17 +1433,19 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           ],
                         ),
                       ),
-                      isActive: _stepIndex >= 3,
-                      state: (_stepIndex == 3)
+                      isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 3,
+                      state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 3)
                           ? StepState.editing
-                          : ((_stepIndex > 3) ? StepState.complete : StepState.disabled)
+                          : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 3) ? StepState.complete : StepState.disabled)
                   ),
                   Step(
                       title: Text(
                         'Conclusion',
                         style: TextStyle(
                             color:
-                                (_stepIndex >= 4) ? Colors.blue : Colors.black),
+                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 4) ? Colors.blue : Colors.black,
+                            fontSize: 18.0
+                        ),
                       ),
                       content: Container(
                         width: size.width,
@@ -1525,8 +1456,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                             Row(
                               children: [
                                 Expanded(
-                                  flex: 4,
                                   child: Container(
+                                    padding: EdgeInsets.only(right: 8.0),
                                     child: Text(
                                       'Ce terrain présente-t-il des risques d\'instabilité lors des terrassements ?',
                                       style: TextStyle(
@@ -1535,122 +1466,124 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Transform.scale(
-                                        scale: 0.8,
-                                        child: ListTile(
-                                          visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                          horizontalTitleGap: -5.0,
-                                          title: const Text('Oui'),
-                                          leading: Radio(
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text('Oui'),
+                                        Transform.scale(
+                                          scale: 0.8,
+                                          child: Radio(
                                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                             value: 'Oui',
-                                            groupValue: _conclusion_1,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _conclusion_1 = value!;
-                                              });
+                                            groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_1Controller.text,
+                                            onChanged: (value) {
+                                              Provider.of<GlobalProvider>(context, listen: false).setConclusion_1Controller = value;
                                             },
                                           ),
                                         ),
-                                      ),
-                                      Transform.scale(
-                                        scale: 0.8,
-                                        child: ListTile(
-                                          visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                          horizontalTitleGap: -5.0,
-                                          title: const Text('Non'),
-                                          leading: Radio(
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text('Non'),
+                                        Transform.scale(
+                                          scale: 0.8,
+                                          child: Radio(
                                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                             value: 'Non',
-                                            groupValue: _conclusion_1,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _conclusion_1 = value!;
-                                              });
+                                            groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_1Controller.text,
+                                            onChanged: (value) {
+                                              Provider.of<GlobalProvider>(context, listen: false).setConclusion_1Controller = value;
                                             },
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ],
+                            ),
+
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
                             ),
 
                             // Conclusion 2
                             Row(
                               children: [
                                 Expanded(
-                                  flex: 4,
                                   child: Container(
+                                    padding: EdgeInsets.only(right: 8.0),
                                     child: Text(
-                                      'Y\'a-t-il nécessité d\'adresser un courrier au <<Maitre d\'ouvrage>> portant sur un risque encouru ?',
+                                      'Y\'a-t-il nécessité d\'adresser un courrier au "Maitre d\'ouvrage" portant sur un risque encouru ?',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Transform.scale(
-                                        scale: 0.8,
-                                        child: ListTile(
-                                          visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                          horizontalTitleGap: -5.0,
-                                          title: const Text('Oui'),
-                                          leading: Radio(
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text('Oui'),
+                                        Transform.scale(
+                                          scale: 0.8,
+                                          child: Radio(
                                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                             value: 'Oui',
-                                            groupValue: _conclusion_2,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _conclusion_2 = value!;
-                                              });
+                                            groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_2Controller.text,
+                                            onChanged: (value) {
+                                              Provider.of<GlobalProvider>(context, listen: false).setConclusion_2Controller = value;
                                             },
                                           ),
                                         ),
-                                      ),
-                                      Transform.scale(
-                                        scale: 0.8,
-                                        child: ListTile(
-                                          visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                                          horizontalTitleGap: -5.0,
-                                          title: const Text('Non'),
-                                          leading: Radio(
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text('Non'),
+                                        Transform.scale(
+                                          scale: 0.8,
+                                          child: Radio(
                                             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                             value: 'Non',
-                                            groupValue: _conclusion_2,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _conclusion_2 = value!;
-                                              });
+                                            groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_2Controller.text,
+                                            onChanged: (value) {
+                                              Provider.of<GlobalProvider>(context, listen: false).setConclusion_2Controller = value;
                                             },
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ],
+                            ),
+
+                            Divider(
+                              color: Colors.black26,
+                              thickness: 1.0,
+                              indent: 50.0,
+                              endIndent: 50.0,
+                              height: 20.0,
                             ),
 
                             // Conclusion 3
                             Row(
                               children: [
                                 Expanded(
-                                  flex: 4,
                                   child: Container(
+                                    padding: EdgeInsets.only(right: 8.0),
                                     child: Text(
                                       'Document(s) annexé(e)',
                                       style: TextStyle(
@@ -1659,15 +1592,13 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 2,
+                                Transform.scale(
+                                  scale: 0.8,
                                   child: Checkbox(
                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    value: _conclusion_3,
+                                    value: Provider.of<GlobalProvider>(context, listen: true).conclusion_3Controller,
                                     onChanged: (bool? value) {
-                                      setState(() {
-                                        _conclusion_3 = value!;
-                                      });
+                                      Provider.of<GlobalProvider>(context, listen: false).setConclusion_3Controller = value;
                                     },
                                   ),
                                 ),
@@ -1676,29 +1607,362 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           ],
                         ),
                       ),
-                      isActive: _stepIndex >= 4,
-                      state: (_stepIndex == 4)
+                      isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 4,
+                      state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 4)
                           ? StepState.editing
-                          : ((_stepIndex > 4) ? StepState.complete : StepState.disabled)
+                          : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 4) ? StepState.complete : StepState.disabled)
                   ),
                   Step(
                       title: Text(
-                        'Photos',
+                        'Photo',
                         style: TextStyle(
                             color:
-                                (_stepIndex >= 5) ? Colors.blue : Colors.black),
+                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 5) ? Colors.blue : Colors.black,
+                            fontSize: 18.0
+                        ),
                       ),
-                      content: Text('Photos'),
-                      isActive: _stepIndex >= 5,
-                      state: (_stepIndex == 5)
+                      content: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.only(bottom: 10.0),
+                                  child: Text(
+                                    'Photo du site',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]
+                          ),
+                          if(Provider.of<GlobalProvider>(context, listen: false).siteImage != null)
+                            Container(
+                              width: MediaQuery.of(context).size.width * 2 / 3,
+                              height: MediaQuery.of(context).size.width * 2 / 3,
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(40.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: FileImage(Provider.of<GlobalProvider>(context, listen: false).siteImage),
+                                          fit: BoxFit.fitWidth,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: Material(
+                                      type: MaterialType.transparency,
+                                      child: Ink(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.red, width: 1.5),
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                          onTap: () {
+                                            Provider.of<GlobalProvider>(context, listen: false).setSiteImage = null;
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.all(2.0),
+                                            child: Icon(
+                                              Icons.close,
+                                              size: 25.0,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if(Provider.of<GlobalProvider>(context, listen: false).siteImage != null)
+                            SizedBox(height: 10.0),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 2 / 3,
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Color.fromRGBO(0, 0, 0, 0.1),
+                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20)),
+                                      ),
+                                      child: Column(children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(20.0),
+                                          child: Icon(
+                                            Icons.camera_alt_outlined,
+                                            size: 30,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Prendre photo",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w300,
+                                          ),
+                                        )
+                                      ]),
+                                      onPressed: () => {
+                                        _imageFromCamera(),
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.0,),
+                                  Expanded(
+                                    flex: 2,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Color.fromRGBO(0, 0, 0, 0.1),
+                                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(20)),
+                                      ),
+                                      child: Column(children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: Icon(
+                                            Icons.photo_library_outlined,
+                                            size: 30,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Charger photo",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w300,
+                                          ),
+                                        )
+                                      ]),
+                                      onPressed: () => {
+                                        _imageFromGallery(),
+                                      },
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                        ],
+                      ),
+                      isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 5,
+                      state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 5)
                           ? StepState.editing
-                          : ((_stepIndex > 5) ? StepState.complete : StepState.disabled)
+                          : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 5) ? StepState.complete : StepState.disabled)
+                  ),
+                  Step(
+                      title: Text(
+                        'Liste des présents',
+                        style: TextStyle(
+                            color:
+                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6) ? Colors.blue : Colors.black,
+                            fontSize: 18.0
+                        ),
+                      ),
+                      content: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.only(bottom: 10.0),
+                                  child: Text(
+                                    'Liste des présents',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                child: IconButton(
+                                  onPressed: (){
+                                    showDialog(context: context, builder: (BuildContext context){
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                        elevation: 0.0,
+                                        insetPadding: EdgeInsets.zero,
+                                        titlePadding: EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                          vertical: 8.0
+                                        ),
+                                        title: Row(
+                                          children: [
+                                            Expanded(child: Text('Ajouter une personne')),
+                                            IconButton(
+                                              onPressed: (){
+                                                Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
+                                                Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
+                                                Navigator.of(context).pop();
+                                              },
+                                              icon: Icon(
+                                                Icons.close,
+                                                color: Colors.red
+                                              ),
+                                              padding: EdgeInsets.zero,
+                                              constraints: BoxConstraints(),
+                                            ),
+                                          ],
+                                        ),
+                                        content: Container(
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Personne tierce',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              DecoratedBox(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(4.0),
+                                                    boxShadow: <BoxShadow>[
+                                                      BoxShadow(
+                                                        blurRadius: 1,
+                                                      ),
+                                                    ],
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 10.0
+                                                  ),
+                                                  child: DropdownButton(
+                                                    isExpanded: true,
+                                                    items: Provider.of<GlobalProvider>(context, listen: false).thirdPerson
+                                                        .map<DropdownMenuItem<String>>((String value) {
+                                                      return DropdownMenuItem<String>(
+                                                        value: value,
+                                                        child: Text(value,),
+                                                      );
+                                                    }).toList(),
+                                                    value: Provider.of<GlobalProvider>(context, listen: true).presentPersonFullName,
+                                                    onChanged: (String? newValue){
+                                                      Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = newValue!;
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 30.0),
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Nom complet',
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              TextFormField(
+                                                controller: Provider.of<GlobalProvider>(context, listen: true).presentPersonController,
+                                                decoration: InputDecoration(
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(7.0),
+                                                    borderSide: BorderSide(
+                                                      color: Color(0xff707070),
+                                                    ),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(7.0),
+                                                    borderSide: BorderSide(
+                                                        color: Color(0xff707070),
+                                                        width: 1.0
+                                                    ),
+                                                  ),
+                                                ),
+                                                style: TextStyle(
+                                                  fontFamily: 'Arial',
+                                                  fontSize: 15,
+                                                  color: const Color(0xff707070),
+                                                ),
+                                                textAlign: TextAlign.start,
+                                                maxLines: 1,
+                                              ),
+                                            ]
+                                          ),
+                                        ),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: const Text('Annuler'),
+                                            onPressed: (){
+                                              Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
+                                              Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: const Text(
+                                              'Ajouter',
+                                              style: TextStyle(
+                                                color: Colors.white
+                                              ),
+                                            ),
+                                            onPressed: (){
+
+                                            },
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: Colors.blue,
+                                            ),
+                                          ),
+                                        ]
+                                      );
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.add,
+                                    size: 23.0,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  color: Colors.black,
+                                  highlightColor: Colors.white,
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                ),
+                              ),
+                            ]
+                          ),
+                        ],
+                      ),
+                      isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6,
+                      state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6)
+                          ? StepState.editing
+                          : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 6) ? StepState.complete : StepState.disabled)
                   ),
                 ],
               ),
             ),
           ),
-          if(_stepIndex == 4)
+          if(Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6)
             Container(
             margin: EdgeInsets.all(8.0),
             child: Row(

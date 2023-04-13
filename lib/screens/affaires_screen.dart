@@ -17,14 +17,6 @@ class _AffairesScreenState extends State<AffairesScreen> {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     late List affaires = Provider.of<Affaires>(context, listen: true).foundAffaires;
-    late String _selectedAffaire = Provider.of<GlobalProvider>(context, listen: false).selectedAffaire;
-    var colors = [
-      Colors.red,
-      Colors.blue,
-      Colors.cyan,
-      Colors.green,
-      Colors.yellow,
-    ];
     return SingleChildScrollView(
       child: Container(
         width: size.width,

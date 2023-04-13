@@ -43,6 +43,7 @@ dependencies:
   salomon_bottom_bar: ^3.3.1
   animated_search_bar: ^2.5.0
   sqflite: ^2.2.6
+  image_picker: ^0.8.7+2
 
 dev_dependencies:
   flutter_test:
