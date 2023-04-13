@@ -17,10 +17,6 @@ class VisiteScreen extends StatefulWidget {
 class _VisiteScreenState extends State<VisiteScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late String _conclusion_1 = '';
-  late String _conclusion_2 = '';
-  late bool _conclusion_3 = false;
-
   ImagePicker imagePicker = ImagePicker();
 
   _imageFromCamera() async {
