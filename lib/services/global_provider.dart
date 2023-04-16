@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mgtrisque_visitepreliminaire/models/third_person.dart';
 
 class GlobalProvider extends ChangeNotifier {
   late String _screenTitle = 'Affaires';
@@ -62,12 +63,20 @@ class GlobalProvider extends ChangeNotifier {
   final _conclusion_1Controller = TextEditingController();
   final _conclusion_2Controller = TextEditingController();
   late bool _conclusion_3Controller = false;
-  // todo: start ////////////////////////////////////////
 
-  late String _conclusion_1 = '';
-  late String _conclusion_2 = '';
-  late bool _conclusion_3 = false;
-  // todo: end //////////////////////////////////////////
+  late List _personnesTierces = [];
+
+  List get personnesTierces  {
+    return _personnesTierces;
+  }
+  void addPersonnesTierces(thirdPerson, fullName){
+    _personnesTierces.add(ThirdPerson(thirdPerson: thirdPerson, fullName: fullName));
+    notifyListeners();
+  }
+  void removePersonnesTierces(index){
+    _personnesTierces.removeAt(index);
+    notifyListeners();
+  }
 
   String get screenTitle => _screenTitle;
   set setScreenTitle(value) {
@@ -90,6 +99,12 @@ class GlobalProvider extends ChangeNotifier {
   String get selectedAffaire => _selectedAffaire;
   set setSelectedAffaire(value) {
     _selectedAffaire = value;
+    print('0000000 ${value} 000000');
+    if(value != ''){
+      resetVisiteForm();
+      _currentIndex = 2;
+      _screenTitle = 'Visite Préliminaire';
+    }
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -367,6 +382,45 @@ class GlobalProvider extends ChangeNotifier {
   clearConclusion_3Controller() {
     _conclusion_3Controller = false;
     notifyListeners();
+  }
+///////////////////////////////////////////////////////////////////////////////////////
+// resetVisiteForm
+  void resetVisiteForm(){
+    _stepIndex = 0;
+    _selectedDate = DateTime.now();
+    _siteImage = null;
+    _present_person_full_name = null;
+    _present_person_controller.clear();
+    _terrainAccessibleController.clear();
+    _terrainAccessibleInputController.clear();
+    _terrainClotureController.clear();
+    _terrainClotureInputController.clear();
+    _terrainNuController.clear();
+    _terrainNuInputController.clear();
+    _presenceVegetationController.clear();
+    _presenceVegetationInputController.clear();
+    _presencePylonesController.clear();
+    _presencePylonesInputController.clear();
+    _existenceMitoyenneteHabitationController.clear();
+    _existenceMitoyenneteHabitationInputController.clear();
+    _existenceVoirieMitoyenneteController.clear();
+    _existenceVoirieMitoyenneteInputController.clear();
+    _presenceRemblaisController.clear();
+    _presenceRemblaisInputController.clear();
+    _presenceSourcesEauCaviteController.clear();
+    _presenceSourcesEauCaviteInputController.clear();
+    _terrainInondableController.clear();
+    _terrainInondableInputController.clear();
+    _terrainPenteController.clear();
+    _terrainPenteInputController.clear();
+    _risqueInstabiliteController.clear();
+    _risqueInstabiliteInputController.clear();
+    _terrassementsEntamesController.clear();
+    _terrassementsEntamesInputController.clear();
+    _observationsComplementairesInputController.clear();
+    _conclusion_1Controller.clear();
+    _conclusion_2Controller.clear();
+    _conclusion_3Controller = false;
   }
 
 }

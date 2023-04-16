@@ -59,10 +59,10 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                       ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
                                       : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires[index%affaires.length].Code_Affaire;
 
-                                    if(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires[index%affaires.length].Code_Affaire) {
-                                      Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 2;
-                                      Provider.of<GlobalProvider>(context, listen: false).setScreenTitle = 'Visite Préliminaire';
-                                    }
+                                    // if(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires[index%affaires.length].Code_Affaire) {
+                                    //   Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 2;
+                                    //   Provider.of<GlobalProvider>(context, listen: false).setScreenTitle = 'Visite Préliminaire';
+                                    // }
                                   },
                                   child: Padding(
                                     padding: EdgeInsets.all(2.0),
@@ -133,7 +133,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                         ),
                       );
                     },
-                    childCount: affaires.length*5,
+                    childCount: affaires.length,
                   )
               )
           ),
