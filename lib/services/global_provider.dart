@@ -99,7 +99,6 @@ class GlobalProvider extends ChangeNotifier {
   String get selectedAffaire => _selectedAffaire;
   set setSelectedAffaire(value) {
     _selectedAffaire = value;
-    print('0000000 ${value} 000000');
     if(value != ''){
       resetVisiteForm();
       _currentIndex = 2;
