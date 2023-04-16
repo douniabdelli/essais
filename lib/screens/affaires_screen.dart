@@ -53,8 +53,6 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                 ),
                                 child: InkWell(
                                   onTap: () {
-                                    // todo: select affaire
-                                    print('test : ${affaires[index%affaires.length].Code_Affaire}');
                                     Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires[index%affaires.length].Code_Affaire
                                       ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
                                       : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires[index%affaires.length].Code_Affaire;
