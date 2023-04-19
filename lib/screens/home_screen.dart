@@ -110,6 +110,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           .setfoundAffaires = value;
                     }),
               ),
+            if (_screenTitle == 'Visite Préliminaire')
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0
+                  ),
+                  child: Text(
+                    '${Provider.of<GlobalProvider>(context, listen: true).selectedAffaire}'
+                        ' / '
+                        '${Provider.of<GlobalProvider>(context, listen: true).selectedSite}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
         bottomNavigationBar: SalomonBottomBar(

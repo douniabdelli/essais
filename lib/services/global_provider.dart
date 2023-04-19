@@ -4,6 +4,7 @@ import 'package:mgtrisque_visitepreliminaire/models/third_person.dart';
 class GlobalProvider extends ChangeNotifier {
   late String _screenTitle = 'Affaires';
   late String _selectedAffaire = '';
+  late String _selectedSite = '';
   late int _currentIndex = 1;
   late DateTime _dateVisite = DateTime.now();
   late String? _present_person_full_name = null;
@@ -45,6 +46,9 @@ class GlobalProvider extends ChangeNotifier {
 
   final _presenceSourcesEauCaviteController = TextEditingController();
   final _presenceSourcesEauCaviteInputController = TextEditingController();
+
+  final _presenceTalwegsController = TextEditingController();
+  final _presenceTalwegsInputController = TextEditingController();
 
   final _terrainInondableController = TextEditingController();
   final _terrainInondableInputController = TextEditingController();
@@ -99,6 +103,12 @@ class GlobalProvider extends ChangeNotifier {
   String get selectedAffaire => _selectedAffaire;
   set setSelectedAffaire(value) {
     _selectedAffaire = value;
+    notifyListeners();
+  }
+////////////////////////////////////////////////////////////////////////////////////////////
+  String get selectedSite => _selectedSite;
+  set setSelectedSite(value) {
+    _selectedSite = value;
     if(value != ''){
       resetVisiteForm();
       _currentIndex = 2;
@@ -283,6 +293,22 @@ class GlobalProvider extends ChangeNotifier {
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
+  TextEditingController get presenceTalwegsController => _presenceTalwegsController;
+  set setPresenceTalwegsController(value) {
+    _presenceTalwegsController.text = value;
+    notifyListeners();
+  }
+  clearPresenceTalwegsController() {
+    _presenceTalwegsController.clear();
+    notifyListeners();
+  }
+
+  TextEditingController get presenceTalwegsInputController => _presenceTalwegsInputController;
+  clearPresenceTalwegsInputController() {
+    _presenceTalwegsInputController.clear();
+    notifyListeners();
+  }
+////////////////////////////////////////////////////////////////////////////////////////////
   TextEditingController get terrainInondableController => _terrainInondableController;
   set setTerrainInondableController(value) {
     _terrainInondableController.text = value;
@@ -317,7 +343,7 @@ class GlobalProvider extends ChangeNotifier {
 ////////////////////////////////////////////////////////////////////////////////////////////
   TextEditingController get risqueInstabiliteController => _risqueInstabiliteController;
   set setRisqueInstabiliteController(value) {
-    _terrainPenteController.text = value;
+    _risqueInstabiliteController.text = value;
     notifyListeners();
   }
   clearRisqueInstabiliteController() {
@@ -408,6 +434,8 @@ class GlobalProvider extends ChangeNotifier {
     _presenceRemblaisInputController.clear();
     _presenceSourcesEauCaviteController.clear();
     _presenceSourcesEauCaviteInputController.clear();
+    _presenceTalwegsController.clear();
+    _presenceTalwegsInputController.clear();
     _terrainInondableController.clear();
     _terrainInondableInputController.clear();
     _terrainPenteController.clear();

@@ -28,102 +28,193 @@ class _AffairesScreenState extends State<AffairesScreen> {
               child: ListView.custom(
                   childrenDelegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      return Container(
-                        height: 75.0,
-                        width: size.width,
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0
-                        ),
-                        child: Row(
-                          children: [
-                            Material(
-                              type: MaterialType.transparency,
-                              child: Ink(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 1.5,
-                                    color: Colors.purple.withOpacity(0.6),
-                                  ),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires[index%affaires.length].Code_Affaire
-                                      ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
-                                      : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires[index%affaires.length].Code_Affaire;
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.all(2.0),
-                                    child: Icon(
-                                      Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires[index%affaires.length].Code_Affaire
-                                      ? Icons.double_arrow
-                                      : Icons.check,
-                                      size: 25.0,
-                                        color: Colors.purple.withOpacity(0.6)
-                                    ),
-                                  ),
-                                ),
-                              ),
+                      return Column(
+                        children: [
+                          Container(
+                            height: 75.0,
+                            width: size.width,
+                            margin: EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 4.0
                             ),
-                            SizedBox(width: 10.0),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 8.0
+                            ),
+                            child: Row(
                               children: [
-                                Text(
-                                  '${affaires[index%affaires.length].Code_Affaire}',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15.0
-                                  ),
-                                ),
-                                Container(
-                                  child: Text(
-                                    affaires[index%affaires.length].NbrSite > 1 ? 'Multi' : 'Mono',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15.0
+                                Material(
+                                  type: MaterialType.transparency,
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        width: 1.5,
+                                        color: Colors.purple.withOpacity(0.6),
+                                      ),
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires[index%affaires.length].Code_Affaire
+                                          ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
+                                          : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires[index%affaires.length].Code_Affaire;
+
+                                        Provider.of<Affaires>(context, listen: false).setfoundSites = affaires[index%affaires.length].Code_Affaire;
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.all(2.0),
+                                        child: Icon(
+                                          Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires[index%affaires.length].Code_Affaire
+                                          ? Icons.keyboard_double_arrow_down
+                                          : Icons.check,
+                                          size: 25.0,
+                                            color: Colors.purple.withOpacity(0.6)
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber,
-                                    borderRadius: BorderRadius.circular(8.0)
-                                  ),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 5.0,
-                                    vertical: 1.0
+                                ),
+                                SizedBox(width: 10.0),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${affaires[index%affaires.length].Code_Affaire}',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15.0
+                                      ),
+                                    ),
+                                    Container(
+                                      child: Text(
+                                        affaires[index%affaires.length].NbrSite > 1 ? 'Multi' : 'Mono',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15.0
+                                        ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.amber,
+                                        borderRadius: BorderRadius.circular(8.0)
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 5.0,
+                                        vertical: 1.0
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(width: 10.0),
+                                Expanded(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      text: '${affaires[index%affaires.length].IntituleAffaire}',
+                                      style: TextStyle(
+                                        color: Colors.black
+                                      )
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                            SizedBox(width: 10.0),
-                            Expanded(
-                              child: RichText(
-                                text: TextSpan(
-                                  text: '${affaires[index%affaires.length].IntituleAffaire}',
-                                  style: TextStyle(
-                                    color: Colors.black
-                                  )
-                                ),
-                              ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(
+                                width: Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires[index%affaires.length].Code_Affaire
+                                  ? 2.0
+                                  : 0.0,
+                                color: Colors.purple.withOpacity(0.6)
+                              )
                             ),
-                          ],
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(
-                            width: Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires[index%affaires.length].Code_Affaire
-                              ? 2.0
-                              : 0.0,
-                            color: Colors.purple.withOpacity(0.6)
-                          )
-                        ),
+                          ),
+                          if(Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires[index%affaires.length].Code_Affaire)
+                            ListView.custom(
+                              childrenDelegate: SliverChildBuilderDelegate(
+                                (innerContext, innerIndex) {
+                                  return Container(
+                                    height: 45.0,
+                                    width: size.width,
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: 40.0,
+                                      vertical: 2.0
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                        vertical: 8.0
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Material(
+                                          type: MaterialType.transparency,
+                                          child: Ink(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                width: 1.5,
+                                                color: Colors.black.withOpacity(0.6),
+                                              ),
+                                              borderRadius: BorderRadius.circular(8.0),
+                                            ),
+                                            child: InkWell(
+                                              onTap: () {
+                                                // todo: on site select
+                                                Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                    ? Provider.of<GlobalProvider>(context, listen: false).setSelectedSite = ''
+                                                    : Provider.of<GlobalProvider>(context, listen: false).setSelectedSite = Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site;
+                                              },
+                                              child: Padding(
+                                                padding: EdgeInsets.all(2.0),
+                                                child: Icon(
+                                                    Provider.of<GlobalProvider>(context, listen: true).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                        ? Icons.keyboard_double_arrow_right_sharp
+                                                        : Icons.check,
+                                                    size: 20.0,
+                                                    color: Colors.black.withOpacity(0.6)
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Text(
+                                          '${Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site}',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 15.0
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Expanded(
+                                          child: RichText(
+                                            text: TextSpan(
+                                                text: '${Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].adress_proj}',
+                                                style: TextStyle(
+                                                    color: Colors.black
+                                                )
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Colors.purple.withOpacity(0.3),
+                                        borderRadius: BorderRadius.circular(8.0),
+                                        border: Border.all(
+                                          width: 1.5,
+                                          color: Colors.purple.withOpacity(0.6),
+                                        )
+                                    ),
+                                  );
+                                },
+                                childCount: Provider.of<Affaires>(context, listen: true).foundSites.length,
+                              ),
+                              shrinkWrap: true,
+                              physics: ScrollPhysics(),
+                          ),
+                        ],
                       );
                     },
                     childCount: affaires.length,

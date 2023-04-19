@@ -15,8 +15,8 @@ class Affaire {
 
   factory Affaire.fromJson(Map<String, dynamic> json) {
     return Affaire(
-        Code_Affaire: json['Code_Affaire'] == null ? '' : json['Code_Affaire'],
-        IntituleAffaire: json['IntituleAffaire'] == null ? '' : json['IntituleAffaire'],
+        Code_Affaire: json['Code_Affaire'],
+        IntituleAffaire: json['IntituleAffaire'],
         NbrSite: json['NbrSite'] == null ? 0 : int.parse(json['NbrSite'])
     );
   }

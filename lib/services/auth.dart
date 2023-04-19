@@ -94,7 +94,6 @@ class Auth extends ChangeNotifier {
     _user = null;
     _isLoggedIn = false;
     _token = null;
-    await storage.delete(key: 'isNotFirstTime');
     await storage.delete(key: 'isLoggedIn');
     await storage.delete(key: 'user');
     await storage.delete(key: 'token');

@@ -66,7 +66,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
       width: size.width,
       height: size.height,
       color: Colors.redAccent.withOpacity(0.1),
-      child: (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '')
+      child: (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '' && Provider.of<GlobalProvider>(context, listen: true).selectedSite != '')
         ? Column(
             children: [
               Row(
@@ -732,7 +732,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                           child: Container(
                                             padding: EdgeInsets.only(right: 8.0),
                                             child: Text(
-                                              'Existence d\'une voirie mitoyenneté',
+                                              'Existence d\'une voirie mitoyenne',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w700,
                                               ),
@@ -961,6 +961,89 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                     TextFormField(
                                       controller: Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteInputController,
+                                      decoration: InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7.0),
+                                          borderSide: BorderSide(
+                                            color: Color(0xff707070),
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(7.0),
+                                          borderSide: BorderSide(
+                                              color: Color(0xff707070),
+                                              width: 1.5
+                                          ),
+                                        ),
+                                      ),
+                                      style: TextStyle(
+                                        fontFamily: 'Arial',
+                                        fontSize: 15,
+                                        color: const Color(0xff707070),
+                                      ),
+                                      textAlign: TextAlign.start,
+                                      minLines: 1,
+                                      maxLines: 2,
+                                    ),
+                                  ],
+                                ),
+
+                                // Présence de sources, cours d\'eau ou cavité (Enquête chez les habitants)
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.only(right: 8.0),
+                                            child: Text(
+                                              'Présence de talwegs',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Transform.scale(
+                                                  scale: 0.8,
+                                                  child: Radio(
+                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                    value: 'Oui',
+                                                    groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsController.text,
+                                                    onChanged: (value) {
+                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceTalwegsController = value;
+                                                    },
+                                                  ),
+                                                ),
+                                                Text('Oui'),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Transform.scale(
+                                                  scale: 0.8,
+                                                  child: Radio(
+                                                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                    value: 'Non',
+                                                    groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsController.text,
+                                                    onChanged: (value) {
+                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceTalwegsController = value;
+                                                    },
+                                                  ),
+                                                ),
+                                                Text('Non'),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    TextFormField(
+                                      controller: Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(7.0),
@@ -2102,7 +2185,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                   Image.asset('assets/images/unauthorized.png', scale: 1.5,),
                   SizedBox(height: 20.0),
                   Text(
-                    "Vous devez sélectionner une affaire",
+                    "Vous devez sélectionner une affaire/site",
                       style: TextStyle(
                         color: Colors.redAccent.withOpacity(0.9),
                         fontWeight: FontWeight.w600

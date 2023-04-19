@@ -19,7 +19,7 @@ class Affaires extends ChangeNotifier {
     try {
       Dio.Response response = await dio()
           .get(
-          '/visites',
+          '/visite-preleminaire/visites',
           options: Dio.Options(
             headers: {
               'Authorization': 'Bearer $token',
