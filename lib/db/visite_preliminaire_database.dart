@@ -50,7 +50,7 @@ class VisitePreliminaireDatabase {
       CREATE TABLE IF NOT EXISTS visites(
         Code_Affaire TEXT,
         Code_site TEXT,
-        dateVisite TEXT,
+        VisitSiteDate TEXT,
         VisitSite_Btn_terrain_accessible INTEGER,
         VisitSiteterrain_accessible TEXT,
         VisitSite_Btn_terrain_cloture INTEGER,
@@ -136,8 +136,8 @@ class VisitePreliminaireDatabase {
   Future<void> createVisites(List<dynamic> sites) async {
     String visiteQuery = '''
       INSERT INTO visites
-      ( Code_Affaire, Code_site, dateVisite, VisitSite_Btn_terrain_accessible, VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture, VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation, VisitSitePresVeget, VisitSite_Btn_presence_pylones, VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab, VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne, VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais, VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite, VisitSiteEnqHabitant, VisitSite_Btn_presence_talwegs, visitesitePresDepotremblai, VisitSite_Btn_terrain_inondable, VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente, VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain, VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame, VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt, VisitSite_Btn_necessite_courrier_MO_risque_encouru, VisitSite_Btn_doc_annexe, VisitSite_liste_present ,)
-      VALUES (?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?)
+      (Code_Affaire, Code_site, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEnqHabitant, VisitSite_Btn_presence_talwegs,  visitesitePresDepotremblai, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''';
     final db = await instance.database;
     sites.forEach((element) async {
@@ -147,7 +147,7 @@ class VisitePreliminaireDatabase {
           [
             item['Code_Affaire'],
             item['Code_site'],
-            item['dateVisite'],
+            item['VisitSiteDate'],
             item['VisitSite_Btn_terrain_accessible'] == 'Oui' ? 1 : 0,
             item['VisitSiteterrain_accessible'],
             item['VisitSite_Btn_terrain_cloture'] == 'Oui' ? 1 : 0,
