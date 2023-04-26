@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
 import 'package:mgtrisque_visitepreliminaire/models/third_person.dart';
 
 class GlobalProvider extends ChangeNotifier {
@@ -110,7 +111,12 @@ class GlobalProvider extends ChangeNotifier {
   set setSelectedSite(value) {
     _selectedSite = value;
     if(value != ''){
-      resetVisiteForm();
+      var visite = VisitePreliminaireDatabase.instance.getVisite(_selectedAffaire, _selectedSite);
+      print('*-----* ${visite}');
+      if(visite != null)
+        prepareVisiteFormData(visite);
+      else 
+        resetVisiteForm();
       _currentIndex = 2;
       _screenTitle = 'Visite Préliminaire';
     }
@@ -417,6 +423,48 @@ class GlobalProvider extends ChangeNotifier {
     _present_person_full_name = null;
     _present_person_controller.clear();
     _terrainAccessibleController.clear();
+    _terrainAccessibleInputController.clear();
+    _terrainClotureController.clear();
+    _terrainClotureInputController.clear();
+    _terrainNuController.clear();
+    _terrainNuInputController.clear();
+    _presenceVegetationController.clear();
+    _presenceVegetationInputController.clear();
+    _presencePylonesController.clear();
+    _presencePylonesInputController.clear();
+    _existenceMitoyenneteHabitationController.clear();
+    _existenceMitoyenneteHabitationInputController.clear();
+    _existenceVoirieMitoyenneteController.clear();
+    _existenceVoirieMitoyenneteInputController.clear();
+    _presenceRemblaisController.clear();
+    _presenceRemblaisInputController.clear();
+    _presenceSourcesEauCaviteController.clear();
+    _presenceSourcesEauCaviteInputController.clear();
+    _presenceTalwegsController.clear();
+    _presenceTalwegsInputController.clear();
+    _terrainInondableController.clear();
+    _terrainInondableInputController.clear();
+    _terrainPenteController.clear();
+    _terrainPenteInputController.clear();
+    _risqueInstabiliteController.clear();
+    _risqueInstabiliteInputController.clear();
+    _terrassementsEntamesController.clear();
+    _terrassementsEntamesInputController.clear();
+    _observationsComplementairesInputController.clear();
+    _conclusion_1Controller.clear();
+    _conclusion_2Controller.clear();
+    _conclusion_3Controller = false;
+  }
+
+///////////////////////////////////////////////////////////////////////////////////////
+// prepareVisiteFormData
+  void prepareVisiteFormData(visite){
+    _stepIndex = 0;
+    _selectedDate = DateTime.now();
+    _siteImage = null;
+    _present_person_full_name = null;
+    _present_person_controller.clear();
+    _terrainAccessibleController.text = 'Oui';
     _terrainAccessibleInputController.clear();
     _terrainClotureController.clear();
     _terrainClotureInputController.clear();
