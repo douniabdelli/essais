@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
 import 'package:mgtrisque_visitepreliminaire/models/third_person.dart';
+import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
 
 class GlobalProvider extends ChangeNotifier {
   late String _screenTitle = 'Affaires';
@@ -107,15 +110,23 @@ class GlobalProvider extends ChangeNotifier {
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
+
+
   String get selectedSite => _selectedSite;
-  set setSelectedSite(value) {
+  setSelectedSite(value) async {
     _selectedSite = value;
     if(value != ''){
-      var visite = VisitePreliminaireDatabase.instance.getVisite(_selectedAffaire, _selectedSite);
-      print('*-----* ${visite}');
-      if(visite != null)
+      var visisteExists = await VisitePreliminaireDatabase
+          .instance
+          .checkExistanceVisite(_selectedAffaire, _selectedSite);
+
+      if(visisteExists) {
+        var visite = await VisitePreliminaireDatabase
+            .instance
+            .getVisite(_selectedAffaire, _selectedSite);
+        print('*-----* ${Visite.toMap(visite)}');
         prepareVisiteFormData(visite);
-      else 
+      } else
         resetVisiteForm();
       _currentIndex = 2;
       _screenTitle = 'Visite Préliminaire';
@@ -460,42 +471,94 @@ class GlobalProvider extends ChangeNotifier {
 // prepareVisiteFormData
   void prepareVisiteFormData(visite){
     _stepIndex = 0;
-    _selectedDate = DateTime.now();
-    _siteImage = null;
     _present_person_full_name = null;
     _present_person_controller.clear();
-    _terrainAccessibleController.text = 'Oui';
-    _terrainAccessibleInputController.clear();
-    _terrainClotureController.clear();
-    _terrainClotureInputController.clear();
-    _terrainNuController.clear();
-    _terrainNuInputController.clear();
-    _presenceVegetationController.clear();
-    _presenceVegetationInputController.clear();
-    _presencePylonesController.clear();
-    _presencePylonesInputController.clear();
-    _existenceMitoyenneteHabitationController.clear();
-    _existenceMitoyenneteHabitationInputController.clear();
-    _existenceVoirieMitoyenneteController.clear();
-    _existenceVoirieMitoyenneteInputController.clear();
-    _presenceRemblaisController.clear();
-    _presenceRemblaisInputController.clear();
-    _presenceSourcesEauCaviteController.clear();
-    _presenceSourcesEauCaviteInputController.clear();
-    _presenceTalwegsController.clear();
-    _presenceTalwegsInputController.clear();
-    _terrainInondableController.clear();
-    _terrainInondableInputController.clear();
-    _terrainPenteController.clear();
-    _terrainPenteInputController.clear();
-    _risqueInstabiliteController.clear();
-    _risqueInstabiliteInputController.clear();
-    _terrassementsEntamesController.clear();
-    _terrassementsEntamesInputController.clear();
-    _observationsComplementairesInputController.clear();
-    _conclusion_1Controller.clear();
-    _conclusion_2Controller.clear();
-    _conclusion_3Controller = false;
+    // Editables
+    _selectedDate = visite.VisitSiteDate != 'null' ? DateTime.parse(visite.VisitSiteDate) : DateTime.now();
+    // todo: later
+    _siteImage = null;
+    _terrainAccessibleController.text = visite.VisitSite_Btn_terrain_accessible == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_accessible == '0' ? 'Non' : '');
+    _terrainAccessibleInputController.text = visite.VisitSiteterrain_accessible == 'null' ? '' : visite.VisitSiteterrain_accessible;
+    _terrainClotureController.text = visite.VisitSite_Btn_terrain_cloture == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_cloture == '0' ? 'Non' : '');
+    _terrainClotureInputController.text = visite.VisitSiteterrain_cloture == 'null' ? '' : visite.VisitSiteterrain_cloture;
+    _terrainNuController.text = visite.VisitSite_Btn_terrain_nu == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_nu == '0' ? 'Non' : '');
+    _terrainNuInputController.text = visite.VisitSiteterrain_nu == 'null' ? '' : visite.VisitSiteterrain_nu;
+    _presenceVegetationController.text = visite.VisitSite_Btn_presence_vegetation == '1' ? 'Oui' : (visite.VisitSite_Btn_presence_vegetation == '0' ? 'Non' : '');
+    _presenceVegetationInputController.text = visite.VisitSitePresVeget == 'null' ? '' : visite.VisitSitePresVeget;
+    _presencePylonesController.text = visite.VisitSite_Btn_presence_pylones == '1' ? 'Oui' : (visite.VisitSite_Btn_presence_pylones == '0' ? 'Non' : '');
+    _presencePylonesInputController.text = visite.VisitSite_presence_pylones == 'null' ? '' : visite.VisitSite_presence_pylones;
+    _existenceMitoyenneteHabitationController.text = visite.VisitSite_Btn_existance_mitoyntehab == '1' ? 'Oui' : (visite.VisitSite_Btn_existance_mitoyntehab == '0' ? 'Non' : '');
+    _existenceMitoyenneteHabitationInputController.text = visite.VisitSiteExistantsvoisin == 'null' ? '' : visite.VisitSiteExistantsvoisin;
+    _existenceVoirieMitoyenneteController.text = visite.VisitSite_Btn_existance_voirie_mitoyenne == '1' ? 'Oui' : (visite.VisitSite_Btn_existance_voirie_mitoyenne == '0' ? 'Non' : '');
+    _existenceVoirieMitoyenneteInputController.text = visite.VisitSite_existance_voirie_mitoyenne == 'null' ? '' : visite.VisitSite_existance_voirie_mitoyenne;
+    _presenceRemblaisController.text = visite.VisitSite_Btn_presence_remblais == '1' ? 'Oui' : (visite.VisitSite_Btn_presence_remblais == '0' ? 'Non' : '');
+    _presenceRemblaisInputController.text = visite.VisitSitePresDepotremblai == 'null' ? '' : visite.VisitSitePresDepotremblai;
+    _presenceSourcesEauCaviteController.text = visite.VisitSite_Btn_presence_sources_cours_eau_cavite == '1' ? 'Oui' : (visite.VisitSite_Btn_presence_sources_cours_eau_cavite == '0' ? 'Non' : '');
+    _presenceSourcesEauCaviteInputController.text = visite.VisitSiteEngHabitant == 'null' ? '' : visite.VisitSiteEngHabitant;
+    _presenceTalwegsController.text = visite.VisitSite_Btn_presence_talwegs == '1' ? 'Oui' : (visite.VisitSite_Btn_presence_talwegs == '0' ? 'Non' : '');
+    _presenceTalwegsInputController.text = visite.visitesitePresDepotremblai == 'null' ? '' : visite.visitesitePresDepotremblai;
+    _terrainInondableController.text = visite.VisitSite_Btn_terrain_inondable == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_inondable == '0' ? 'Non' : '');
+    _terrainInondableInputController.text = visite.VisitSite_terrain_inondable == 'null' ? '' : visite.VisitSite_terrain_inondable;
+    _terrainPenteController.text = visite.VisitSite_Btn_terrain_enpente == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_enpente == '0' ? 'Non' : '');
+    _terrainPenteInputController.text = visite.VisitSite_terrain_enpente == 'null' ? '' : visite.VisitSite_terrain_enpente;
+    _risqueInstabiliteController.text = visite.VisitSite_Btn_risque_InstabiliteGlisTerrain == '1' ? 'Oui' : (visite.VisitSite_Btn_risque_InstabiliteGlisTerrain == '0' ? 'Non' : '');
+    _risqueInstabiliteInputController.text = visite.VisitSite_risque_InstabiliteGlisTerrain == 'null' ? '' : visite.VisitSite_risque_InstabiliteGlisTerrain;
+    _terrassementsEntamesController.text = visite.VisitSite_Btn_terrassement_entame == '1' ? 'Oui' : (visite.VisitSite_Btn_terrassement_entame == '0' ? 'Non' : '');
+    _terrassementsEntamesInputController.text = visite.VisitSite_terrassement_entame == 'null' ? '' : visite.VisitSite_terrassement_entame;
+    _observationsComplementairesInputController.text = visite.VisitSiteAutre == 'null' ? '' : visite.VisitSiteAutre;
+    _conclusion_1Controller.text = visite.VisitSite_Btn_Presence_risque_instab_terasmt == '1' ? 'Oui' : (visite.VisitSite_Btn_Presence_risque_instab_terasmt == '0' ? 'Non' : '');
+    _conclusion_2Controller.text = visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '1' ? 'Oui' : (visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '0' ? 'Non' : '');
+    _conclusion_3Controller = visite.VisitSite_Btn_doc_annexe == 'Oui' ? true : false;
+  }
+///////////////////////////////////////////////////////////////////////////////////////
+// prepareVisiteFormData
+  void submitForm() async {
+    var visitesData = [
+      new Visite(
+          Code_Affaire: _selectedAffaire,
+          Code_site: _selectedSite,
+          VisitSiteDate: _dateVisite.toString(),
+          VisitSite_Btn_terrain_accessible: _terrainAccessibleController.text,
+          VisitSiteterrain_accessible: _terrainAccessibleInputController.text,
+          VisitSite_Btn_terrain_cloture: _terrainClotureController.text,
+          VisitSiteterrain_cloture: _terrainClotureInputController.text,
+          VisitSite_Btn_terrain_nu: _terrainNuController.text,
+          VisitSiteterrain_nu: _terrainNuInputController.text,
+          VisitSite_Btn_presence_vegetation: _presenceVegetationController.text,
+          VisitSitePresVeget: _presenceVegetationInputController.text,
+          VisitSite_Btn_presence_pylones: _presencePylonesController.text,
+          VisitSite_presence_pylones: _presencePylonesInputController.text,
+          VisitSite_Btn_existance_mitoyntehab: _existenceMitoyenneteHabitationController.text,
+          VisitSiteExistantsvoisin: _existenceMitoyenneteHabitationInputController.text,
+          VisitSite_Btn_existance_voirie_mitoyenne: _existenceVoirieMitoyenneteController.text,
+          VisitSite_existance_voirie_mitoyenne: _existenceVoirieMitoyenneteInputController.text,
+          VisitSite_Btn_presence_remblais: _presenceRemblaisController.text,
+          VisitSitePresDepotremblai: _presenceRemblaisInputController.text,
+          VisitSite_Btn_presence_sources_cours_eau_cavite: presenceSourcesEauCaviteController.text,
+          VisitSiteEngHabitant: _presenceSourcesEauCaviteInputController.text,
+          VisitSite_Btn_presence_talwegs: _presenceTalwegsController.text,
+          visitesitePresDepotremblai: _presenceTalwegsInputController.text,
+          VisitSite_Btn_terrain_inondable: _terrainInondableController.text,
+          VisitSite_terrain_inondable: _terrainInondableInputController.text,
+          VisitSite_Btn_terrain_enpente: _terrainPenteController.text,
+          VisitSite_terrain_enpente: _terrainPenteInputController.text,
+          VisitSite_Btn_risque_InstabiliteGlisTerrain: _risqueInstabiliteController.text,
+          VisitSite_risque_InstabiliteGlisTerrain: _risqueInstabiliteInputController.text,
+          VisitSite_Btn_terrassement_entame: _terrassementsEntamesController.text,
+          VisitSite_terrassement_entame: _terrassementsEntamesInputController.text,
+          VisitSiteAutre: _observationsComplementairesInputController.text,
+          VisitSite_Btn_Presence_risque_instab_terasmt: _conclusion_1Controller.text,
+          VisitSite_Btn_necessite_courrier_MO_risque_encouru: _conclusion_2Controller.text,
+          VisitSite_Btn_doc_annexe: _conclusion_3Controller ? '1' : '0',
+          VisitSite_liste_present: jsonEncode(_personnesTierces),
+          ValidCRVPIng: '0'
+      )
+    ];
+    var existsVisite = await VisitePreliminaireDatabase.instance.checkExistanceVisite(_selectedAffaire, _selectedSite);
+    if(existsVisite)
+      await VisitePreliminaireDatabase.instance.updateVisite(visitesData);
+    else
+      await VisitePreliminaireDatabase.instance.createVisites(visitesData);
   }
 
 }

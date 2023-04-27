@@ -2150,7 +2150,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           ),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(10.0),
-                            onTap: () {},
+                            onTap: () {
+                              // todo: save form if visite hasn't been validated
+                              print('+-------------- Save Button ---------------+');
+                              Provider.of<GlobalProvider>(context, listen: false).submitForm();
+                            },
                             child: Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Icon(

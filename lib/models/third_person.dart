@@ -11,6 +11,11 @@ class ThirdPerson {
     required this.fullName,
   });
 
+  Map toJson() => {
+    'thirdPerson': thirdPerson,
+    'fullName': fullName,
+  };
+
   factory ThirdPerson.fromJson(Map<String, dynamic> json) {
     return ThirdPerson(
       thirdPerson: json['thirdPerson'] == null ? '' : json['thirdPerson'],

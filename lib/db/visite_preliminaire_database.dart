@@ -187,6 +187,95 @@ class VisitePreliminaireDatabase {
     });
   }
 
+  Future<void> updateVisite(List<dynamic> visites) async {
+    String visiteQuery = '''
+      UPDATE visites
+      SET 
+      VisitSiteDate = ?, 
+      VisitSite_Btn_terrain_accessible = ?, 
+      VisitSiteterrain_accessible = ?, 
+      VisitSite_Btn_terrain_cloture = ?,  
+      VisitSiteterrain_cloture = ?, 
+      VisitSite_Btn_terrain_nu = ?, 
+      VisitSiteterrain_nu = ?, 
+      VisitSite_Btn_presence_vegetation = ?,  
+      VisitSitePresVeget = ?, 
+      VisitSite_Btn_presence_pylones = ?,  
+      VisitSite_presence_pylones = ?, 
+      VisitSite_Btn_existance_mitoyntehab = ?,  
+      VisitSiteExistantsvoisin = ?, 
+      VisitSite_Btn_existance_voirie_mitoyenne = ?,  
+      VisitSite_existance_voirie_mitoyenne = ?, 
+      VisitSite_Btn_presence_remblais = ?,  
+      VisitSitePresDepotremblai = ?, 
+      VisitSite_Btn_presence_sources_cours_eau_cavite = ?,  
+      VisitSiteEnqHabitant = ?, 
+      VisitSite_Btn_presence_talwegs = ?,  
+      visitesitePresDepotremblai = ?, 
+      VisitSite_Btn_terrain_inondable = ?,  
+      VisitSite_terrain_inondable = ?, 
+      VisitSite_Btn_terrain_enpente = ?,  
+      VisitSite_terrain_enpente = ?, 
+      VisitSite_Btn_risque_InstabiliteGlisTerrain = ?,  
+      VisitSite_risque_InstabiliteGlisTerrain = ?, 
+      VisitSite_Btn_terrassement_entame = ?,  
+      VisitSite_terrassement_entame = ?, 
+      VisitSiteAutre = ?, 
+      VisitSite_Btn_Presence_risque_instab_terasmt = ?,  
+      VisitSite_Btn_necessite_courrier_MO_risque_encouru = ?,  
+      VisitSite_Btn_doc_annexe = ?,  
+      VisitSite_liste_present = ?, 
+      ValidCRVPIng = ?     
+      where Code_Affaire = ? AND Code_site = ?, 
+    ''';
+    final db = await instance.database;
+    visites.forEach((element) async {
+      var item = Visite.toMap(element);
+      var result = await db.rawInsert(
+          visiteQuery,
+          [
+            item['VisitSiteDate'],
+            (item['VisitSite_Btn_terrain_accessible'] == 'Oui' || item['VisitSite_Btn_terrain_accessible'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_accessible'] == 'Non' || item['VisitSite_Btn_terrain_accessible'] == '0') ? '0' : ''),
+            item['VisitSiteterrain_accessible'],
+            (item['VisitSite_Btn_terrain_cloture'] == 'Oui' || item['VisitSite_Btn_terrain_cloture'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_cloture'] == 'Non' || item['VisitSite_Btn_terrain_cloture'] == '0') ? '0' : ''),
+            item['VisitSiteterrain_cloture'],
+            (item['VisitSite_Btn_terrain_nu'] == 'Oui' || item['VisitSite_Btn_terrain_nu'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_nu'] == 'Non' || item['VisitSite_Btn_terrain_nu'] == '0') ? '0' : ''),
+            item['VisitSiteterrain_nu'],
+            (item['VisitSite_Btn_presence_vegetation'] == 'Oui' || item['VisitSite_Btn_presence_vegetation'] == '1') ? '1' : ((item['VisitSite_Btn_presence_vegetation'] == 'Non' || item['VisitSite_Btn_presence_vegetation'] == '0') ? '0' : ''),
+            item['VisitSitePresVeget'],
+            (item['VisitSite_Btn_presence_pylones'] == 'Oui' || item['VisitSite_Btn_presence_pylones'] == '1') ? '1' : ((item['VisitSite_Btn_presence_pylones'] == 'Non' || item['VisitSite_Btn_presence_pylones'] == '0') ? '0' : ''),
+            item['VisitSite_presence_pylones'],
+            (item['VisitSite_Btn_existance_mitoyntehab'] == 'Oui' || item['VisitSite_Btn_existance_mitoyntehab'] == '1') ? '1' : ((item['VisitSite_Btn_existance_mitoyntehab'] == 'Non' || item['VisitSite_Btn_existance_mitoyntehab'] == '0') ? '0' : ''),
+            item['VisitSiteExistantsvoisin'],
+            (item['VisitSite_Btn_existance_voirie_mitoyenne'] == 'Oui' || item['VisitSite_Btn_existance_voirie_mitoyenne'] == '1') ? '1' : ((item['VisitSite_Btn_existance_voirie_mitoyenne'] == 'Non' || item['VisitSite_Btn_existance_voirie_mitoyenne'] == '0') ? '0' : ''),
+            item['VisitSite_existance_voirie_mitoyenne'],
+            (item['VisitSite_Btn_presence_remblais'] == 'Oui' || item['VisitSite_Btn_presence_remblais'] == '1') ? '1' : ((item['VisitSite_Btn_presence_remblais'] == 'Non' || item['VisitSite_Btn_presence_remblais'] == '0') ? '0' : ''),
+            item['VisitSitePresDepotremblai'],
+            (item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
+            item['VisitSiteEnqHabitant'],
+            (item['VisitSite_Btn_presence_talwegs'] == 'Oui' || item['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((item['VisitSite_Btn_presence_talwegs'] == 'Non' || item['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
+            item['visitesitePresDepotremblai'],
+            (item['VisitSite_Btn_terrain_inondable'] == 'Oui' || item['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_inondable'] == 'Non' || item['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
+            item['VisitSite_terrain_inondable'],
+            (item['VisitSite_Btn_terrain_enpente'] == 'Oui' || item['VisitSite_Btn_terrain_enpente'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_enpente'] == 'Non' || item['VisitSite_Btn_terrain_enpente'] == '0') ? '0' : ''),
+            item['VisitSite_terrain_enpente'],
+            (item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == 'Oui' || item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == '1') ? '1' : ((item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == 'Non' || item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == '0') ? '0' : ''),
+            item['VisitSite_risque_InstabiliteGlisTerrain'],
+            (item['VisitSite_Btn_terrassement_entame'] == 'Oui' || item['VisitSite_Btn_terrassement_entame'] == '1') ? '1' : ((item['VisitSite_Btn_terrassement_entame'] == 'Non' || item['VisitSite_Btn_terrassement_entame'] == '0') ? '0' : ''),
+            item['VisitSite_terrassement_entame'],
+            item['VisitSiteAutre'],
+            (item['VisitSite_Btn_Presence_risque_instab_terasmt'] == 'Oui' || item['VisitSite_Btn_Presence_risque_instab_terasmt'] == '1') ? '1' : ((item['VisitSite_Btn_Presence_risque_instab_terasmt'] == 'Non' || item['VisitSite_Btn_Presence_risque_instab_terasmt'] == '0') ? '0' : ''),
+            (item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == 'Oui' || item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == '1') ? '1' : ((item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == 'Non' || item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == '0') ? '0' : ''),
+            (item['VisitSite_Btn_doc_annexe'] == 'Oui' || item['VisitSite_Btn_doc_annexe'] == '1') ? '1' : ((item['VisitSite_Btn_doc_annexe'] == 'Non' || item['VisitSite_Btn_doc_annexe'] == '0') ? '0' : ''),
+            item['VisitSite_liste_present'],
+            (item['ValidCRVPIng'] == 'Oui' || item['ValidCRVPIng'] == '1') ? '1' : ((item['ValidCRVPIng'] == 'Non' || item['ValidCRVPIng'] == '0') ? '0' : ''),
+            item['Code_Affaire'],
+            item['Code_site'],
+          ]
+      );
+    });
+  }
+
   Future<List<Affaire>> getAffaires() async {
     final db = await instance.database;
     final affaires = await db.query('affaires');
@@ -218,9 +307,18 @@ class VisitePreliminaireDatabase {
       where: 'Code_Affaire=? and Code_site=?',
       whereArgs: [Code_Affaire, Code_site]
     );
-    print('db-------------- ${visite.length} -------------db');
 
-    return visite.map((json) => Visite.fromJson(json)).toList();
+    return Visite.fromJson(visite[0]);
+  }
+
+  Future<bool> checkExistanceVisite(Code_Affaire, Code_site) async {
+    final db = await instance.database;
+    final visite = await db.query(
+        'visites',
+        where: 'Code_Affaire=? and Code_site=?',
+        whereArgs: [Code_Affaire, Code_site]
+    );
+    return visite.length > 0;
   }
 
   Future close() async {

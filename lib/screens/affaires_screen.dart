@@ -161,8 +161,8 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                               onTap: () {
                                                 // todo: on site select
                                                 Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
-                                                    ? Provider.of<GlobalProvider>(context, listen: false).setSelectedSite = ''
-                                                    : Provider.of<GlobalProvider>(context, listen: false).setSelectedSite = Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site;
+                                                    ? Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('')
+                                                    : Provider.of<GlobalProvider>(context, listen: false).setSelectedSite(Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site);
                                               },
                                               child: Padding(
                                                 padding: EdgeInsets.all(2.0),
