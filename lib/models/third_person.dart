@@ -31,6 +31,6 @@ class ThirdPerson {
 
   static String serialize(ThirdPerson model) => json.encode(ThirdPerson.toMap(model));
 
-  static ThirdPerson deserialize(String json) => ThirdPerson.fromJson(jsonDecode(json));
+  static List<ThirdPerson> deserialize(String data) => (json.decode(data) as List).map((i) => ThirdPerson.fromJson(i)).toList();
 
 }

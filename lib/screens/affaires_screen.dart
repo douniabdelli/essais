@@ -159,15 +159,22 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                             ),
                                             child: InkWell(
                                               onTap: () {
-                                                // todo: on site select
-                                                Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                (
+                                                    Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                  &&
+                                                    Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == Provider.of<Affaires>(context, listen: false).foundAffaires[index].Code_Affaire
+                                                )
                                                     ? Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('')
                                                     : Provider.of<GlobalProvider>(context, listen: false).setSelectedSite(Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site);
                                               },
                                               child: Padding(
                                                 padding: EdgeInsets.all(2.0),
                                                 child: Icon(
-                                                    Provider.of<GlobalProvider>(context, listen: true).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                    (
+                                                        Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                      &&
+                                                        Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == Provider.of<Affaires>(context, listen: false).foundAffaires[index].Code_Affaire
+                                                    )
                                                         ? Icons.keyboard_double_arrow_right_sharp
                                                         : Icons.check,
                                                     size: 20.0,

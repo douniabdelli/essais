@@ -44,6 +44,7 @@ dependencies:
   animated_search_bar: ^2.5.0
   sqflite: ^2.2.6
   image_picker: ^0.8.7+2
+  motion_toast: ^2.6.6
 
 dev_dependencies:
   flutter_test:

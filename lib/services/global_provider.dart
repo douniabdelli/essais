@@ -72,6 +72,8 @@ class GlobalProvider extends ChangeNotifier {
   final _conclusion_2Controller = TextEditingController();
   late bool _conclusion_3Controller = false;
 
+  late String _ValidCRVPIng = '';
+
   late List _personnesTierces = [];
 
   List get personnesTierces  {
@@ -89,6 +91,12 @@ class GlobalProvider extends ChangeNotifier {
   String get screenTitle => _screenTitle;
   set setScreenTitle(value) {
     _screenTitle = value;
+    notifyListeners();
+  }
+
+  String get validCRVPIng => _ValidCRVPIng;
+  set setValidCRVPIng(value) {
+    _ValidCRVPIng = value;
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -465,6 +473,8 @@ class GlobalProvider extends ChangeNotifier {
     _conclusion_1Controller.clear();
     _conclusion_2Controller.clear();
     _conclusion_3Controller = false;
+    _ValidCRVPIng = '0';
+    _personnesTierces = [];
   }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -509,6 +519,8 @@ class GlobalProvider extends ChangeNotifier {
     _conclusion_1Controller.text = visite.VisitSite_Btn_Presence_risque_instab_terasmt == '1' ? 'Oui' : (visite.VisitSite_Btn_Presence_risque_instab_terasmt == '0' ? 'Non' : '');
     _conclusion_2Controller.text = visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '1' ? 'Oui' : (visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '0' ? 'Non' : '');
     _conclusion_3Controller = visite.VisitSite_Btn_doc_annexe == 'Oui' ? true : false;
+    _ValidCRVPIng = visite.ValidCRVPIng == '1' ? '1' : '0';
+    _personnesTierces = visite.VisitSite_liste_present != 'null' ? ThirdPerson.deserialize(visite.VisitSite_liste_present) as List : [];
   }
 ///////////////////////////////////////////////////////////////////////////////////////
 // prepareVisiteFormData
@@ -559,6 +571,12 @@ class GlobalProvider extends ChangeNotifier {
       await VisitePreliminaireDatabase.instance.updateVisite(visitesData);
     else
       await VisitePreliminaireDatabase.instance.createVisites(visitesData);
+  }
+
+///////////////////////////////////////////////////////////////////////////////////////
+// prepareVisiteFormData
+  void validateForm() async {
+    await VisitePreliminaireDatabase.instance.validateVisite(_selectedAffaire, _selectedSite);
   }
 
 }

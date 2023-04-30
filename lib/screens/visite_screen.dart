@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'dart:io';
 
 import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 
 class VisiteScreen extends StatefulWidget {
@@ -195,6 +198,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 onChanged: (value) {
                                                   Provider.of<GlobalProvider>(context, listen: false).setTerrainAccessibleController = value;
                                                 },
+
                                               ),
                                             ),
                                             Text('Oui'),
@@ -2042,7 +2046,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ),
                               ListView.custom(
                                 childrenDelegate: SliverChildBuilderDelegate(
-                                      (context, index) {
+                                      (context, ThirdPersonIndex) {
                                     return Container(
                                       height: 55.0,
                                       width: size.width,
@@ -2064,7 +2068,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    '${Provider.of<GlobalProvider>(context, listen: true).personnesTierces[index].fullName}',
+                                                    '${Provider.of<GlobalProvider>(context, listen: true).personnesTierces[ThirdPersonIndex].fullName}',
                                                     style: TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 15.0,
@@ -2081,7 +2085,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                         vertical: 1.0
                                                     ),
                                                     child: Text(
-                                                      '${Provider.of<GlobalProvider>(context, listen: true).personnesTierces[index].thirdPerson}',
+                                                      '${Provider.of<GlobalProvider>(context, listen: true).personnesTierces[ThirdPersonIndex].thirdPerson}',
                                                       style: TextStyle(
                                                           color: Colors.white,
                                                           fontSize: 15.0
@@ -2097,7 +2101,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                             child: Ink(
                                               child: InkWell(
                                                 onTap: () {
-                                                  Provider.of<GlobalProvider>(context, listen: false).removePersonnesTierces(index);
+                                                  Provider.of<GlobalProvider>(context, listen: false).removePersonnesTierces(ThirdPersonIndex);
                                                 },
                                                 child: Icon(
                                                     Icons.delete,
@@ -2138,15 +2142,17 @@ class _VisiteScreenState extends State<VisiteScreen> {
                 Container(
                   margin: EdgeInsets.all(8.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Material(
+                      if(Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
+                        Material(
                         type: MaterialType.transparency,
                         child: Ink(
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.red, width: 1.5),
-                            color: Colors.redAccent.withOpacity(0.7),
-                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blueGrey, width: 1.5),
+                            color: Colors.blueGrey.withOpacity(0.7),
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(10.0),
@@ -2154,14 +2160,63 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               // todo: save form if visite hasn't been validated
                               print('+-------------- Save Button ---------------+');
                               Provider.of<GlobalProvider>(context, listen: false).submitForm();
+                              _displayCustomMotionToast();
                             },
                             child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.save,
-                                size: 30.0,
-                                color: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                  vertical: 4.0,
+                                ),
+                                child: Row(
+                                    children: [
+                                      Image.asset('assets/images/save_icon.png', scale: 2.0,),
+                                      SizedBox(width: 10.0),
+                                      Text(
+                                          'Sauvegarder',
+                                          style: TextStyle(
+                                              color: Colors.white
+                                          )
+                                      ),
+                                    ]
+                                )
+                            ),
+                          ),
+                        ),
+                      ),
+                      if(Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
+                        Material(
+                        type: MaterialType.transparency,
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.red, width: 1.5),
+                            color: Colors.redAccent.withOpacity(0.7),
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10.0),
+                            onTap: () {
+                              // todo: save form if visite hasn't been validated
+                              print('+-------------- Validate Button ---------------+');
+                              Provider.of<GlobalProvider>(context, listen: false).validateForm();
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                                vertical: 4.0,
                               ),
+                              child: Row(
+                                children: [
+                                  Image.asset('assets/images/validate_icon.png', scale: 2.0,),
+                                  SizedBox(width: 10.0),
+                                  Text(
+                                    'Valider',
+                                      style: TextStyle(
+                                        color: Colors.white
+                                      )
+                                  ),
+                                ]
+                              )
                             ),
                           ),
                         ),
@@ -2201,5 +2256,20 @@ class _VisiteScreenState extends State<VisiteScreen> {
           ]
         ),
     );
+  }
+  void _displayCustomMotionToast() {
+    MotionToast(
+      height: 50,
+      width: MediaQuery.of(context).size.width * 4/5,
+      icon:IconData(0xf635, fontFamily: 'MaterialIcons'),
+      primaryColor: Colors.lightGreen,
+      title: Text(
+        'Succès',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      description: Text('Visite modifiée !'),
+    ).show(context);
   }
 }
