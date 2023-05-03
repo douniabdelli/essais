@@ -254,7 +254,6 @@ class VisitePreliminaireDatabase {
   Future<List<Affaire>> getAffaires() async {
     final db = await instance.database;
     final affaires = await db.query('affaires');
-    print('db-------------- ${affaires} -------------db');
 
     return affaires.map((json) => Affaire.fromJson(json)).toList();
   }
@@ -262,7 +261,6 @@ class VisitePreliminaireDatabase {
   Future<List<Site>> getSites() async {
     final db = await instance.database;
     final sites = await db.query('sites');
-    print('db-------------- ${sites} -------------db');
 
     return sites.map((json) => Site.fromJson(json)).toList();
   }
@@ -270,7 +268,6 @@ class VisitePreliminaireDatabase {
   Future<List<Visite>> getVisites() async {
     final db = await instance.database;
     final visites = await db.query('visites');
-    print('db-------------- ${visites} -------------db');
 
     return visites.map((json) => Visite.fromJson(json)).toList();
   }

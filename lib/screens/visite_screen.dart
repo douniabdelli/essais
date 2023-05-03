@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lottie/lottie.dart';
 import 'dart:io';
 
 import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
@@ -2261,8 +2259,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
     MotionToast(
       height: 50,
       width: MediaQuery.of(context).size.width * 4/5,
-      icon:IconData(0xf635, fontFamily: 'MaterialIcons'),
-      primaryColor: Colors.lightGreen,
+      icon: Icons.check_circle,
+      primaryColor: Color.fromRGBO(183, 247, 196, 1.0),
       title: Text(
         'Succès',
         style: TextStyle(

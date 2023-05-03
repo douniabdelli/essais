@@ -42,6 +42,8 @@ class Affaires extends ChangeNotifier {
         _affaires = await VisitePreliminaireDatabase.instance.getAffaires();
         // get sites from local database
         _sites = await VisitePreliminaireDatabase.instance.getSites();
+        // get visites from local database
+        _visites = await VisitePreliminaireDatabase.instance.getVisites();
       }
       else {
         await storage.write(key: 'isNotFirstTime', value: 'isNotFirstTime');
@@ -115,7 +117,6 @@ class Affaires extends ChangeNotifier {
           },
         )
     );
-    print('Visites >>> ${responseVisite.data} <<< Visites');
     _visites = responseVisite.data.map((data) => Visite.fromJson(data)).toList();
     await VisitePreliminaireDatabase.instance.createVisites(responseVisite.data.map((data) => Visite.fromJson(data)).toList());
   }

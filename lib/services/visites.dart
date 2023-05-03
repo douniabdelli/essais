@@ -30,7 +30,6 @@ class Affaires extends ChangeNotifier {
       );
       _visites = response.data.map((data) => Affaire.fromJson(data)).toList();
       _foundVisites = _visites;
-      print('***0***   ${_visites}   +++0+++');
     } catch (e) {
       print(e);
     }

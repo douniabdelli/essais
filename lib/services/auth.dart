@@ -38,10 +38,16 @@ class Auth extends ChangeNotifier {
           );
       String token = response.data.toString();
       await tryToken(token: token);
+      await storeCredentials(credentials);
       return token;
     } catch(e){
       print(e);
     }
+  }
+
+  storeCredentials(credentials) async {
+    await storage.write(key: 'matricule', value: credentials['matricule']);
+    await storage.write(key: 'password', value: credentials['password']);
   }
 
   tryToken({required String token}) async {
