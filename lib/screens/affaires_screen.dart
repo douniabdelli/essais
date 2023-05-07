@@ -109,6 +109,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                 SizedBox(width: 10.0),
                                 Expanded(
                                   child: RichText(
+                                    overflow: TextOverflow.clip,
                                     text: TextSpan(
                                       text: '${affaires[index%affaires.length].IntituleAffaire}',
                                       style: TextStyle(

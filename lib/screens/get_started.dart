@@ -1,13 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:lottie/lottie.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
+import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:provider/provider.dart';
 
-class GetStarted extends StatelessWidget {
+class GetStarted extends StatefulWidget {
   GetStarted({
     Key? key,
-    required this.isNotFirstTime
   }) : super(key: key);
 
-  final String isNotFirstTime;
+  @override
+  State<GetStarted> createState() => _GetStartedState();
+}
+
+class _GetStartedState extends State<GetStarted> {
+  final storage = new FlutterSecureStorage();
+  final Auth _auth = Auth();
+  late bool isReady = false;
+  String? isLoggedIn;
+  String? isNotFirstTime;
+
+  void loadData() async {
+    await _auth.checkLoggedUser();
+    isLoggedIn = await storage.read(key: 'isLoggedIn');
+    isNotFirstTime = await storage.read(key: 'isNotFirstTime');
+    final String? token = await storage.read(key: 'token');
+
+    if(token != null && token != '')
+      await Provider.of<Affaires>(context, listen: false).getAffaires(token: token);
+      // final String? matricule = await storage.read(key: 'matricule');
+      // final String? password = await storage.read(key: 'password');
+      // if(matricule != null && password != null)
+      //   String? token = await Provider.of<Auth>(context, listen: false).login(credentials: {'matricule': matricule, 'password': password});
+
+    Future.delayed(new Duration(milliseconds: 2500), () {
+      if(isLoggedIn == 'loggedIn')
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(isNotFirstTime: isNotFirstTime ?? ''),
+            )
+        );
+      else
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime ?? ''
+              ),
+            )
+        );
+    });
+  }
+
+  @override
+  void initState() {
+    loadData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,51 +71,18 @@ class GetStarted extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Expanded(
-                child: Row(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 1 / 2,
-                      height: 50.0,
-                      margin: EdgeInsets.only(
-                        top: 40.0,
-                        bottom: 10.0,
-                        left: 30.0,
-                      ),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: const AssetImage('assets/images/mgt_logo.png'),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Container(
-                  margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  width: MediaQuery.of(context).size.width * 9 / 10,
-                  height: MediaQuery.of(context).size.width * 9 / 10,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: const AssetImage('assets/images/engineers.png'),
-                      fit: BoxFit.fill,
-                      colorFilter: new ColorFilter.mode(
-                        Colors.black,
-                        BlendMode.dstIn,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Row(
+                flex: 1,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/visite_preliminaire.png',
-                      scale: 1.2,
+                    // Image.asset(
+                    //   'assets/images/visite_preliminaire.png',
+                    //   scale: 1.2,
+                    // ),
+                    Lottie.asset(
+                      'assets/animations/area-map-animation.json',
+                      width: 100.0,
+                      height: 100.0,
                     ),
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 5.0),
@@ -83,42 +102,48 @@ class GetStarted extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Container(
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 5.0,
-                    vertical: 5.0,
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width * 2 / 3,
-                        child: Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.only(
-                              left: 15.0, right: 15.0, bottom: 5.0),
-                          decoration: BoxDecoration(
-                              color: Color(0xff3D73AA),
-                              borderRadius: BorderRadius.circular(17.0)),
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime)));
-                            },
-                            child: Text(
-                              'Commencer',
-                              style: TextStyle(
-                                fontFamily: 'Arial',
-                                fontSize: 25,
-                                color: const Color(0xffFFFFFF),
-                              ),
-                              textAlign: TextAlign.center,
-                              softWrap: false,
-                            ),
-                          ),
+                flex: 2,
+                child: Center(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    width: MediaQuery.of(context).size.width * 9 / 10,
+                    height: MediaQuery.of(context).size.width * 9 / 10,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: const AssetImage('assets/images/engineers.png'),
+                        fit: BoxFit.fill,
+                        colorFilter: new ColorFilter.mode(
+                          Colors.black,
+                          BlendMode.dstIn,
                         ),
                       ),
-                    ],
+                    ),
                   ),
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 50.0,
+                      margin: EdgeInsets.only(
+                        top: 10.0,
+                        bottom: 10.0,
+                      ),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: const AssetImage(
+                            'assets/images/mgt_logo.png',
+                          ),
+                          fit: BoxFit.scaleDown,
+                          scale: 1.8
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

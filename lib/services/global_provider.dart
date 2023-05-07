@@ -132,7 +132,6 @@ class GlobalProvider extends ChangeNotifier {
         var visite = await VisitePreliminaireDatabase
             .instance
             .getVisite(_selectedAffaire, _selectedSite);
-        print('*-----* ${Visite.toMap(visite)}');
         prepareVisiteFormData(visite);
       } else
         resetVisiteForm();
@@ -520,7 +519,12 @@ class GlobalProvider extends ChangeNotifier {
     _conclusion_2Controller.text = visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '1' ? 'Oui' : (visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '0' ? 'Non' : '');
     _conclusion_3Controller = visite.VisitSite_Btn_doc_annexe == 'Oui' ? true : false;
     _ValidCRVPIng = visite.ValidCRVPIng == '1' ? '1' : '0';
-    _personnesTierces = visite.VisitSite_liste_present != 'null' ? ThirdPerson.deserialize(visite.VisitSite_liste_present) as List : [];
+    _personnesTierces = visite.VisitSite_liste_present != 'null'
+        ? ( isJSON(visite.VisitSite_liste_present)
+              ? ThirdPerson.deserialize(visite.VisitSite_liste_present) as List
+              : []
+          )
+        : [];
   }
 ///////////////////////////////////////////////////////////////////////////////////////
 // prepareVisiteFormData
@@ -577,6 +581,15 @@ class GlobalProvider extends ChangeNotifier {
 // prepareVisiteFormData
   void validateForm() async {
     await VisitePreliminaireDatabase.instance.validateVisite(_selectedAffaire, _selectedSite);
+  }
+
+  bool isJSON(str) {
+    try {
+      jsonDecode(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
 }
