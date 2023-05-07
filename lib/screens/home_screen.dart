@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Image.asset(
                 'assets/images/syncing.png',
               ),
-              title: Text("Synchronisation"),
+              title: Text("Sync"),
               selectedColor: Colors.blueAccent,
             ),
 
