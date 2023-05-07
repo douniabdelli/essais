@@ -242,7 +242,7 @@ class VisitePreliminaireDatabase {
       UPDATE visites
       SET      
       ValidCRVPIng = 1     
-      where Code_Affaire = ? AND Code_site = ?, 
+      where Code_Affaire = ? AND Code_site = ?
     ''';
     final db = await instance.database;
     var result = await db.rawInsert(

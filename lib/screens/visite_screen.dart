@@ -1,11 +1,10 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
 import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
-import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 
 class VisiteScreen extends StatefulWidget {
@@ -2158,7 +2157,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               // todo: save form if visite hasn't been validated
                               print('+-------------- Save Button ---------------+');
                               Provider.of<GlobalProvider>(context, listen: false).submitForm();
-                              _displayCustomMotionToast();
+                              _showSnackBar(context, 'Enregistrement', 'Le formulaire à été enregistré !');
                             },
                             child: Padding(
                                 padding: EdgeInsets.symmetric(
@@ -2194,9 +2193,9 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(10.0),
                             onTap: () {
-                              // todo: save form if visite hasn't been validated
                               print('+-------------- Validate Button ---------------+');
                               Provider.of<GlobalProvider>(context, listen: false).validateForm();
+                              _showSnackBar(context, 'Validation', 'Le formulaire à été validé !');
                             },
                             child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -2255,19 +2254,30 @@ class _VisiteScreenState extends State<VisiteScreen> {
         ),
     );
   }
-  void _displayCustomMotionToast() {
-    MotionToast(
-      height: 50,
-      width: MediaQuery.of(context).size.width * 4/5,
-      icon: Icons.check_circle,
-      primaryColor: Color.fromRGBO(183, 247, 196, 1.0),
-      title: Text(
-        'Succès',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
+
+  void _showSnackBar(BuildContext context, String title, String msg) {
+    final materialBanner = MaterialBanner(
+      elevation: 10000,
+      backgroundColor: Colors.transparent,
+      forceActionsBelow: true,
+
+      content: AwesomeSnackbarContent(
+        title: title,
+        message: msg,
+        contentType: ContentType.success,
+        inMaterialBanner: true,
       ),
-      description: Text('Visite modifiée !'),
-    ).show(context);
+      actions: const [SizedBox.shrink()],
+    );
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentMaterialBanner()
+      ..showMaterialBanner(materialBanner);
+
+    Future.delayed(Duration(milliseconds: 3000), () {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentMaterialBanner();
+    });
+
   }
 }

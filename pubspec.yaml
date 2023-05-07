@@ -44,9 +44,8 @@ dependencies:
   animated_search_bar: ^2.5.0
   sqflite: ^2.2.6
   image_picker: ^0.8.7+2
-  motion_toast: ^2.6.6
-  shared_preferences: ^2.1.0
   lottie: ^2.3.2
+  awesome_snackbar_content: ^0.1.2
 
 dev_dependencies:
   flutter_test:
