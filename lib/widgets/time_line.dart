@@ -5,6 +5,7 @@ class Timeline extends StatelessWidget {
     Key? key,
     required this.children,
     this.indicators,
+    this.times,
     this.isLeftAligned = true,
     this.itemGap = 12.0,
     this.gutterSpacing = 4.0,
@@ -32,6 +33,7 @@ class Timeline extends StatelessWidget {
   final double itemGap;
   final double gutterSpacing;
   final List<Widget>? indicators;
+  final List<DateTime>? times;
   final bool isLeftAligned;
   final EdgeInsets padding;
   final ScrollController? controller;
@@ -64,17 +66,23 @@ class Timeline extends StatelessWidget {
       itemBuilder: (context, index) {
         final child = children[index];
         final _indicators = indicators;
+        final _times = times;
 
         Widget? indicator;
         if (_indicators != null) {
           indicator = _indicators[index];
         }
 
+        DateTime? time;
+        if (_times != null) {
+          time = _times[index];
+        }
+
         final isFirst = index == 0;
         final isLast = index == itemCount - 1;
 
         final timelineTile = <Widget>[
-          // todo: add time here
+          Text('${time?.day}-${time?.month}-${time?.year}  ${time?.hour}:${time?.minute}'),
           CustomPaint(
             foregroundPainter: _TimelinePainter(
               hideDefaultIndicator: indicator != null,
