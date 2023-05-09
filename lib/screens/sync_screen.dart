@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:mgtrisque_visitepreliminaire/widgets/time_line.dart';
 import 'dart:math' as math;
 
 import 'package:provider/provider.dart';
@@ -102,8 +103,7 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                                 String? matricule = await storage.read(key: 'matricule');
                                 String? password = await storage.read(key: 'password');
                                 await Provider.of<Auth>(context, listen: false).getApiToken({'matricule': matricule, 'password': password});
-                                String? token = await storage.read(key: 'token');
-                                print('*** ${matricule} * ${password} * ${token} ***');
+                                // todo: sync all data (users, affaires, sites, visites)
                                 Future.delayed(const Duration(seconds: 1), () {
                                   setState(() => syncing = false);
                                 });
@@ -129,6 +129,33 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                         ),
                       ),
                     ],
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: size.width * 2/3,
+                      child: Timeline(
+                        children: <Widget>[
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
+                        ],
+                        indicators: <Widget>[
+                          Icon(Icons.history),
+                          Icon(Icons.history),
+                          Icon(Icons.history),
+                          Icon(Icons.history),
+                          Icon(Icons.history),
+                          Icon(Icons.history),
+                          Icon(Icons.history),
+                          Icon(Icons.history),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
