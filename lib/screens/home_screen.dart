@@ -211,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          '${Provider.of<Auth>(context, listen: false).user?.Nom} ${Provider.of<Auth>(context, listen: false).user?.Prenom}',
+                          '${Provider.of<Auth>(context, listen: false).user?.nom} ${Provider.of<Auth>(context, listen: false).user?.prenom}',
                           style: TextStyle(
                             color: Colors.white,
                           ),

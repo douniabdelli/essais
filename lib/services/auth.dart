@@ -1,6 +1,8 @@
+import 'package:bcrypt/bcrypt.dart';
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
 import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
 import '../models/user.dart';
 
@@ -31,18 +33,42 @@ class Auth extends ChangeNotifier {
 
   login({required Map credentials}) async {
     try {
-      Dio.Response response = await dio()
-          .post(
-            '/token',
-            data: credentials
-          );
-      String token = response.data.toString();
-      await tryToken(token: token);
       await storeCredentials(credentials);
-      return token;
+      String? isNotFirstTime = await storage.read(key: 'isNotFirstTime');
+      if(isNotFirstTime != null && isNotFirstTime == 'isNotFirstTime'){
+        List<User> users = (await VisitePreliminaireDatabase.instance.getUser()).cast<User>();
+        // todo: check if user exists && check verify password then store logged user
+        if(users.length >= 1) {
+          final bool checkedPassword = BCrypt.checkpw(credentials['password'], users.first.password);
+          if(checkedPassword) {
+            await storeUser(user: users.first);
+            await storeToken(token: 'token');
+            // todo: ok pass
+            return 200;
+          }
+          else
+            return 500;
+        }
+        else
+          return 404;
+      }
+      else {
+        await getApiToken(credentials);
+        return 200;
+      }
     } catch(e){
       print(e);
     }
+  }
+
+  getApiToken(credentials) async {
+    Dio.Response response = await dio()
+        .post(
+        '/token',
+        data: credentials
+    );
+    String token = response.data.toString();
+    await tryToken(token: token);
   }
 
   storeCredentials(credentials) async {

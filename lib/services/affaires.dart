@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
 import 'package:mgtrisque_visitepreliminaire/models/site.dart';
+import 'package:mgtrisque_visitepreliminaire/models/user.dart';
 import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
 import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
 import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
@@ -34,7 +35,7 @@ class Affaires extends ChangeNotifier {
     notifyListeners();
   }
 //////////////////////////////////////////////////////////////////////////////////////
-  getAffaires ({required String token}) async {
+  getData({required String token}) async {
     try {
       String? _isNotFirstTime = await storage.read(key: 'isNotFirstTime');
       if(_isNotFirstTime != null && _isNotFirstTime == 'isNotFirstTime'){
@@ -47,6 +48,8 @@ class Affaires extends ChangeNotifier {
       }
       else {
         await storage.write(key: 'isNotFirstTime', value: 'isNotFirstTime');
+        // get users from api
+        await fetchUsers(token: token);
         // get affaires from api
         await fetchAffaires(token: token);
         // get sites from api
@@ -60,7 +63,22 @@ class Affaires extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchAffaires ({required String token}) async {
+  Future<void> fetchUsers({required String token}) async {
+    Dio.Response responseUser = await dio()
+        .get(
+        '/visite-preleminaire/users',
+        options: Dio.Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Charset': 'utf-8'
+          },
+        )
+    );
+    await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
+  }
+
+  Future<void> fetchAffaires({required String token}) async {
     Dio.Response responseAffaire = await dio()
         .get(
         '/visite-preleminaire/affaires',
@@ -72,8 +90,8 @@ class Affaires extends ChangeNotifier {
           },
         )
     );
-    _affaires = responseAffaire.data.map((data) => Affaire.fromJson(data)).toList();
     await VisitePreliminaireDatabase.instance.createAffaires(responseAffaire.data.map((data) => Affaire.fromJson(data)).toList());
+    _affaires = await VisitePreliminaireDatabase.instance.getAffaires();
     _codes_affaires = responseAffaire.data.map((e) => e['Code_Affaire'].toString()).toList();
   }
 
@@ -92,8 +110,8 @@ class Affaires extends ChangeNotifier {
           },
         )
     );
-    _sites = responseSite.data.map((data) => Site.fromJson(data)).toList();
     await VisitePreliminaireDatabase.instance.createSites(responseSite.data.map((data) => Site.fromJson(data)).toList());
+    _sites = await VisitePreliminaireDatabase.instance.getSites();
     _codes_affaires_sites = responseSite.data.map((e) {
       return {
         'Code_Affaire': e['Code_Affaire'],
@@ -117,8 +135,8 @@ class Affaires extends ChangeNotifier {
           },
         )
     );
-    _visites = responseVisite.data.map((data) => Visite.fromJson(data)).toList();
     await VisitePreliminaireDatabase.instance.createVisites(responseVisite.data.map((data) => Visite.fromJson(data)).toList());
+    _visites = await VisitePreliminaireDatabase.instance.getVisites();
   }
 
 }

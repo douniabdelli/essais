@@ -1,5 +1,7 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
 import 'package:mgtrisque_visitepreliminaire/models/site.dart';
+import 'package:mgtrisque_visitepreliminaire/models/user.dart';
 import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -31,11 +33,22 @@ class VisitePreliminaireDatabase {
   }
 
   Future _createDB(Database db, int version) async {
+    String userQuery = '''
+      CREATE TABLE IF NOT EXISTS users(        
+        matricule TEXT PRIMARY KEY, 
+        nom TEXT,
+        prenom TEXT,
+        password TEXT
+      )
+    ''';
     String affaireQuery = '''
       CREATE TABLE IF NOT EXISTS affaires(        
-        Code_Affaire TEXT PRIMARY KEY, 
+        Code_Affaire TEXT, 
+        Code_Site TEXT, 
         IntituleAffaire TEXT, 
-        NbrSite TEXT       
+        NbrSite TEXT,
+        matricule TEXT,
+        PRIMARY KEY (Code_Affaire, matricule) 
       )
     ''';
     String siteQuery = '''
@@ -88,16 +101,39 @@ class VisitePreliminaireDatabase {
         PRIMARY KEY (Code_Affaire, Code_site) 
       )
     ''';
+
+    await db.execute(userQuery);
     await db.execute(affaireQuery);
     await db.execute(siteQuery);
     await db.execute(visiteQuery);
   }
 
+  Future<void> createUsers(List<dynamic> users) async {
+    String userQuery = '''
+      INSERT INTO users
+      (matricule, nom, prenom, password)
+      VALUES (?, ?, ?, ?)
+    ''';
+    final db = await instance.database;
+    users.forEach((element) async {
+      var item = User.toMap(element);
+      var result = await db.rawInsert(
+          userQuery,
+          [
+            item['matricule'].toString(),
+            item['nom'].toString(),
+            item['prenom'].toString(),
+            item['password'].toString()
+          ]
+      );
+    });
+  }
+
   Future<void> createAffaires(List<dynamic> affaires) async {
     String affaireQuery = '''
       INSERT INTO affaires
-      (Code_Affaire, IntituleAffaire, NbrSite)
-      VALUES (?, ?, ?)
+      (Code_Affaire, Code_Site, matricule, IntituleAffaire, NbrSite)
+      VALUES (?, ?, ?, ?, ?)
     ''';
     final db = await instance.database;
     affaires.forEach((element) async {
@@ -106,8 +142,10 @@ class VisitePreliminaireDatabase {
           affaireQuery,
           [
             item['Code_Affaire'].toString(),
+            item['Code_Site'].toString(),
+            item['matricule'].toString(),
             item['IntituleAffaire'].toString(),
-            item['NbrSite']
+            item['NbrSite'],
           ]
       );
     });
@@ -237,6 +275,7 @@ class VisitePreliminaireDatabase {
       );
     });
   }
+
   Future<void> validateVisite(Code_Affaire, Code_site) async {
     String visiteQuery = '''
       UPDATE visites
@@ -251,9 +290,30 @@ class VisitePreliminaireDatabase {
     );
   }
 
-  Future<List<Affaire>> getAffaires() async {
+  Future<List<User>> getUser() async {
+    final storage = new FlutterSecureStorage();
+    String? matricule = await storage.read(key: 'matricule');
+
     final db = await instance.database;
-    final affaires = await db.query('affaires');
+    final users = await db.query(
+      'users',
+      where: 'matricule = ?',
+      whereArgs: [ matricule ],
+    );
+
+    return users.map((json) => User.fromJson(json)).toList();
+  }
+
+  Future<List<Affaire>> getAffaires() async {
+    final storage = new FlutterSecureStorage();
+    String? matricule = await storage.read(key: 'matricule');
+    print('matricule : ${matricule}');
+    final db = await instance.database;
+    final affaires = await db.query(
+      'affaires',
+      where: 'matricule = ?',
+      whereArgs: [ matricule ],
+    );
 
     return affaires.map((json) => Affaire.fromJson(json)).toList();
   }

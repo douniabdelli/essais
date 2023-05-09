@@ -1,56 +1,32 @@
 import 'dart:convert';
 
 class User {
-  String Matricule;
-  String Nom;
-  String Nomjeunefille;
-  String Prenom;
-  String Structure;
-  String DirectionAntenne;
-  String Service;
-  String Fonction;
-  String GroupSec;
-  String? GroupSousSec;
+  String matricule;
+  String nom;
+  String prenom;
+  String password;
 
 
   User({
-    required this.Matricule,
-    required this.Nom,
-    required this.Nomjeunefille,
-    required this.Prenom,
-    required this.Structure,
-    required this.DirectionAntenne,
-    required this.Service,
-    required this.Fonction,
-    required this.GroupSec,
-    required this.GroupSousSec,
+    required this.matricule,
+    required this.nom,
+    required this.prenom,
+    required this.password,
   });
 
   User.fromJson(Map<String, dynamic> json)
-      : Matricule = json['Matricule'] == null ? '' : json['Matricule'],
-        Nom = json['Nom'] == null ? '' : json['Nom'],
-        Nomjeunefille = json['Nomjeunefille'] == null ? '' : json['Nomjeunefille'],
-        Prenom = json['Prenom'] == null ? '' : json['Prenom'],
-        Structure = json['Structure'] == null ? '' : json['Structure'],
-        DirectionAntenne = json['DirectionAntenne'] == null ? '' : json['DirectionAntenne'],
-        Service = json['Service'] == null ? '' : json['Service'],
-        Fonction = json['Fonction'] == null ? '' : json['Fonction'],
-        GroupSec = json['GroupSec'] == null ? '' : json['GroupSec'],
-        GroupSousSec = json['GroupSousSec'] == null ? '' : json['GroupSousSec']
+      : matricule = json['matricule'] == null ? '' : json['matricule'],
+        nom = json['nom'] == null ? '' : json['nom'],
+        prenom = json['prenom'] == null ? '' : json['prenom'],
+        password = json['password'] == null ? '' : json['password']
   ;
 
   static Map<String, dynamic> toMap(User model) => 
       <String, dynamic> {
-        'Matricule': model.Matricule,
-        'Nom': model.Nom,
-        'Nomjeunefille': model.Nomjeunefille,
-        'Prenom': model.Prenom,
-        'Structure': model.Structure,
-        'DirectionAntenne': model.DirectionAntenne,
-        'Service': model.Service,
-        'Fonction': model.Fonction,
-        'GroupSec': model.GroupSec,
-        'GroupSousSec': model.GroupSousSec,
+        'matricule': model.matricule,
+        'nom': model.nom,
+        'prenom': model.prenom,
+        'password': model.password,
       };
   
   static String serialize(User model) => json.encode(User.toMap(model));

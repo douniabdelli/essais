@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
@@ -20,11 +21,14 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isSigning = false;
+  bool loginMatriculeError = false;
+  bool loginPasswordError = false;
   bool get getIsSigning => _isSigning;
+  final storage = new FlutterSecureStorage();
 
   @override
   void initState() {
-    _matriculeController.text = '00052';
+    _matriculeController.text = 'A0162';
     _passwordController.text = '123456';
     _isSigning = false;
     super.initState();
@@ -140,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: TextFormField(
                                           controller: _matriculeController,
                                           validator: (String? value) {
-                                            if (value != null && value.isEmpty)
+                                            if ((value != null && value.isEmpty) || loginMatriculeError)
                                               return 'Entrez un matricule correct';
                                             return null;
                                           },
@@ -214,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           obscureText: true,
                                           controller: _passwordController,
                                           validator: (String? value) {
-                                            if(value != null && value.isEmpty)
+                                            if((value != null && value.isEmpty) || loginPasswordError)
                                               return 'Entrez un mot de passe correct';
                                             return null;
                                           },
@@ -285,26 +289,32 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: () async {
                                   setState(() {
                                     _isSigning = true;
+                                    loginMatriculeError = false;
+                                    loginPasswordError = false;
                                   });
+
                                   Map credentials = {
                                     'matricule': _matriculeController.text,
                                     'password': _passwordController.text,
                                   };
                                   if (_formKey.currentState!.validate()) {
-                                    String? token = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
-                                    // setState(() {
-                                    //   _isSigning = false;
-                                    // });
-                                    if(token != null) {
-                                      await Provider.of<Affaires>(context, listen: false).getAffaires(token: token);
+                                    late int result;
+                                    result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
+                                    String? token = await storage.read(key: 'token');
+                                    // todo: login result
+                                    if(result == 200){
+                                      print('/////////////// ${token}');
+                                      await Provider.of<Affaires>(context, listen: false).getData(token: token!);
                                       Navigator.pop(context);
                                       Navigator.of(context).push(MaterialPageRoute(
                                           builder: (context) => const HomeScreen(isNotFirstTime: '',)));
                                     }
                                     else {
-                                      setState(() {
-                                        _isSigning = false;
-                                      });
+                                      setState(() => _isSigning = false);
+                                      if(result == 404)
+                                        setState(() => loginMatriculeError = true);
+                                      if(result == 500)
+                                        setState(() => loginPasswordError = true);
                                     }
                                   }
                                 },

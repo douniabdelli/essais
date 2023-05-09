@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'dart:math' as math;
+
+import 'package:provider/provider.dart';
 
 class SyncScreen extends StatefulWidget {
   const SyncScreen({Key? key}) : super(key: key);
@@ -10,6 +14,7 @@ class SyncScreen extends StatefulWidget {
 }
 
 class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateMixin {
+  final storage = new FlutterSecureStorage();
   late bool syncing = false;
   late AnimationController controller = AnimationController(
     duration: const Duration(seconds: 3),
@@ -90,10 +95,18 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                             color: Colors.blueAccent.withOpacity(0.2),
                             child: InkWell(
                               splashColor: Colors.blueAccent.withOpacity(0.4),
-                              onTap: () {
+                              onTap: () async {
                                 // todo:
-                                // setState(() => syncing = true);
-                                setState(() => syncing = !syncing);
+                                setState(() => syncing = true);
+                                //setState(() => syncing = !syncing);
+                                String? matricule = await storage.read(key: 'matricule');
+                                String? password = await storage.read(key: 'password');
+                                await Provider.of<Auth>(context, listen: false).getApiToken({'matricule': matricule, 'password': password});
+                                String? token = await storage.read(key: 'token');
+                                print('*** ${matricule} * ${password} * ${token} ***');
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  setState(() => syncing = false);
+                                });
                               },
                               child: syncing
                                   ? AnimatedBuilder(

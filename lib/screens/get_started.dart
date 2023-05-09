@@ -30,7 +30,7 @@ class _GetStartedState extends State<GetStarted> {
     final String? token = await storage.read(key: 'token');
 
     if(token != null && token != '')
-      await Provider.of<Affaires>(context, listen: false).getAffaires(token: token);
+      await Provider.of<Affaires>(context, listen: false).getData(token: token);
       // final String? matricule = await storage.read(key: 'matricule');
       // final String? password = await storage.read(key: 'password');
       // if(matricule != null && password != null)
