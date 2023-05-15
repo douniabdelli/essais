@@ -82,7 +82,7 @@ class Timeline extends StatelessWidget {
         final isLast = index == itemCount - 1;
 
         final timelineTile = <Widget>[
-          Text('${time?.day}-${time?.month}-${time?.year}  ${time?.hour}:${time?.minute}'),
+          Text('${time?.day.toString().padLeft(2, '0')}-${time?.month.toString().padLeft(2, '0')}-${time?.year.toString().padLeft(4, '0')}  ${time?.hour.toString().padLeft(2, '0')}:${time?.minute.toString().padLeft(2, '0')}'),
           CustomPaint(
             foregroundPainter: _TimelinePainter(
               hideDefaultIndicator: indicator != null,

@@ -1,6 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
 import 'package:mgtrisque_visitepreliminaire/models/site.dart';
+import 'package:mgtrisque_visitepreliminaire/models/sync_history.dart';
 import 'package:mgtrisque_visitepreliminaire/models/user.dart';
 import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
 import 'package:path/path.dart';
@@ -101,11 +102,20 @@ class VisitePreliminaireDatabase {
         PRIMARY KEY (Code_Affaire, Code_site) 
       )
     ''';
+    String syncQuery = '''
+      CREATE TABLE IF NOT EXISTS sync(        
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        matricule TEXT, 
+        syncedAt TEXT,
+        syncedData TEXT        
+      )
+    ''';
 
     await db.execute(userQuery);
     await db.execute(affaireQuery);
     await db.execute(siteQuery);
     await db.execute(visiteQuery);
+    await db.execute(syncQuery);
   }
 
   Future<void> createUsers(List<dynamic> users) async {
@@ -225,6 +235,38 @@ class VisitePreliminaireDatabase {
     });
   }
 
+  Future<void> createSync(sync) async {
+    String syncQuery = '''
+      INSERT INTO sync
+      (matricule, syncedAt, syncedData)
+      VALUES (?, ?, ?)
+    ''';
+    final db = await instance.database;
+    var item = SyncHistory.toMap(sync);
+    var result = await db.rawInsert(
+        syncQuery,
+        [
+          item['matricule'].toString(),
+          '${item['syncedAt'].year.toString().padLeft(4, '0')}-${item['syncedAt'].month.toString().padLeft(2, '0')}-${item['syncedAt'].day.toString().padLeft(2, '0')} ${item['syncedAt'].hour.toString().padLeft(2, '0')}:${item['syncedAt'].minute.toString().padLeft(2, '0')}:${item['syncedAt'].second.toString().padLeft(2, '0')}',
+          item['syncedData'].toString(),
+        ]
+    );
+  }
+
+  Future<List<SyncHistory>> getSyncHistory() async {
+    final storage = new FlutterSecureStorage();
+    String? matricule = await storage.read(key: 'matricule');
+    print('matricule : ${matricule}');
+    final db = await instance.database;
+    final sync = await db.query(
+      'sync',
+      where: 'matricule = ?',
+      whereArgs: [ matricule ],
+    );
+
+    return sync.map((json) => SyncHistory.fromJson(json)).toList();
+  }
+
   Future<void> updateVisite(List<dynamic> visites) async {
     final db = await instance.database;
     visites.forEach((element) async {
@@ -302,6 +344,24 @@ class VisitePreliminaireDatabase {
     );
 
     return users.map((json) => User.fromJson(json)).toList();
+  }
+
+  Future<List<Affaire>> getAffairesFromAffaires() async {
+    final db = await instance.database;
+    final affaires = await db.query(
+      'affaires',
+    );
+
+    return affaires.map((json) => Affaire.fromJson(json)).toList();
+  }
+
+  Future<List<Site>> getAffairesFromSites() async {
+    final db = await instance.database;
+    final sites = await db.query(
+      'sites',
+    );
+
+    return sites.map((json) => Site.fromJson(json)).toList();
   }
 
   Future<List<Affaire>> getAffaires() async {

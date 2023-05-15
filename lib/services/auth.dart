@@ -41,6 +41,7 @@ class Auth extends ChangeNotifier {
         if(users.length >= 1) {
           final bool checkedPassword = BCrypt.checkpw(credentials['password'], users.first.password);
           if(checkedPassword) {
+            _user = users.first;
             await storeUser(user: users.first);
             await storeToken(token: 'token');
             // todo: ok pass

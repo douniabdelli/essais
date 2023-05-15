@@ -58,6 +58,7 @@ class Affaires extends ChangeNotifier {
         await fetchVisites(token: token);
       }
       _foundAffaires = _affaires;
+      notifyListeners();
     } catch (e) {
       print(e);
     }

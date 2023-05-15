@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:mgtrisque_visitepreliminaire/services/sync.dart';
 import 'package:mgtrisque_visitepreliminaire/widgets/time_line.dart';
 import 'dart:math' as math;
 
@@ -60,7 +62,6 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
         child: Column(
           children: [
             Expanded(
-              flex: 3,
               child: syncing
                   ? Lottie.asset(
                     'assets/animations/sync-data-animation.json',
@@ -73,7 +74,6 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                   ),
             ),
             Expanded(
-              flex: 2,
               child: Column(
                 children: [
                   Row(
@@ -104,9 +104,11 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                                 String? password = await storage.read(key: 'password');
                                 await Provider.of<Auth>(context, listen: false).getApiToken({'matricule': matricule, 'password': password});
                                 // todo: sync all data (users, affaires, sites, visites)
-                                Future.delayed(const Duration(seconds: 1), () {
-                                  setState(() => syncing = false);
-                                });
+                                await Provider.of<Sync>(context, listen: false).syncData();
+                                // todo: refresh data
+                                String? token = await storage.read(key: 'token');
+                                await Provider.of<Affaires>(context, listen: false).getData(token: token!);
+                                setState(() => syncing = false);
                               },
                               child: syncing
                                   ? AnimatedBuilder(
@@ -130,6 +132,7 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                       ),
                     ],
                   ),
+                  SizedBox(height: 20.0,),
                   Expanded(
                     child: Container(
                       width: size.width * 2/3,
