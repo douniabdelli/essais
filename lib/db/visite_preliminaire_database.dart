@@ -355,6 +355,17 @@ class VisitePreliminaireDatabase {
     return affaires.map((json) => Affaire.fromJson(json)).toList();
   }
 
+  Future<List<Affaire>> getAffairesFromAffairesWhereMatricule(matricule) async {
+    final db = await instance.database;
+    final affaires = await db.query(
+      'affaires',
+      where: 'matricule = ?',
+      whereArgs: [ matricule ]
+    );
+
+    return affaires.map((json) => Affaire.fromJson(json)).toList();
+  }
+
   Future<List<Site>> getAffairesFromSites() async {
     final db = await instance.database;
     final sites = await db.query(

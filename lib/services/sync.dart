@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,28 +27,27 @@ class Sync extends ChangeNotifier {
     String? token = await storage.read(key: 'token');
     String? matricule = await storage.read(key: 'matricule');
     late String syncedData = '';
-    syncedData = await syncAffaires(token, syncedData);
+    syncedData = await syncAffaires(token, syncedData, matricule!);
     syncedData = await syncSites(token, syncedData);
     syncedData = await syncVisites(token, syncedData);
-    print('*** SyncData : ${syncedData} ***');
     if(syncedData != '') {
+      if(syncedData[syncedData.length-1] != '}')
+        syncedData += '}';
       _syncPoint = SyncHistory(
         matricule: matricule!,
         syncedAt: DateTime.now(),
         syncedData: syncedData,
       );
-      print('*** SyncPoint : ${_syncPoint.matricule} ***');
       await VisitePreliminaireDatabase.instance.createSync(_syncPoint);
     }
     _syncHistory = await VisitePreliminaireDatabase.instance.getSyncHistory();
-    print('SyncHistory : ${_syncHistory}');
   }
 
   // todo: syncAffaires
-  syncAffaires(token, syncedData) async {
+  syncAffaires(token, syncedData, matricule) async {
     late List ids = [];
     late List<Affaire> _ids = [];
-    _ids = await VisitePreliminaireDatabase.instance.getAffairesFromAffaires();
+    _ids = await VisitePreliminaireDatabase.instance.getAffairesFromAffairesWhereMatricule(matricule);
     ids = _ids.map((e) =>
           {
             'Code_Affaire': e.Code_Affaire.toString(),
@@ -57,7 +58,8 @@ class Sync extends ChangeNotifier {
         .post(
         '/visite-preleminaire/sync-affaires',
         data: {
-          'ids': ids
+          'ids': ids,
+          'matricule': matricule
         },
         options: Dio.Options(
           headers: {
@@ -68,9 +70,15 @@ class Sync extends ChangeNotifier {
         )
     );
     await VisitePreliminaireDatabase.instance.createAffaires(responseAffaire.data.map((data) => Affaire.fromJson(data)).toList());
-    _syncedAffaires = responseAffaire.data.map((data) => Affaire.fromJson(data)).toList();
+    _syncedAffaires = responseAffaire.data
+        .map((data) => Affaire.fromJson(data))
+        .toList();
+
     if(_syncedAffaires.length >0)
-      syncedData += '*** Affaires : ${_syncedAffaires.map((e) => e.Code_Affaire).toString()}';
+      if(syncedData == '')
+        syncedData += '{"Affaires": [${_syncedAffaires.map((e) => '"'+e.Code_Affaire.toString()+'"').toList().join(",")}]';
+      else
+        syncedData += ', "Affaires": [${_syncedAffaires.map((e) => '"'+e.Code_Affaire.toString()+'"').toList().join(",")}]';
 
     return syncedData;
   }
@@ -103,7 +111,10 @@ class Sync extends ChangeNotifier {
     await VisitePreliminaireDatabase.instance.createSites(responseSite.data.map((data) => Site.fromJson(data)).toList());
     _syncedSites = responseSite.data.map((data) => Site.fromJson(data)).toList();
     if(_syncedAffaires.length >0)
-      syncedData += '*** Sites : ${_syncedSites.map((e) => e.Code_site).toString()}';
+      if(syncedData == '')
+        syncedData += '{"Sites": [${_syncedSites.map((e) => '"'+e.Code_site.toString()+'"').toList().join(",")}]';
+      else
+        syncedData += ', "Sites": [${_syncedSites.map((e) => '"'+e.Code_site.toString()+'"').toList().join(",")}]';
 
     return syncedData;
   }
