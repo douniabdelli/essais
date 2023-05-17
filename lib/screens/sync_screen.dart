@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mgtrisque_visitepreliminaire/models/sync_history.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/sync.dart';
@@ -80,7 +81,7 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Synchronisation',
+                        'Historique de synchronisation',
                         style: TextStyle(
                             color: Colors.blueAccent,
                             fontWeight: FontWeight.w500,
@@ -134,40 +135,145 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                   ),
                   SizedBox(height: 20.0,),
                   Expanded(
-                    child: Container(
-                      width: size.width * 2/3,
-                      child: Timeline(
-                        children: <Widget>[
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                          Container(height: 50, color: Colors.blueAccent.withOpacity(0.2)),
-                        ],
-                        indicators: <Widget>[
-                          Icon(Icons.history),
-                          Icon(Icons.history),
-                          Icon(Icons.history),
-                          Icon(Icons.history),
-                          Icon(Icons.history),
-                          Icon(Icons.history),
-                          Icon(Icons.history),
-                          Icon(Icons.history),
-                        ],
-                        times: <DateTime>[
-                          DateTime.now(),
-                          DateTime.now(),
-                          DateTime.now(),
-                          DateTime.now(),
-                          DateTime.now(),
-                          DateTime.now(),
-                          DateTime.now(),
-                          DateTime.now(),
-                        ],
-                      ),
+                    child: Consumer<Sync>(
+                      builder: (context, sync, Widget? child){
+                        return SingleChildScrollView(
+                          child: Container(
+                            width: size.width * 2/3,
+                            child: Timeline(
+                              children: sync.getSyncHistoryData().map<Widget>(
+                                    (e) => Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if(e['Affaires'] != null)
+                                          Row(
+                                            children: [
+                                              ClipOval(
+                                                child: Material(
+                                                  color: Colors.red.withOpacity(0.25),
+                                                  child: Icon(
+                                                    Icons.trending_down_rounded,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 10.0,),
+                                              Expanded(
+                                                child: RichText(
+                                                  overflow: TextOverflow.clip,
+                                                  text: TextSpan(
+                                                    children: [
+                                                      TextSpan(
+                                                        text: 'Affaires : ',
+                                                        style: TextStyle(
+                                                          color: Colors.blueAccent,
+                                                          fontWeight: FontWeight.w500,
+                                                          fontSize: 15.0
+                                                        ),
+                                                      ),
+                                                      TextSpan(
+                                                        text: '${e['Affaires'] != null ? e['Affaires'].join(' - ') : '' }',
+                                                        style: TextStyle(
+                                                            color: Colors.black
+                                                        ),
+                                                      ),
+                                                    ]
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        if((e['Sites'] != null) && (e['Affaires'] != null))
+                                          SizedBox(height: 5.0,),
+                                        if(e['Sites'] != null)
+                                          Row(
+                                            children: [
+                                              ClipOval(
+                                                child: Material(
+                                                  color: Colors.red.withOpacity(0.25),
+                                                  child: Icon(
+                                                    Icons.trending_down_rounded,
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(width: 10.0,),
+                                              Expanded(
+                                                child: RichText(
+                                                  overflow: TextOverflow.clip,
+                                                  text: TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                          text: 'Sites : ',
+                                                          style: TextStyle(
+                                                            color: Colors.blueAccent,
+                                                            fontWeight: FontWeight.w500,
+                                                            fontSize: 15.0
+                                                          ),
+                                                        ),
+                                                        TextSpan(
+                                                          text: '${e['Sites'] != null ? e['Sites'].join(' - ') : '' }',
+                                                          style: TextStyle(
+                                                              color: Colors.black
+                                                          ),
+                                                        ),
+                                                      ]
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        if((e['Visites'] != null) && ((e['Affaires'] != null) || e['Sites'] != null))
+                                          SizedBox(height: 5.0,),
+                                        if(e['Visites'] != null)
+                                          Row(
+                                            children: [
+                                              ClipOval(
+                                                child: Material(
+                                                  color: Colors.green.withOpacity(0.25),
+                                                  child: Icon(
+                                                    Icons.trending_up_rounded,
+                                                    color: Colors.green,
+                                                    size: 25.0,
+                                                  ),
+                                                ),
+                                              ),
+
+                                              SizedBox(width: 10.0,),
+                                              Expanded(
+                                                child: RichText(
+                                                  overflow: TextOverflow.clip,
+                                                  text: TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                          text: 'Visites : ',
+                                                          style: TextStyle(
+                                                            color: Colors.blueAccent,
+                                                            fontWeight: FontWeight.w500,
+                                                            fontSize: 15.0
+                                                          ),
+                                                        ),
+                                                        TextSpan(
+                                                          text: '${e['Visites'] != null ? e['Visites'].join(' - ') : '' }',
+                                                          style: TextStyle(
+                                                              color: Colors.black
+                                                          ),
+                                                        ),
+                                                      ]
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                              ).toList(),
+                              indicators: sync.syncHistory.map<Widget>((e) => Icon(Icons.history)).toList(),
+                              times: sync.getSyncHistoryDateTime().map<DateTime>((e) => e).toList(),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],

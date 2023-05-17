@@ -5,6 +5,7 @@ import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:mgtrisque_visitepreliminaire/services/sync.dart';
 import 'package:provider/provider.dart';
 
 class GetStarted extends StatefulWidget {
@@ -29,12 +30,10 @@ class _GetStartedState extends State<GetStarted> {
     isNotFirstTime = await storage.read(key: 'isNotFirstTime');
     final String? token = await storage.read(key: 'token');
 
-    if(token != null && token != '')
+    if(token != null && token != '') {
       await Provider.of<Affaires>(context, listen: false).getData(token: token);
-      // final String? matricule = await storage.read(key: 'matricule');
-      // final String? password = await storage.read(key: 'password');
-      // if(matricule != null && password != null)
-      //   String? token = await Provider.of<Auth>(context, listen: false).login(credentials: {'matricule': matricule, 'password': password});
+      await Provider.of<Sync>(context, listen: false).getSyncHistory();
+    }
 
     Future.delayed(new Duration(milliseconds: 2500), () {
       if(isLoggedIn == 'loggedIn')

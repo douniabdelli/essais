@@ -10,16 +10,30 @@ import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dar
 import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
 
 class Sync extends ChangeNotifier {
+
   final storage = new FlutterSecureStorage();
   late SyncHistory _syncPoint;
-  late List<SyncHistory> _syncHistory = [];
+  late List _syncHistory = [];
   late List _syncedAffaires = [];
   late List _syncedSites = [];
 
-  get syncHistory => _syncPoint;
-  set setSyncHistory(value){
-    _syncPoint = value;
+  get syncHistory => _syncHistory;
+  set setHistory(value){
+    _syncHistory = value;
     notifyListeners();
+  }
+
+  getSyncHistory() async {
+    _syncHistory = await VisitePreliminaireDatabase.instance.getSyncHistory();
+    notifyListeners();
+  }
+
+  List<DateTime> getSyncHistoryDateTime() {
+    return _syncHistory.map<DateTime>((e) => e.syncedAt).toList();
+  }
+
+  getSyncHistoryData() {
+    return _syncHistory.map((e) => jsonDecode(e.syncedData));
   }
 
   // todo: Sync
@@ -112,9 +126,9 @@ class Sync extends ChangeNotifier {
     _syncedSites = responseSite.data.map((data) => Site.fromJson(data)).toList();
     if(_syncedAffaires.length >0)
       if(syncedData == '')
-        syncedData += '{"Sites": [${_syncedSites.map((e) => '"'+e.Code_site.toString()+'"').toList().join(",")}]';
+        syncedData += '{"Sites": [${_syncedSites.map((e) => '"'+e.Code_Affaire.toString()+'/'+e.Code_site.toString()+'"').toList().join(",")}]';
       else
-        syncedData += ', "Sites": [${_syncedSites.map((e) => '"'+e.Code_site.toString()+'"').toList().join(",")}]';
+        syncedData += ', "Sites": [${_syncedSites.map((e) => '"'+e.Code_Affaire.toString()+'/'+e.Code_site.toString()+'"').toList().join(",")}]';
 
     return syncedData;
   }
@@ -123,6 +137,15 @@ class Sync extends ChangeNotifier {
   syncVisites(token, syncedData) async {
 
     return syncedData;
+  }
+
+  bool isJSON(str) {
+    try {
+      jsonDecode(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
   }
 
 }

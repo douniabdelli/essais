@@ -16,7 +16,6 @@ class _AffairesScreenState extends State<AffairesScreen> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    //late List affaires = Provider.of<Affaires>(context, listen: true).foundAffaires;
     return SingleChildScrollView(
       child: Container(
         width: size.width,
@@ -26,7 +25,8 @@ class _AffairesScreenState extends State<AffairesScreen> {
           children: [
           Expanded(
               child: Consumer<Affaires>(
-                builder: (BuildContext context, affaires, Widget? child) { return ListView.custom(
+                builder: (BuildContext context, affaires, Widget? child) {
+                  return ListView.custom(
                     childrenDelegate: SliverChildBuilderDelegate(
                           (context, index) {
                         return Column(

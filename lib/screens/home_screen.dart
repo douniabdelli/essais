@@ -192,13 +192,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     top: 24.0,
                     bottom: 34.0,
                   ),
+                  padding: const EdgeInsets.only(
+                    top: 5.0
+                  ),
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
-                    color: Colors.black26,
+                    color: Colors.black12,
                     shape: BoxShape.circle,
                   ),
-                  child: Image.network(
-                    'https://thumbs.dreamstime.com/b/businessman-icon-vector-male-avatar-profile-image-profile-businessman-icon-vector-male-avatar-profile-image-182095609.jpg',
+                  child: Image.asset(
+                    'assets/images/user_avatar.png',
                   ),
                 ),
                 Container(
