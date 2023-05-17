@@ -575,12 +575,14 @@ class GlobalProvider extends ChangeNotifier {
       await VisitePreliminaireDatabase.instance.updateVisite(visitesData);
     else
       await VisitePreliminaireDatabase.instance.createVisites(visitesData);
+    notifyListeners();
   }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // prepareVisiteFormData
   void validateForm() async {
     await VisitePreliminaireDatabase.instance.validateVisite(_selectedAffaire, _selectedSite);
+    notifyListeners();
   }
 
   bool isJSON(str) {
