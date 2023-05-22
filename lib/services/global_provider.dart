@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
 import 'package:mgtrisque_visitepreliminaire/models/third_person.dart';
 import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
@@ -529,10 +530,13 @@ class GlobalProvider extends ChangeNotifier {
 ///////////////////////////////////////////////////////////////////////////////////////
 // prepareVisiteFormData
   void submitForm() async {
+    final storage = new FlutterSecureStorage();
+    String? matricule = await storage.read(key: 'matricule');
     var visitesData = [
       new Visite(
           Code_Affaire: _selectedAffaire,
           Code_site: _selectedSite,
+          matricule: matricule!,
           VisitSiteDate: _dateVisite.toString(),
           VisitSite_Btn_terrain_accessible: _terrainAccessibleController.text,
           VisitSiteterrain_accessible: _terrainAccessibleInputController.text,

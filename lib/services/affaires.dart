@@ -21,9 +21,11 @@ class Affaires extends ChangeNotifier {
 //////////////////////////////////////////////////////////////////////////////////////
   List get affaires => _affaires;
   List get foundAffaires => _foundAffaires;
-
-  set setfoundAffaires(codeAffaire) {
-      _foundAffaires = _affaires.where((element) => element.Code_Affaire.contains(codeAffaire)).toList();
+  int selectedAffaireIndex(value) {
+    return _foundAffaires.indexWhere((e) => e.Code_Affaire == value);
+  }
+  set setfoundAffaires(value) {
+      _foundAffaires = _affaires.where((element) => (element.Code_Affaire.contains(value) || element.Code_site.contains(value))).toList();
       notifyListeners();
   }
 //////////////////////////////////////////////////////////////////////////////////////

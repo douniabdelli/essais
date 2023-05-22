@@ -5,6 +5,7 @@ import 'package:mgtrisque_visitepreliminaire/models/sync_history.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/sync.dart';
+import 'package:mgtrisque_visitepreliminaire/widgets/custom_dialog.dart';
 import 'package:mgtrisque_visitepreliminaire/widgets/time_line.dart';
 import 'dart:math' as math;
 
@@ -19,7 +20,6 @@ class SyncScreen extends StatefulWidget {
 
 class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateMixin {
   final storage = new FlutterSecureStorage();
-  late bool syncing = false;
   late AnimationController controller = AnimationController(
     duration: const Duration(seconds: 3),
     vsync: this,
@@ -33,7 +33,6 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    syncing = false;
     controller = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
@@ -63,16 +62,19 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
         child: Column(
           children: [
             Expanded(
-              child: syncing
-                  ? Lottie.asset(
-                    'assets/animations/sync-data-animation.json',
-                    width: size.width,
-                  )
-                  : Lottie.asset(
-                    'assets/animations/completed-sync-animation.json',
-                    width: size.width,
-                    repeat: false,
-                  ),
+              child: Consumer<Sync>(
+                builder: (context, sync, Widget? child){
+                  return sync.syncing
+                      ? Lottie.asset(
+                        'assets/animations/sync-data-animation.json',
+                        width: size.width,
+                      )
+                      : Lottie.asset(
+                        'assets/animations/completed-sync-animation.json',
+                        width: size.width,
+                        repeat: false,
+                      );
+                }),
             ),
             Expanded(
               child: Column(
@@ -98,35 +100,63 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                             child: InkWell(
                               splashColor: Colors.blueAccent.withOpacity(0.4),
                               onTap: () async {
-                                // todo:
-                                setState(() => syncing = true);
-                                //setState(() => syncing = !syncing);
+                                await Provider.of<Sync>(context, listen: false).setSyncing(true);
                                 String? matricule = await storage.read(key: 'matricule');
                                 String? password = await storage.read(key: 'password');
                                 await Provider.of<Auth>(context, listen: false).getApiToken({'matricule': matricule, 'password': password});
-                                // todo: sync all data (users, affaires, sites, visites)
-                                await Provider.of<Sync>(context, listen: false).syncData();
-                                // todo: refresh data
-                                String? token = await storage.read(key: 'token');
-                                await Provider.of<Affaires>(context, listen: false).getData(token: token!);
-                                setState(() => syncing = false);
+
+                                late List invalidVisites = [];
+                                invalidVisites = await Provider.of<Sync>(context, listen: false).getInvalidVisites(matricule);
+
+                                if(invalidVisites.length > 0) await Provider.of<Sync>(context, listen: false).setCanSync(false);
+
+                                if(await Provider.of<Sync>(context, listen: false).canSync){
+                                  // sync all data (users, affaires, sites, visites)
+                                  await Provider.of<Sync>(context, listen: false).syncData();
+                                  // refresh data
+                                  String? token = await storage.read(key: 'token');
+                                  await Provider.of<Affaires>(context, listen: false).getData(token: token!);
+
+                                  await Provider.of<Sync>(context, listen: false).setSyncing(false);
+                                  await Provider.of<Sync>(context, listen: false).setCanSync(true);
+                                }
+                                else
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return CustomDialogBox(
+                                          title: 'Avertissement',
+                                          descriptions:
+                                          'Les visites préléminaires des affaires/sites suivantes ne sont pas encore validées : \n' +
+                                              invalidVisites
+                                                  .map((e) => '\t▪  ' + e)
+                                                  .join('\n') +
+                                              '\nÊtes-vous sûr de vouloir synchroniser ceux qui sont valides seulement ?',
+                                          text: 'text',
+                                        );
+                                      });
                               },
-                              child: syncing
-                                  ? AnimatedBuilder(
-                                      animation: controller,
-                                      builder: (context, child) => Transform.rotate(
-                                        angle:  controller.value * 2.0 * (-math.pi),
-                                        child: child,
-                                      ),
-                                      child: Icon(
+                              child: Consumer<Sync>(
+                                builder: (context, sync, Widget? child) {
+                                  return sync.syncing
+                                      ? AnimatedBuilder(
+                                          animation: controller,
+                                          builder: (context, child) =>
+                                          Transform.rotate(
+                                            angle: controller.value * 2.0 *
+                                                (-math.pi),
+                                            child: child,
+                                          ),
+                                          child: Icon(
+                                            Icons.sync_rounded,
+                                            color: Colors.blueAccent,
+                                          ),
+                                        )
+                                      : Icon(
                                         Icons.sync_rounded,
                                         color: Colors.blueAccent,
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.sync_rounded,
-                                      color: Colors.blueAccent,
-                                    ),
+                                      );
+                                }),
                             ),
                           ),
                         ),
@@ -265,10 +295,14 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                                               ),
                                             ],
                                           ),
-                                        ],
-                                      ),
+                                      ],
+                                    ),
                               ).toList(),
-                              indicators: sync.syncHistory.map<Widget>((e) => Icon(Icons.history)).toList(),
+                              indicators: sync.syncHistory
+                                  .map<Widget>(
+                                      (e) => Icon(Icons.history)
+                                  )
+                                  .toList(),
                               times: sync.getSyncHistoryDateTime().map<DateTime>((e) => e).toList(),
                             ),
                           ),

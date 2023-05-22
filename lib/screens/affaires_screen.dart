@@ -161,6 +161,9 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                               ),
                                               child: InkWell(
                                                 onTap: () {
+                                                  print('XXXXXXXXXXXXXX ${Provider.of<GlobalProvider>(context, listen: false).selectedAffaire} * ${Provider.of<Affaires>(context, listen: false).foundAffaires[index].Code_Affaire} XXXXXXXXXXXXXXX');
+                                                  print('YYYYYYYYYYYYYY ${Provider.of<GlobalProvider>(context, listen: false).selectedSite} * ${Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site} YYYYYYYYYYYYYY');
+                                                  print('YYYYYYYYYYYYYY ${Provider.of<Affaires>(context, listen: false).selectedAffaireIndex(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire)} YYYYYYYYYYYYYY');
                                                   (
                                                       Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
                                                           &&

@@ -7,8 +7,8 @@ class Timeline extends StatelessWidget {
     this.indicators,
     this.times,
     this.isLeftAligned = true,
-    this.itemGap = 12.0,
-    this.gutterSpacing = 4.0,
+    this.itemGap = 20.0,
+    this.gutterSpacing = 10.0,
     this.padding = const EdgeInsets.all(8),
     this.controller,
     this.lineColor = Colors.grey,
@@ -83,6 +83,7 @@ class Timeline extends StatelessWidget {
 
         final timelineTile = <Widget>[
           Text('${time?.day.toString().padLeft(2, '0')}-${time?.month.toString().padLeft(2, '0')}-${time?.year.toString().padLeft(4, '0')}  ${time?.hour.toString().padLeft(2, '0')}:${time?.minute.toString().padLeft(2, '0')}'),
+          SizedBox(width: gutterSpacing),
           CustomPaint(
             foregroundPainter: _TimelinePainter(
               hideDefaultIndicator: indicator != null,
@@ -111,6 +112,7 @@ class Timeline extends StatelessWidget {
         return IntrinsicHeight(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children:
             isLeftAligned ? timelineTile : timelineTile.reversed.toList(),
           ),

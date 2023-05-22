@@ -64,6 +64,7 @@ class VisitePreliminaireDatabase {
       CREATE TABLE IF NOT EXISTS visites(
         Code_Affaire TEXT,
         Code_site TEXT,
+        matricule TEXT,
         VisitSiteDate TEXT,
         VisitSite_Btn_terrain_accessible TEXT,
         VisitSiteterrain_accessible TEXT,
@@ -82,7 +83,7 @@ class VisitePreliminaireDatabase {
         VisitSite_Btn_presence_remblais TEXT,
         VisitSitePresDepotremblai TEXT,
         VisitSite_Btn_presence_sources_cours_eau_cavite TEXT,
-        VisitSiteEnqHabitant TEXT,
+        VisitSiteEngHabitant TEXT,
         VisitSite_Btn_presence_talwegs TEXT,
         visitesitePresDepotremblai TEXT,
         VisitSite_Btn_terrain_inondable TEXT,
@@ -184,9 +185,11 @@ class VisitePreliminaireDatabase {
   Future<void> createVisites(List<dynamic> visites) async {
     String visiteQuery = '''
       INSERT INTO visites
-      (Code_Affaire, Code_site, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEnqHabitant, VisitSite_Btn_presence_talwegs,  visitesitePresDepotremblai, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (Code_Affaire, Code_site, matricule, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEngHabitant, VisitSite_Btn_presence_talwegs,  VisitSitePresDepotremblai, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''';
+    final storage = new FlutterSecureStorage();
+    String? matricule = await storage.read(key: 'matricule');
     final db = await instance.database;
     visites.forEach((element) async {
       var item = Visite.toMap(element);
@@ -195,6 +198,7 @@ class VisitePreliminaireDatabase {
           [
             item['Code_Affaire'],
             item['Code_site'],
+            matricule,
             item['VisitSiteDate'],
             (item['VisitSite_Btn_terrain_accessible'] == 'Oui' || item['VisitSite_Btn_terrain_accessible'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_accessible'] == 'Non' || item['VisitSite_Btn_terrain_accessible'] == '0') ? '0' : ''),
             item['VisitSiteterrain_accessible'],
@@ -213,7 +217,7 @@ class VisitePreliminaireDatabase {
             (item['VisitSite_Btn_presence_remblais'] == 'Oui' || item['VisitSite_Btn_presence_remblais'] == '1') ? '1' : ((item['VisitSite_Btn_presence_remblais'] == 'Non' || item['VisitSite_Btn_presence_remblais'] == '0') ? '0' : ''),
             item['VisitSitePresDepotremblai'],
             (item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
-            item['VisitSiteEnqHabitant'],
+            item['VisitSiteEngHabitant'],
             (item['VisitSite_Btn_presence_talwegs'] == 'Oui' || item['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((item['VisitSite_Btn_presence_talwegs'] == 'Non' || item['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
             item['visitesitePresDepotremblai'],
             (item['VisitSite_Btn_terrain_inondable'] == 'Oui' || item['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_inondable'] == 'Non' || item['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
@@ -292,7 +296,7 @@ class VisitePreliminaireDatabase {
           'VisitSite_Btn_presence_remblais': (visite['VisitSite_Btn_presence_remblais'] == 'Oui' || visite['VisitSite_Btn_presence_remblais'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_remblais'] == 'Non' || visite['VisitSite_Btn_presence_remblais'] == '0') ? '0' : ''),
           'VisitSitePresDepotremblai': visite['VisitSitePresDepotremblai'],
           'VisitSite_Btn_presence_sources_cours_eau_cavite': (visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
-          'VisitSiteEnqHabitant': visite['VisitSiteEnqHabitant'],
+          'VisitSiteEngHabitant': visite['VisitSiteEngHabitant'],
           'VisitSite_Btn_presence_talwegs': (visite['VisitSite_Btn_presence_talwegs'] == 'Oui' || visite['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_talwegs'] == 'Non' || visite['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
           'visitesitePresDepotremblai': visite['visitesitePresDepotremblai'],
           'VisitSite_Btn_terrain_inondable': (visite['VisitSite_Btn_terrain_inondable'] == 'Oui' || visite['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_inondable'] == 'Non' || visite['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
@@ -364,6 +368,36 @@ class VisitePreliminaireDatabase {
     );
 
     return affaires.map((json) => Affaire.fromJson(json)).toList();
+  }
+
+  Future<List<Visite>> getInvalidVisitesWhereMatricule(matricule) async {
+    final db = await instance.database;
+    final visites = await db.query(
+        'visites',
+        where: 'matricule = ? AND ValidCRVPIng = 0',
+        whereArgs: [ matricule ]
+    );
+
+    return visites.map((json) => Visite.fromJson(json)).toList();
+  }
+
+  Future<List<Visite>> getAffairesSitesFromVisitesWhereMatricule(matricule) async {
+    final db = await instance.database;
+    final visites = await db.query(
+      'visites',
+      where: 'matricule = ? AND ValidCRVPIng = 1',
+      whereArgs: [ matricule ]
+    );
+
+    return visites.map((json) => Visite.fromJson(json)).toList();
+  }
+
+  getVisitesWhereAffairesSites(args) async {
+    late String whereArgs = args.map((e) => '"'+(e['Code_Affaire'].toString() + e['Code_site']).toString()+'"').toList().join(',');
+    final db = await instance.database;
+    final visites = await db.rawQuery('SELECT * FROM visites WHERE Code_Affaire || Code_site IN (${whereArgs})');
+
+    return visites;
   }
 
   Future<List<Site>> getAffairesFromSites() async {

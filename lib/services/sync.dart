@@ -7,6 +7,7 @@ import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
 import 'package:mgtrisque_visitepreliminaire/models/site.dart';
 import 'package:mgtrisque_visitepreliminaire/models/sync_history.dart';
 import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
+import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
 import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
 
 class Sync extends ChangeNotifier {
@@ -16,10 +17,24 @@ class Sync extends ChangeNotifier {
   late List _syncHistory = [];
   late List _syncedAffaires = [];
   late List _syncedSites = [];
+  late bool _syncing = false;
+  late bool _canSync = true;
 
   get syncHistory => _syncHistory;
   set setHistory(value){
     _syncHistory = value;
+    notifyListeners();
+  }
+
+  get syncing => _syncing;
+  setSyncing(value){
+    _syncing = value;
+    notifyListeners();
+  }
+
+  get canSync => _canSync;
+  setCanSync(value){
+    _canSync = value;
     notifyListeners();
   }
 
@@ -43,7 +58,7 @@ class Sync extends ChangeNotifier {
     late String syncedData = '';
     syncedData = await syncAffaires(token, syncedData, matricule!);
     syncedData = await syncSites(token, syncedData);
-    syncedData = await syncVisites(token, syncedData);
+    syncedData = await syncVisites(token, syncedData, matricule);
     if(syncedData != '') {
       if(syncedData[syncedData.length-1] != '}')
         syncedData += '}';
@@ -134,9 +149,59 @@ class Sync extends ChangeNotifier {
   }
 
   // todo: syncVisites
-  syncVisites(token, syncedData) async {
+  syncVisites(token, syncedData, matricule) async {
+    late List ids = [];
+    late List<Visite> _ids = [];
+    _ids = (await VisitePreliminaireDatabase.instance.getAffairesSitesFromVisitesWhereMatricule(matricule)).cast<Visite>();
+    ids = _ids.map((e) => {
+      'Code_Affaire': e.Code_Affaire.toString(),
+      'Code_site': e.Code_site.toString(),
+    }).toList();
+    
+    Dio.Response response = await dio()
+        .post(
+        '/visite-preleminaire/visites-to-be-synced',
+        data: {
+          'ids': ids,
+        },
+        options: Dio.Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Charset': 'utf-8'
+          },
+        )
+    );
+    final visites = await VisitePreliminaireDatabase.instance.getVisitesWhereAffairesSites(response.data);
+    if(visites.length > 0) {
+      Dio.Response responseVisites = await dio()
+          .post(
+          '/visite-preleminaire/sync-visites',
+          data: {
+            'data': visites,
+          },
+          options: Dio.Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+              'Charset': 'utf-8'
+            },
+          )
+      );
+      if(syncedData == '')
+        syncedData += '{"Visites": [${visites.map((e) => '"'+e['Code_Affaire'].toString()+'/'+e['Code_site'].toString()+'"').toList().join(",")}]';
+      else
+        syncedData += ', "Visites": [${visites.map((e) => '"'+e['Code_Affaire'].toString()+'/'+e['Code_site'].toString()+'"').toList().join(",")}]';
+      print('SyncedData ${syncedData}');
+    }
 
     return syncedData;
+  }
+
+  getInvalidVisites(matricule) async {
+    late List<Visite> ids = [];
+    ids = (await VisitePreliminaireDatabase.instance.getInvalidVisitesWhereMatricule(matricule)).cast<Visite>();
+    return ids.map((e) => e.Code_Affaire.toString()+'/'+e.Code_site.toString()).toList();
   }
 
   bool isJSON(str) {
