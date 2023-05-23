@@ -5,6 +5,7 @@ class Visite {
   final String Code_Affaire;
   final String Code_site;
   final String matricule;
+  final String siteImage;
   final String VisitSiteDate;
   final String VisitSite_Btn_terrain_accessible;
   final String VisitSiteterrain_accessible;
@@ -51,6 +52,7 @@ class Visite {
     required this.Code_Affaire,
     required this.Code_site,
     required this.matricule,
+    required this.siteImage,
     required this.VisitSiteDate,
     required this.VisitSite_Btn_terrain_accessible,
     required this.VisitSiteterrain_accessible,
@@ -98,6 +100,7 @@ class Visite {
       Code_Affaire: json['Code_Affaire'].toString(),
       Code_site: json['Code_site'].toString(),
       matricule: json['matricule'].toString(),
+      siteImage: json['siteImage'].toString(),
       VisitSiteDate: json['VisitSiteDate'].toString(),
       VisitSite_Btn_terrain_accessible: (json['VisitSite_Btn_terrain_accessible'] == 'Oui' || json['VisitSite_Btn_terrain_accessible'] == '1') ? '1' : ((json['VisitSite_Btn_terrain_accessible'] == 'Non' || json['VisitSite_Btn_terrain_accessible'] == '0') ? '0' : ''),
       VisitSiteterrain_accessible: json['VisitSiteterrain_accessible'].toString(),
@@ -141,6 +144,7 @@ class Visite {
         'Code_Affaire': model.Code_Affaire,
         'Code_site': model.Code_site,
         'matricule': model.matricule,
+        'siteImage': model.siteImage,
         'VisitSiteDate': model.VisitSiteDate,
         'VisitSite_Btn_terrain_accessible': (model.VisitSite_Btn_terrain_accessible == 'Oui' || model.VisitSite_Btn_terrain_accessible == '1') ? '1' : ((model.VisitSite_Btn_terrain_accessible == 'Non' || model.VisitSite_Btn_terrain_accessible == '0') ? '0' : ''),
         'VisitSiteterrain_accessible': model.VisitSiteterrain_accessible,

@@ -192,7 +192,6 @@ class Sync extends ChangeNotifier {
         syncedData += '{"Visites": [${visites.map((e) => '"'+e['Code_Affaire'].toString()+'/'+e['Code_site'].toString()+'"').toList().join(",")}]';
       else
         syncedData += ', "Visites": [${visites.map((e) => '"'+e['Code_Affaire'].toString()+'/'+e['Code_site'].toString()+'"').toList().join(",")}]';
-      print('SyncedData ${syncedData}');
     }
 
     return syncedData;

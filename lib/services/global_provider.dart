@@ -1,10 +1,12 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
 import 'package:mgtrisque_visitepreliminaire/models/third_person.dart';
 import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
+import 'package:path_provider/path_provider.dart';
 
 class GlobalProvider extends ChangeNotifier {
   late String _screenTitle = 'Affaires';
@@ -17,6 +19,7 @@ class GlobalProvider extends ChangeNotifier {
   late int _stepIndex = 0;
   DateTime _selectedDate = DateTime.now();
   var _siteImage = null;
+  var _capturedImage;
   late List<String> _thirdPerson = [
     'Maitre d\'ouvrage',
     'maitre d\'oeuvre',
@@ -157,6 +160,12 @@ class GlobalProvider extends ChangeNotifier {
   get siteImage => _siteImage;
   set setSiteImage(value) {
     _siteImage = value;
+    notifyListeners();
+  }
+
+  get capturedImage => _capturedImage;
+  set setCapturedImage(value) {
+    _capturedImage = value;
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -486,7 +495,7 @@ class GlobalProvider extends ChangeNotifier {
     // Editables
     _selectedDate = visite.VisitSiteDate != 'null' ? DateTime.parse(visite.VisitSiteDate) : DateTime.now();
     // todo: later
-    _siteImage = null;
+    _siteImage = (visite.siteImage != '' || visite.siteImage != null) ? visite.siteImage : null;
     _terrainAccessibleController.text = visite.VisitSite_Btn_terrain_accessible == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_accessible == '0' ? 'Non' : '');
     _terrainAccessibleInputController.text = visite.VisitSiteterrain_accessible == 'null' ? '' : visite.VisitSiteterrain_accessible;
     _terrainClotureController.text = visite.VisitSite_Btn_terrain_cloture == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_cloture == '0' ? 'Non' : '');
@@ -532,11 +541,23 @@ class GlobalProvider extends ChangeNotifier {
   void submitForm() async {
     final storage = new FlutterSecureStorage();
     String? matricule = await storage.read(key: 'matricule');
+
+    late String? siteImagePath = null, path;
+    final File image;
+    if(_capturedImage != null){
+      final File imageFile = File(_capturedImage.path);
+      Directory appDir = await getApplicationDocumentsDirectory();
+      path = appDir.path;
+      siteImagePath = path + '/' + _selectedAffaire + '_' + _selectedSite + '_' + 'image' + p.extension(imageFile.path);
+      image = await imageFile.copy(siteImagePath);
+    }
+
     var visitesData = [
       new Visite(
           Code_Affaire: _selectedAffaire,
           Code_site: _selectedSite,
           matricule: matricule!,
+          siteImage: (siteImagePath != null) ? siteImagePath : '',
           VisitSiteDate: _dateVisite.toString(),
           VisitSite_Btn_terrain_accessible: _terrainAccessibleController.text,
           VisitSiteterrain_accessible: _terrainAccessibleInputController.text,

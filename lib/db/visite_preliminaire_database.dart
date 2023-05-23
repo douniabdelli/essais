@@ -65,6 +65,7 @@ class VisitePreliminaireDatabase {
         Code_Affaire TEXT,
         Code_site TEXT,
         matricule TEXT,
+        siteImage TEXT,
         VisitSiteDate TEXT,
         VisitSite_Btn_terrain_accessible TEXT,
         VisitSiteterrain_accessible TEXT,
@@ -185,8 +186,8 @@ class VisitePreliminaireDatabase {
   Future<void> createVisites(List<dynamic> visites) async {
     String visiteQuery = '''
       INSERT INTO visites
-      (Code_Affaire, Code_site, matricule, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEngHabitant, VisitSite_Btn_presence_talwegs,  VisitSitePresDepotremblai, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (Code_Affaire, Code_site, matricule, siteImage, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEngHabitant, VisitSite_Btn_presence_talwegs,  VisitSitePresDepotremblai, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''';
     final storage = new FlutterSecureStorage();
     String? matricule = await storage.read(key: 'matricule');
@@ -199,6 +200,7 @@ class VisitePreliminaireDatabase {
             item['Code_Affaire'],
             item['Code_site'],
             matricule,
+            item['siteImage'],
             item['VisitSiteDate'],
             (item['VisitSite_Btn_terrain_accessible'] == 'Oui' || item['VisitSite_Btn_terrain_accessible'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_accessible'] == 'Non' || item['VisitSite_Btn_terrain_accessible'] == '0') ? '0' : ''),
             item['VisitSiteterrain_accessible'],
@@ -315,6 +317,7 @@ class VisitePreliminaireDatabase {
           'ValidCRVPIng': (visite['ValidCRVPIng'] == 'Oui' || visite['ValidCRVPIng'] == '1') ? '1' : ((visite['ValidCRVPIng'] == 'Non' || visite['ValidCRVPIng'] == '0') ? '0' : ''),
           'Code_Affaire': visite['Code_Affaire'],
           'Code_site': visite['Code_site'],
+          'siteImage': visite['siteImage'].toString(),
         },
         where: 'Code_Affaire = ? AND Code_site = ?',
         whereArgs: [ visite['Code_Affaire'], visite['Code_site'] ],
@@ -412,7 +415,6 @@ class VisitePreliminaireDatabase {
   Future<List<Affaire>> getAffaires() async {
     final storage = new FlutterSecureStorage();
     String? matricule = await storage.read(key: 'matricule');
-    print('matricule : ${matricule}');
     final db = await instance.database;
     final affaires = await db.query(
       'affaires',

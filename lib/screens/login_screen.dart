@@ -303,7 +303,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     String? token = await storage.read(key: 'token');
                                     // todo: login result
                                     if(result == 200){
-                                      print('/////////////// ${token}');
                                       await Provider.of<Affaires>(context, listen: false).getData(token: token!);
                                       Navigator.pop(context);
                                       Navigator.of(context).push(MaterialPageRoute(

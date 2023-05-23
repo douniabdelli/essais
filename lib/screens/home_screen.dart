@@ -24,7 +24,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _advancedDrawerController = AdvancedDrawerController();
-  int _currentIndex = 1;
   final List<Widget> bottomBarWidgets = [
     SyncScreen(),
     AffairesScreen(),
@@ -100,12 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       border: InputBorder.none,
                     ),
                     onChanged: (value) {
-                      print("value on Change");
                       Provider.of<Affaires>(context, listen: false)
                           .setfoundAffaires = value;
                     },
                     onFieldSubmitted: (value) {
-                      print("value on Field Submitted");
                       Provider.of<Affaires>(context, listen: false)
                           .setfoundAffaires = value;
                     }),
@@ -133,9 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
           currentIndex:
               Provider.of<GlobalProvider>(context, listen: true).currentIndex,
           onTap: (i) {
-            setState(
-              () => _currentIndex = i,
-            );
             Provider.of<GlobalProvider>(context, listen: false)
                 .setCurrentIndex = i;
             Provider.of<GlobalProvider>(context, listen: false).setScreenTitle =

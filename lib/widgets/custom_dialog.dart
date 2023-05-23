@@ -141,6 +141,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> with SingleTickerProv
                     alignment: Alignment.bottomRight,
                     child: TextButton(
                       onPressed: () async {
+                        await Provider.of<Sync>(context, listen: false).setSyncing(false);
                         await Provider.of<Sync>(context, listen: false).setCanSync(true);
                         Navigator.of(context).pop();
                       },

@@ -2,9 +2,9 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
+import 'dart:io';
 import 'package:provider/provider.dart';
 
 class VisiteScreen extends StatefulWidget {
@@ -22,14 +22,15 @@ class _VisiteScreenState extends State<VisiteScreen> {
   _imageFromCamera() async {
     try {
       PickedFile? capturedImage = await imagePicker.getImage(source: ImageSource.camera);
-      final File imagePath = File(capturedImage!.path);
+      Provider.of<GlobalProvider>(context, listen: false).setCapturedImage = capturedImage;
+
       if (capturedImage == null)
         showAlert(
             bContext: context,
             title: "Error choosing file",
             content: "No file was selected");
       else
-          Provider.of<GlobalProvider>(context, listen: false).setSiteImage = imagePath;
+        Provider.of<GlobalProvider>(context, listen: false).setSiteImage = capturedImage.path;
     } catch (e) {
       showAlert(
           bContext: context, title: "Error capturing image file", content: e.toString());
@@ -38,7 +39,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
 
   _imageFromGallery() async {
     PickedFile? uploadedImage = await imagePicker.getImage(source: ImageSource.gallery);
-    final File imagePath = File(uploadedImage!.path);
+    Provider.of<GlobalProvider>(context, listen: false).setCapturedImage = uploadedImage;
 
     if (uploadedImage == null)
       showAlert(
@@ -46,7 +47,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
           title: "Error choosing file",
           content: "No file was selected");
     else
-      Provider.of<GlobalProvider>(context, listen: false).setSiteImage = imagePath;
+      Provider.of<GlobalProvider>(context, listen: false).setSiteImage = uploadedImage.path;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -1719,7 +1720,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ]
                               ),
-                              if(Provider.of<GlobalProvider>(context, listen: false).siteImage != null)
+                              if(Provider.of<GlobalProvider>(context, listen: false).siteImage != null && Provider.of<GlobalProvider>(context, listen: false).siteImage != '')
                                 Container(
                                   width: MediaQuery.of(context).size.width * 2 / 3,
                                   height: MediaQuery.of(context).size.width * 2 / 3,
@@ -1730,7 +1731,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         child: Container(
                                           decoration: BoxDecoration(
                                             image: DecorationImage(
-                                              image: FileImage(Provider.of<GlobalProvider>(context, listen: false).siteImage),
+                                              image: FileImage(File(Provider.of<GlobalProvider>(context, listen: false).siteImage)),
                                               fit: BoxFit.fitWidth,
                                             ),
                                           ),
@@ -2135,14 +2136,13 @@ class _VisiteScreenState extends State<VisiteScreen> {
                   ),
                 ),
               ),
-              if(Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6)
+              if((Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6) && (Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1'))
                 Container(
                   margin: EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if(Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
-                        Material(
+                      Material(
                         type: MaterialType.transparency,
                         child: Ink(
                           decoration: BoxDecoration(
@@ -2154,8 +2154,6 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(10.0),
                             onTap: () {
-                              // todo: save form if visite hasn't been validated
-                              print('+-------------- Save Button ---------------+');
                               Provider.of<GlobalProvider>(context, listen: false).submitForm();
                               _showSnackBar(context, 'Enregistrement', 'Le formulaire à été enregistré !');
                             },
@@ -2180,8 +2178,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           ),
                         ),
                       ),
-                      if(Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
-                        Material(
+                      Material(
                         type: MaterialType.transparency,
                         child: Ink(
                           decoration: BoxDecoration(
@@ -2193,8 +2190,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(10.0),
                             onTap: () {
-                              print('+-------------- Validate Button ---------------+');
                               Provider.of<GlobalProvider>(context, listen: false).validateForm();
+                              Provider.of<GlobalProvider>(context, listen: false).setValidCRVPIng = '1';
                               _showSnackBar(context, 'Validation', 'Le formulaire à été validé !');
                             },
                             child: Padding(
@@ -2260,12 +2257,12 @@ class _VisiteScreenState extends State<VisiteScreen> {
       elevation: 10000,
       backgroundColor: Colors.transparent,
       forceActionsBelow: true,
-
       content: AwesomeSnackbarContent(
         title: title,
         message: msg,
         contentType: ContentType.success,
         inMaterialBanner: true,
+        color: Colors.green,
       ),
       actions: const [SizedBox.shrink()],
     );

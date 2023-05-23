@@ -171,7 +171,7 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                           child: Container(
                             width: size.width * 2/3,
                             child: Timeline(
-                              children: sync.getSyncHistoryData().map<Widget>(
+                              children: sync.getSyncHistoryData().toList().reversed.toList().map<Widget>(
                                     (e) => Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
