@@ -51,7 +51,7 @@ class Sync extends ChangeNotifier {
     return _syncHistory.map((e) => jsonDecode(e.syncedData));
   }
 
-  // todo: Sync
+  // Sync
   syncData() async {
     String? token = await storage.read(key: 'token');
     String? matricule = await storage.read(key: 'matricule');
@@ -72,7 +72,7 @@ class Sync extends ChangeNotifier {
     _syncHistory = await VisitePreliminaireDatabase.instance.getSyncHistory();
   }
 
-  // todo: syncAffaires
+  // syncAffaires
   syncAffaires(token, syncedData, matricule) async {
     late List ids = [];
     late List<Affaire> _ids = [];
@@ -112,7 +112,7 @@ class Sync extends ChangeNotifier {
     return syncedData;
   }
 
-  // todo: syncSites
+  // syncSites
   syncSites(token, syncedData) async {
     late List ids = [];
     late List notInIds = [];
@@ -148,7 +148,7 @@ class Sync extends ChangeNotifier {
     return syncedData;
   }
 
-  // todo: syncVisites
+  // syncVisites
   syncVisites(token, syncedData, matricule) async {
     late List ids = [];
     late List<Visite> _ids = [];

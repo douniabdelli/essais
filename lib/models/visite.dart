@@ -43,8 +43,6 @@ class Visite {
   final String VisitSite_Btn_Presence_risque_instab_terasmt;
   final String VisitSite_Btn_necessite_courrier_MO_risque_encouru;
   final String VisitSite_Btn_doc_annexe;
-  // todo: photo
-  // final String ;
   final String VisitSite_liste_present;
   final String ValidCRVPIng;
 
@@ -90,7 +88,6 @@ class Visite {
     required this.VisitSite_Btn_Presence_risque_instab_terasmt,
     required this.VisitSite_Btn_necessite_courrier_MO_risque_encouru,
     required this.VisitSite_Btn_doc_annexe,
-    // todo: photo
     required this.VisitSite_liste_present,
     required this.ValidCRVPIng,
   });

@@ -494,7 +494,6 @@ class GlobalProvider extends ChangeNotifier {
     _present_person_controller.clear();
     // Editables
     _selectedDate = visite.VisitSiteDate != 'null' ? DateTime.parse(visite.VisitSiteDate) : DateTime.now();
-    // todo: later
     _siteImage = (visite.siteImage != '' || visite.siteImage != null) ? visite.siteImage : null;
     _terrainAccessibleController.text = visite.VisitSite_Btn_terrain_accessible == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_accessible == '0' ? 'Non' : '');
     _terrainAccessibleInputController.text = visite.VisitSiteterrain_accessible == 'null' ? '' : visite.VisitSiteterrain_accessible;

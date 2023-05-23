@@ -301,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     late int result;
                                     result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
                                     String? token = await storage.read(key: 'token');
-                                    // todo: login result
+                                    // login result
                                     if(result == 200){
                                       await Provider.of<Affaires>(context, listen: false).getData(token: token!);
                                       Navigator.pop(context);

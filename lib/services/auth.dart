@@ -37,14 +37,14 @@ class Auth extends ChangeNotifier {
       String? isNotFirstTime = await storage.read(key: 'isNotFirstTime');
       if(isNotFirstTime != null && isNotFirstTime == 'isNotFirstTime'){
         List<User> users = (await VisitePreliminaireDatabase.instance.getUser()).cast<User>();
-        // todo: check if user exists && check verify password then store logged user
+        // check if user exists && check verify password then store logged user
         if(users.length >= 1) {
           final bool checkedPassword = BCrypt.checkpw(credentials['password'], users.first.password);
           if(checkedPassword) {
             _user = users.first;
             await storeUser(user: users.first);
             await storeToken(token: 'token');
-            // todo: ok pass
+            // ok pass
             return 200;
           }
           else
