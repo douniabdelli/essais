@@ -550,6 +550,8 @@ class GlobalProvider extends ChangeNotifier {
       siteImagePath = path + '/' + _selectedAffaire + '_' + _selectedSite + '_' + 'image' + p.extension(imageFile.path);
       image = await imageFile.copy(siteImagePath);
     }
+    else if(_capturedImage != null && (siteImage != null || siteImage != ''))
+      await File(siteImage).delete();
 
     var visitesData = [
       new Visite(
