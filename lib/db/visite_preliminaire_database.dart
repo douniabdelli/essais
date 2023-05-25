@@ -262,7 +262,6 @@ class VisitePreliminaireDatabase {
   Future<List<SyncHistory>> getSyncHistory() async {
     final storage = new FlutterSecureStorage();
     String? matricule = await storage.read(key: 'matricule');
-    print('matricule : ${matricule}');
     final db = await instance.database;
     final sync = await db.query(
       'sync',

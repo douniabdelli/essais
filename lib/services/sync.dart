@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io' as io;
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -172,14 +172,45 @@ class Sync extends ChangeNotifier {
           },
         )
     );
-    final visites = await VisitePreliminaireDatabase.instance.getVisitesWhereAffairesSites(response.data);
+
+    var visites = await VisitePreliminaireDatabase.instance.getVisitesWhereAffairesSites(response.data);
+
+    visites = visites.toList();
+    var fileName, fileNameArray, filePath;
     if(visites.length > 0) {
+      visites = visites.map((visite) {
+        filePath = visite['siteImage'];
+        fileNameArray = visite['siteImage'].split('/').toList();
+        fileName = fileNameArray[fileNameArray.length-1];
+        return {
+          ...visite,
+          'siteImage': fileName,
+          'siteImagePath': filePath
+        };
+      });
+      visites = visites.toList();
+
+      var formData = Dio.FormData();
+      formData.fields.add(
+        MapEntry('visites', jsonEncode(visites))
+      );
+
+      visites.forEach((visite) async {
+        formData.files.add(
+          MapEntry(
+            '${visite['siteImage']}',
+            await Dio.MultipartFile.fromFile(
+              visite['siteImagePath'],
+              filename: fileName,
+            ),
+          )
+        );
+      });
+
       Dio.Response responseVisites = await dio()
           .post(
           '/visite-preleminaire/sync-visites',
-          data: {
-            'data': visites,
-          },
+          data: formData,
           options: Dio.Options(
             headers: {
               'Authorization': 'Bearer $token',
@@ -188,6 +219,7 @@ class Sync extends ChangeNotifier {
             },
           )
       );
+
       if(syncedData == '')
         syncedData += '{"Visites": [${visites.map((e) => '"'+e['Code_Affaire'].toString()+'/'+e['Code_site'].toString()+'"').toList().join(",")}]';
       else
