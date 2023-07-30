@@ -50,6 +50,7 @@ class Affaires extends ChangeNotifier {
       }
       else {
         await storage.write(key: 'isNotFirstTime', value: 'isNotFirstTime');
+        await storage.write(key: 'isLocally', value: 'true');
         // get users from api
         await fetchUsers(token: token);
         // get affaires from api

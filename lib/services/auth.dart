@@ -11,12 +11,18 @@ class Auth extends ChangeNotifier {
   late bool? _isNotFirstTime = false;
   late String? _token = null;
   late User? _user = null;
+  late bool _isLocally = false;
 
   final storage = new FlutterSecureStorage();
 
   bool? get isLoggedIn => _isLoggedIn;
   bool? get isNotFirstTime => _isNotFirstTime;
   User? get user => _user;
+
+  bool get isLocally => _isLocally;
+  set setIsLocally(bool value) {
+    _isLocally = value;
+  }
 
   checkLoggedUser() async {
     try {
@@ -35,7 +41,8 @@ class Auth extends ChangeNotifier {
     try {
       await storeCredentials(credentials);
       String? isNotFirstTime = await storage.read(key: 'isNotFirstTime');
-      if(isNotFirstTime != null && isNotFirstTime == 'isNotFirstTime'){
+      String? isLocally = await storage.read(key: 'isLocally');
+      if(isNotFirstTime != null && isNotFirstTime == 'isNotFirstTime' && (isLocally == 'true')){
         List<User> users = (await VisitePreliminaireDatabase.instance.getUser()).cast<User>();
         // check if user exists && check verify password then store logged user
         if(users.length >= 1) {
@@ -48,7 +55,7 @@ class Auth extends ChangeNotifier {
             return 200;
           }
           else
-            return 500;
+            return 401;
         }
         else
           return 404;
@@ -63,6 +70,7 @@ class Auth extends ChangeNotifier {
   }
 
   getApiToken(credentials) async {
+    print('****************** ${credentials}');
     Dio.Response response = await dio()
         .post(
         '/token',

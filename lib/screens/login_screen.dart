@@ -265,6 +265,35 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ],
                                   )
                               ),
+                              Container(
+                                  margin: EdgeInsets.only(top: 10.0),
+                                  width: size.width * 3/4,
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                        value: Provider.of<Auth>(context, listen: true).isLocally,
+                                        onChanged: (value) async {
+                                          setState(
+                                            () => Provider.of<Auth>(context, listen: false).setIsLocally = value ?? false
+                                          );
+                                          await storage.write(key: 'isLocally', value: value.toString().toLowerCase());
+                                        },
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          'Se connecter locallement',
+                                          style: TextStyle(
+                                            fontFamily: 'Arial',
+                                            fontSize: 15,
+                                            color: Colors.blue,
+                                          ),
+                                          textAlign: TextAlign.start,
+                                          softWrap: false,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                              ),
                             ],
                           ),
                         ),
@@ -314,7 +343,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       setState(() => _isSigning = false);
                                       if(result == 404)
                                         setState(() => loginMatriculeError = true);
-                                      if(result == 500)
+                                      if(result == 401)
                                         setState(() => loginPasswordError = true);
                                     }
                                   }
