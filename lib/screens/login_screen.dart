@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             children: <Widget>[
                               Container(
-                                  width: size.width * 3/4,
+                                  width: size.width * 2/3,
                                   child: Column(
                                     children: [
                                       Container(
@@ -123,10 +123,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                         width: double.infinity,
                                         child: TextFormField(
                                           controller: _matriculeController,
+                                          onChanged: (String? value) {
+                                            if(loginMatriculeError) {
+                                              _formKey.currentState!.reset();
+                                              _matriculeController.clear();
+                                              setState(() => loginMatriculeError = false);
+                                            }
+                                        },
                                           validator: (String? value) {
-                                            if ((value != null && value.isEmpty) || loginMatriculeError)
-                                              return 'Entrez un matricule correct';
-                                            return null;
+                                            if ((value != null && value.isEmpty) || loginMatriculeError) {
+                                              setState(() => _isSigning = false);
+                                              setState(() => loginMatriculeError = true);
+                                              if(loginMatriculeError)
+                                                return 'Entrez un matricule correct';
+                                              else if(value != null && value.isEmpty)
+                                                return 'Le matricule ne doit pas être null';
+                                            }
+                                          return null;
                                           },
                                           decoration: InputDecoration(
                                             hintText: 'Entrez le matricule',
@@ -171,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               Container(
                                   margin: EdgeInsets.only(top: 10.0),
-                                  width: size.width * 3/4,
+                                  width: size.width * 2/3,
                                   child: Column(
                                     children: [
                                       Container(
@@ -197,10 +210,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: TextFormField(
                                           obscureText: true,
                                           controller: _passwordController,
+                                          onChanged: (String? value) {
+                                            if(loginPasswordError) {
+                                              _formKey.currentState!.reset();
+                                              _passwordController.clear();
+                                              setState(() => loginPasswordError = false);
+                                            }
+                                        },
                                           validator: (String? value) {
-                                            if((value != null && value.isEmpty) || loginPasswordError)
-                                              return 'Entrez un mot de passe correct';
-                                            return null;
+                                            if((value != null && value.isEmpty) || loginPasswordError) {
+                                              setState(() => _isSigning = false);
+                                              setState(() => loginPasswordError = true);
+                                              if(loginPasswordError)
+                                                return 'Entrez un mot de passe correct';
+                                              else if(value != null && value.isEmpty)
+                                                return 'Le mot de passe ne doit pas être null';
+                                            }
+                                          return null;
                                           },
                                           decoration: InputDecoration(
                                             hintText: 'Entrez le mot de passe',
@@ -245,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               Container(
                                   margin: EdgeInsets.only(top: 10.0),
-                                  width: size.width * 3/4,
+                                  width: size.width * 2/3,
                                   child: Row(
                                     children: [
                                       Checkbox(
@@ -287,13 +313,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: <Widget>[
                             Container(
                               width: size.width * 2/3,
-                              height: 50,
+                              height: 55,
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
                                   shape: new RoundedRectangleBorder(
                                     borderRadius: new BorderRadius.circular(17.0),
                                   ),
-                                  backgroundColor: Color(0xff3D73AA),
+                                  backgroundColor: Color(0xff3D73AA), 
                                 ),
                                 onPressed: () async {
                                   setState(() {
@@ -311,6 +337,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
                                     String? token = await storage.read(key: 'token');
                                     // login result
+                                    print('/*/*/* ${result} /*/*/*');
                                     if(result == 200){
                                       await Provider.of<Affaires>(context, listen: false).getData(token: token!);
                                       Navigator.pop(context);
@@ -319,26 +346,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                     else {
                                       setState(() => _isSigning = false);
-                                      if(result == 404)
+                                      if(result == 404){
                                         setState(() => loginMatriculeError = true);
-                                      if(result == 401)
+                                        _formKey.currentState!.validate();
+                                      }
+                                      if(result == 401) {
                                         setState(() => loginPasswordError = true);
-                                    }
+                                        _formKey.currentState!.validate();
+                                      }
+                                  }
                                   }
                                 },
-                                icon: getIsSigning
-                                    ? Container(
-                                  width: 24,
-                                  height: 24,
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: const CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3,
-                                  ),
-                                )
-                                    : const Icon(Icons.login),
+                                icon: Container(
+                                      margin: const EdgeInsets.only(right: 20.0),
+                                      height: 25.0,
+                                      width: 25.0,
+                                      child: getIsSigning
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2,
+                                          )
+                                        : const Icon(Icons.login, size: 26),
+                                      ),
                                 label: Text(
-                                  'Se connecter',
+                                  getIsSigning ? 'Connexion en cours...' : 'Se connecter',
                                   style: TextStyle(
                                     fontFamily: 'Arial',
                                     fontSize: 25,
