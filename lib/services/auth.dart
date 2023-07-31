@@ -62,6 +62,23 @@ class Auth extends ChangeNotifier {
       }
       else {
         await getApiToken(credentials);
+        String? token = await storage.read(key: 'token');
+        String? userString = await storage.read(key: 'user');
+        if(userString != null)
+          User user = User.deserialize(userString);
+        await VisitePreliminaireDatabase.instance.dropUsers(user?.structure);
+        Dio.Response responseUser = await dio()
+            .get(
+            '/visite-preleminaire/users',
+            options: Dio.Options(
+              headers: {
+                'Authorization': 'Bearer $token',
+                'Content-Type': 'application/json',
+                'Charset': 'utf-8'
+              },
+            )
+        );
+        //await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
         return 200;
       }
     } catch(e){

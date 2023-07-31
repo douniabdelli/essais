@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/get_started.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
@@ -30,6 +31,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final storage = FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAuthData();
+  }
+
+  Future<void> _initializeAuthData() async {
+    final token = await storage.read(key: 'token');
+    final auth = Provider.of<Auth>(context, listen: false);
+    String? isLocally = await storage.read(key: 'isLocally');
+    if(isLocally == 'true')
+      auth.setIsLocally = true;
+    else
+      auth.setIsLocally = false;
+  }
 
   @override
   Widget build(BuildContext context) {

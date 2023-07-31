@@ -28,10 +28,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    // _matriculeController.text = 'A0162';
-    // _passwordController.text = '123456';
-    _matriculeController.text = '';
-    _passwordController.text = '';
+    _matriculeController.text = '00871';
+    _passwordController.text = '123456';
+    //_matriculeController.text = '';
+    //_passwordController.text = '';
     _isSigning = false;
     super.initState();
   }

@@ -37,6 +37,7 @@ class VisitePreliminaireDatabase {
     String userQuery = '''
       CREATE TABLE IF NOT EXISTS users(        
         matricule TEXT PRIMARY KEY, 
+        structure TEXT,
         nom TEXT,
         prenom TEXT,
         password TEXT
@@ -49,7 +50,7 @@ class VisitePreliminaireDatabase {
         IntituleAffaire TEXT, 
         NbrSite TEXT,
         matricule TEXT,
-        PRIMARY KEY (Code_Affaire, matricule) 
+        PRIMARY KEY (Code_Affaire, matricule)
       )
     ''';
     String siteQuery = '''
@@ -120,11 +121,20 @@ class VisitePreliminaireDatabase {
     await db.execute(syncQuery);
   }
 
+  Future<Future<int>> dropUsers(String? structure) async {
+    final db = await instance.database;
+    String query = "DELETE FROM users";
+    if(structure != null)
+      query += " WHERE structure=${structure}";
+    print("++++=>> ${query}");
+    return db.rawDelete(query);
+  }
+
   Future<void> createUsers(List<dynamic> users) async {
     String userQuery = '''
       INSERT INTO users
-      (matricule, nom, prenom, password)
-      VALUES (?, ?, ?, ?)
+      (matricule, structure, nom, prenom, password)
+      VALUES (?, ?, ?, ?, ?)
     ''';
     final db = await instance.database;
     users.forEach((element) async {
@@ -133,6 +143,7 @@ class VisitePreliminaireDatabase {
           userQuery,
           [
             item['matricule'].toString(),
+            item['structure'].toString(),
             item['nom'].toString(),
             item['prenom'].toString(),
             item['password'].toString()
