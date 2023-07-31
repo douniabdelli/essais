@@ -28,10 +28,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    _matriculeController.text = '00871';
-    _passwordController.text = '123456';
-    //_matriculeController.text = '';
-    //_passwordController.text = '';
+    // _matriculeController.text = '00871';
+    // _passwordController.text = '123456';
+    _matriculeController.text = '';
+    _passwordController.text = '';
     _isSigning = false;
     super.initState();
   }
@@ -53,34 +53,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Container(
             height: size.height,
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Row(
-                  //   children: [
-                  //     Container(
-                  //       width: size.width * 1/2,
-                  //       height: 50.0,
-                  //       margin: EdgeInsets.only(
-                  //           top: 40.0,
-                  //           bottom: 10.0,
-                  //           left: 30.0,
-                  //       ),
-                  //       decoration: BoxDecoration(
-                  //         image: DecorationImage(
-                  //           image: const AssetImage('assets/images/mgt_logo.png'),
-                  //           fit: BoxFit.fill,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-
-
                   Column(
                     children: [
                       Container(
-                        width: 300.0,
-                        height: 300.0,
+                        width: size.width * 3/5,
+                        height: size.width * 3/5,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             image: const AssetImage('assets/images/login_image.jpg'),
@@ -92,28 +71,27 @@ class _LoginScreenState extends State<LoginScreen> {
                           BorderRadius.all(Radius.elliptical(9999.0, 9999.0)),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 5.0),
-                        child: Text(
-                          'Connexion',
-                          style: TextStyle(
-                            fontFamily: 'Malgun Gothic',
-                            fontSize: 40,
-                            color: const Color(0xff632f5a),
-                            fontWeight: FontWeight.w700,
-                          ),
-                          textAlign: TextAlign.center,
-                          softWrap: false,
-                        ),
-                      ),
                     ]
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 40.0),
+                    child: Text(
+                      'Connexion',
+                      style: TextStyle(
+                        fontFamily: 'Malgun Gothic',
+                        fontSize: 40,
+                        color: const Color(0xff632f5a),
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
+                      softWrap: false,
+                    ),
                   ),
                   Column(
                     children: [
                       Container(
                         margin: EdgeInsets.symmetric(
                           horizontal: 5.0,
-                          vertical: 20.0,
                         ),
                         child: Form(
                           key: _formKey,
@@ -376,7 +354,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ]
                   ),
-
                 ],
               ),
           ),

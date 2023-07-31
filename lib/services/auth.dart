@@ -78,7 +78,7 @@ class Auth extends ChangeNotifier {
               },
             )
         );
-        //await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
+        await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
         return 200;
       }
     } catch(e){
