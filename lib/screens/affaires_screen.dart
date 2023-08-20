@@ -57,7 +57,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                   vertical: 10.0
                               ),
                               child: const Text(
-                                'Aucune affaire n\a été asignée à cet utilisateur',
+                                'Aucune affaire n\'a été assignée à cet utilisateur',
                                 style: TextStyle(
                                     color: Colors.black38,
                                     fontSize: 18.0
