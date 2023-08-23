@@ -40,7 +40,12 @@ class VisitePreliminaireDatabase {
         structure TEXT,
         nom TEXT,
         prenom TEXT,
-        password TEXT
+        password TEXT,
+        role TEXT,
+        consultation TEXT,
+        insertion TEXT,
+        modification TEXT,
+        suppression TEXT
       )
     ''';
     String affaireQuery = '''
@@ -133,8 +138,8 @@ class VisitePreliminaireDatabase {
   Future<void> createUsers(List<dynamic> users) async {
     String userQuery = '''
       INSERT INTO users
-      (matricule, structure, nom, prenom, password)
-      VALUES (?, ?, ?, ?, ?)
+      (matricule, structure, nom, prenom, password, role, consultation, insertion, modification, suppression)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''';
     final db = await instance.database;
     users.forEach((element) async {
@@ -146,7 +151,12 @@ class VisitePreliminaireDatabase {
             item['structure'].toString(),
             item['nom'].toString(),
             item['prenom'].toString(),
-            item['password'].toString()
+            item['password'].toString(),
+            item['role'].toString(),
+            item['consultation'].toString(),
+            item['insertion'].toString(),
+            item['modification'].toString(),
+            item['suppression'].toString(),
           ]
       );
     });

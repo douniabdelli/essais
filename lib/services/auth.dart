@@ -64,8 +64,10 @@ class Auth extends ChangeNotifier {
         await getApiToken(credentials);
         String? token = await storage.read(key: 'token');
         String? userString = await storage.read(key: 'user');
-        if(userString != null)
+        if(userString != null) {
           User user = User.deserialize(userString);
+          _user = user;
+        }
         await VisitePreliminaireDatabase.instance.dropUsers(user?.structure);
         Dio.Response responseUser = await dio()
             .get(
@@ -134,6 +136,7 @@ class Auth extends ChangeNotifier {
 
   storeUser({required User? user}) async {
     if(user != null) {
+      _user = user;
       await storage.write(key: 'user', value: User.serialize(user));
       await storage.write(key: 'isLoggedIn', value: 'loggedIn');
     }

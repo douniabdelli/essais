@@ -2,7 +2,9 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
+import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
@@ -67,7 +69,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
       width: size.width,
       height: size.height,
       color: Colors.redAccent.withOpacity(0.1),
-      child: (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '' && Provider.of<GlobalProvider>(context, listen: true).selectedSite != '')
+      child: (
+          (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '' && Provider.of<GlobalProvider>(context, listen: true).selectedSite != '')
+              &&
+          (['Consultation', 'Rédacteur'].contains(Provider.of<Auth>(context, listen: true).user?.role))
+      )
         ? Column(
             children: [
               Row(
@@ -2220,35 +2226,82 @@ class _VisiteScreenState extends State<VisiteScreen> {
                 )
             ],
           )
-        : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 30.0,
-                vertical: 20.0,
+        : (['Consultation', 'Rédacteur'].contains(Provider.of<Auth>(context, listen: true).user?.role))
+          ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.symmetric(
+                  horizontal: 30.0,
+                  vertical: 30.0,
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 30.0,
+                  vertical: 20.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  children: [
+                    Lottie.asset(
+                      'assets/animations/opps-animation.json',
+                      width: size.width * 1/2,
+                      height: size.width * 1/2,
+                    ),
+                    SizedBox(height: 20.0),
+                    Text(
+                      "Vous devez sélectionner un(e) Affaire/Site pour continuer !",
+                        style: TextStyle(
+                            color: Color.fromRGBO(204, 25, 131, 1.0),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18.0
+                        ),
+                    ),
+                  ],
+                )
               ),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Column(
-                children: [
-                  Image.asset('assets/images/unauthorized.png', scale: 1.5,),
-                  SizedBox(height: 20.0),
-                  Text(
-                    "Vous devez sélectionner une affaire/site",
-                      style: TextStyle(
-                        color: Colors.redAccent.withOpacity(0.9),
-                        fontWeight: FontWeight.w600
-                      ),
-                  ),
-                ],
-              )
-            ),
-          ]
-        ),
+            ]
+          )
+          :  Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 30.0,
+                      vertical: 30.0,
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 30.0,
+                      vertical: 20.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Column(
+                      children: [
+                        Lottie.asset(
+                          'assets/animations/forbidden-animation.json',
+                          width: size.width * 1/2,
+                          height: size.width * 1/2,
+                        ),
+                        Text(
+                          "Vous n'avez pas assez de privilèges pour consulter cette visite !",
+                          style: TextStyle(
+                              color: Color.fromRGBO(204, 25, 131, 1.0),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18.0
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+              ]
+           )
     );
   }
 
