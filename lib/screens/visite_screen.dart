@@ -199,10 +199,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                 value: 'Oui',
                                                 groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleController.text,
-                                                onChanged: (value) {
-                                                  Provider.of<GlobalProvider>(context, listen: false).setTerrainAccessibleController = value;
-                                                },
-
+                                                onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                  ? (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setTerrainAccessibleController = value;
+                                                  }
+                                                  : null,
                                               ),
                                             ),
                                             Text('Oui'),
@@ -216,9 +217,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                 value: 'Non',
                                                 groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleController.text,
-                                                onChanged: (value) {
-                                                  Provider.of<GlobalProvider>(context, listen: false).setTerrainAccessibleController = value;
-                                                },
+                                                onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                  ? (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setTerrainAccessibleController = value;
+                                                  }
+                                                  : null,
                                               ),
                                             ),
                                             Text('Non'),
@@ -229,6 +232,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   ],
                                 ),
                                 TextFormField(
+                                  enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                   controller: Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleInputController,
                                   decoration: InputDecoration(
                                     enabledBorder: OutlineInputBorder(
@@ -254,7 +258,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   minLines: 1,
                                   maxLines: 2,
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -262,7 +266,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Terrain cloturé
                                 Column(
                                   children: [
@@ -289,9 +293,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainClotureController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainClotureController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setTerrainClotureController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -305,9 +311,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainClotureController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainClotureController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                       Provider.of<GlobalProvider>(context, listen: false).setTerrainClotureController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -318,6 +326,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).terrainClotureInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -345,7 +354,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -353,7 +362,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Terrain nu
                                 Column(
                                   children: [
@@ -380,9 +389,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainNuController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainNuController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                        ? (value) {
+                                                          Provider.of<GlobalProvider>(context, listen: false).setTerrainNuController = value;
+                                                        }
+                                                    : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -396,9 +407,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainNuController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainNuController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                        ? (value) {
+                                                          Provider.of<GlobalProvider>(context, listen: false).setTerrainNuController = value;
+                                                        }
+                                                        : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -409,6 +422,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).terrainNuInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -436,7 +450,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -444,7 +458,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Terrain nu
                                 Column(
                                   children: [
@@ -471,9 +485,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceVegetationController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceVegetationController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceVegetationController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -487,9 +503,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceVegetationController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceVegetationController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceVegetationController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -500,6 +518,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).presenceVegetationInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -575,9 +594,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presencePylonesController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresencePylonesController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresencePylonesController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -591,9 +612,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presencePylonesController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresencePylonesController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresencePylonesController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -604,6 +627,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).presencePylonesInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -631,7 +655,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -639,7 +663,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Existence de mitoyenneté (habitation)
                                 Column(
                                   children: [
@@ -666,9 +690,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setExistenceMitoyenneteHabitationController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                       ? (value) {
+                                                          Provider.of<GlobalProvider>(context, listen: false).setExistenceMitoyenneteHabitationController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -682,9 +708,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setExistenceMitoyenneteHabitationController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setExistenceMitoyenneteHabitationController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -695,6 +723,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -722,7 +751,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -730,7 +759,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Existence d'une voirie mitoyenneté
                                 Column(
                                   children: [
@@ -757,9 +786,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setExistenceVoirieMitoyenneteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setExistenceVoirieMitoyenneteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -773,9 +804,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setExistenceVoirieMitoyenneteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setExistenceVoirieMitoyenneteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -786,6 +819,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -813,7 +847,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -821,7 +855,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Présence de remblais
                                 Column(
                                   children: [
@@ -848,9 +882,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceRemblaisController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceRemblaisController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -864,9 +900,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceRemblaisController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                          ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceRemblaisController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -877,6 +915,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -904,7 +943,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -912,7 +951,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Présence de sources, cours d\'eau ou cavité (Enquête chez les habitants)
                                 Column(
                                   children: [
@@ -939,9 +978,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceSourcesEauCaviteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceSourcesEauCaviteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -955,9 +996,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceSourcesEauCaviteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceSourcesEauCaviteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -968,6 +1011,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -1022,9 +1066,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceTalwegsController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceTalwegsController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -1038,9 +1084,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setPresenceTalwegsController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setPresenceTalwegsController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -1051,6 +1099,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -1078,7 +1127,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                               ],
                             ),
                           ),
@@ -1126,9 +1175,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainInondableController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainInondableController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setTerrainInondableController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -1142,9 +1193,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainInondableController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainInondableController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setTerrainInondableController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -1155,6 +1208,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).terrainInondableInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -1182,7 +1236,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -1190,7 +1244,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Terrain en pente
                                 Column(
                                   children: [
@@ -1217,9 +1271,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainPenteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainPenteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setTerrainPenteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -1233,9 +1289,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrainPenteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrainPenteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setTerrainPenteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -1246,6 +1304,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).terrainPenteInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -1273,7 +1332,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -1281,7 +1340,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Risque d'instabilité
                                 Column(
                                   children: [
@@ -1308,9 +1367,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Oui',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setRisqueInstabiliteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setRisqueInstabiliteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -1324,9 +1385,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setRisqueInstabiliteController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setRisqueInstabiliteController = value;
+                                                      }
+                                                      : null,
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -1337,6 +1400,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -1364,7 +1428,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -1372,7 +1436,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Terrassements entamés
                                 Column(
                                   children: [
@@ -1399,9 +1463,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                       value: 'Oui',
                                                       groupValue: Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesController.text,
-                                                      onChanged: (value) {
-                                                        Provider.of<GlobalProvider>(context, listen: false).setTerrassementsEntamesController = value;
-                                                      }
+                                                      onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                        ? (value) {
+                                                          Provider.of<GlobalProvider>(context, listen: false).setTerrassementsEntamesController = value;
+                                                        }
+                                                        : null
                                                   ),
                                                 ),
                                                 Text('Oui'),
@@ -1415,9 +1481,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                     value: 'Non',
                                                     groupValue: Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesController.text,
-                                                    onChanged: (value) {
-                                                      Provider.of<GlobalProvider>(context, listen: false).setTerrassementsEntamesController = value;
-                                                    },
+                                                    onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                      ? (value) {
+                                                        Provider.of<GlobalProvider>(context, listen: false).setTerrassementsEntamesController = value;
+                                                      }
+                                                      : null
                                                   ),
                                                 ),
                                                 Text('Non'),
@@ -1428,6 +1496,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ],
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -1455,7 +1524,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                               ],
                             ),
                           ),
@@ -1491,6 +1560,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ),
                                     ),
                                     TextFormField(
+                                      enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
                                       controller: Provider.of<GlobalProvider>(context, listen: true).observationsComplementairesInputController,
                                       decoration: InputDecoration(
                                         enabledBorder: OutlineInputBorder(
@@ -1567,9 +1637,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                 value: 'Oui',
                                                 groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_1Controller.text,
-                                                onChanged: (value) {
-                                                  Provider.of<GlobalProvider>(context, listen: false).setConclusion_1Controller = value;
-                                                },
+                                                onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                  ? (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setConclusion_1Controller = value;
+                                                  }
+                                                  : null,
                                               ),
                                             ),
                                           ],
@@ -1583,9 +1655,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                 value: 'Non',
                                                 groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_1Controller.text,
-                                                onChanged: (value) {
-                                                  Provider.of<GlobalProvider>(context, listen: false).setConclusion_1Controller = value;
-                                                },
+                                                onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                  ? (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setConclusion_1Controller = value;
+                                                  }
+                                                  : null,
                                               ),
                                             ),
                                           ],
@@ -1594,7 +1668,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -1602,7 +1676,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Conclusion 2
                                 Row(
                                   children: [
@@ -1630,9 +1704,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                 value: 'Oui',
                                                 groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_2Controller.text,
-                                                onChanged: (value) {
-                                                  Provider.of<GlobalProvider>(context, listen: false).setConclusion_2Controller = value;
-                                                },
+                                                onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                  ? (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setConclusion_2Controller = value;
+                                                  }
+                                                  : null,
                                               ),
                                             ),
                                           ],
@@ -1646,9 +1722,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                                 value: 'Non',
                                                 groupValue: Provider.of<GlobalProvider>(context, listen: true).conclusion_2Controller.text,
-                                                onChanged: (value) {
-                                                  Provider.of<GlobalProvider>(context, listen: false).setConclusion_2Controller = value;
-                                                },
+                                                onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                                  ? (value) {
+                                                    Provider.of<GlobalProvider>(context, listen: false).setConclusion_2Controller = value;
+                                                  }
+                                                  : null,
                                               ),
                                             ),
                                           ],
@@ -1657,7 +1735,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                     ),
                                   ],
                                 ),
-    
+
                                 Divider(
                                   color: Colors.black26,
                                   thickness: 1.0,
@@ -1665,7 +1743,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   endIndent: 50.0,
                                   height: 20.0,
                                 ),
-    
+
                                 // Conclusion 3
                                 Row(
                                   children: [
@@ -1685,9 +1763,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       child: Checkbox(
                                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                         value: Provider.of<GlobalProvider>(context, listen: true).conclusion_3Controller,
-                                        onChanged: (bool? value) {
-                                          Provider.of<GlobalProvider>(context, listen: false).setConclusion_3Controller = value;
-                                        },
+                                        onChanged: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                          ? (bool? value) {
+                                            Provider.of<GlobalProvider>(context, listen: false).setConclusion_3Controller = value;
+                                          }
+                                          : null,
                                       ),
                                     ),
                                   ],
@@ -1775,76 +1855,77 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                 ),
                               if(Provider.of<GlobalProvider>(context, listen: false).siteImage != null)
                                 SizedBox(height: 10.0),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 2 / 3,
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        flex: 2,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Color.fromRGBO(0, 0, 0, 0.1),
-                                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20)),
-                                          ),
-                                          child: Column(children: [
-                                            Padding(
-                                              padding: EdgeInsets.all(20.0),
-                                              child: Icon(
-                                                Icons.camera_alt_outlined,
-                                                size: 30,
-                                              ),
+                              if(Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                Container(
+                                  width: MediaQuery.of(context).size.width * 2 / 3,
+                                  child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Color.fromRGBO(0, 0, 0, 0.1),
+                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20)),
                                             ),
-                                            Text(
-                                              "Prendre photo",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w300,
+                                            child: Column(children: [
+                                              Padding(
+                                                padding: EdgeInsets.all(20.0),
+                                                child: Icon(
+                                                  Icons.camera_alt_outlined,
+                                                  size: 30,
+                                                ),
                                               ),
-                                            )
-                                          ]),
-                                          onPressed: () => {
-                                            _imageFromCamera(),
-                                          },
-                                        ),
-                                      ),
-                                      SizedBox(width: 10.0,),
-                                      Expanded(
-                                        flex: 2,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Color.fromRGBO(0, 0, 0, 0.1),
-                                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20)),
+                                              Text(
+                                                "Prendre photo",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              )
+                                            ]),
+                                            onPressed: () => {
+                                              _imageFromCamera(),
+                                            },
                                           ),
-                                          child: Column(children: [
-                                            Padding(
-                                              padding: EdgeInsets.all(20),
-                                              child: Icon(
-                                                Icons.photo_library_outlined,
-                                                size: 30,
-                                              ),
-                                            ),
-                                            Text(
-                                              "Charger photo",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w300,
-                                              ),
-                                            )
-                                          ]),
-                                          onPressed: () => {
-                                            _imageFromGallery(),
-                                          },
                                         ),
-                                      ),
-                                    ]),
-                              ),
+                                        SizedBox(width: 10.0,),
+                                        Expanded(
+                                          flex: 2,
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Color.fromRGBO(0, 0, 0, 0.1),
+                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20)),
+                                            ),
+                                            child: Column(children: [
+                                              Padding(
+                                                padding: EdgeInsets.all(20),
+                                                child: Icon(
+                                                  Icons.photo_library_outlined,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                              Text(
+                                                "Charger photo",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              )
+                                            ]),
+                                            onPressed: () => {
+                                              _imageFromGallery(),
+                                            },
+                                          ),
+                                        ),
+                                      ]),
+                                ),
                             ],
                           ),
                           isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 5,
@@ -1878,173 +1959,175 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(20.0),
-                                        ),
-                                        child: IconButton(
-                                          onPressed: (){
-                                            showDialog(context: context, builder: (BuildContext context){
-                                              return AlertDialog(
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-                                                  elevation: 0.0,
-                                                  insetPadding: EdgeInsets.zero,
-                                                  titlePadding: EdgeInsets.symmetric(
-                                                      horizontal: 8.0,
-                                                      vertical: 8.0
-                                                  ),
-                                                  title: Row(
-                                                    children: [
-                                                      Expanded(child: Text('Ajouter une personne')),
-                                                      IconButton(
+                                      if(Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1')
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(20.0),
+                                          ),
+                                          child: IconButton(
+                                            onPressed: (){
+                                              showDialog(context: context, builder: (BuildContext context){
+                                                return AlertDialog(
+                                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                                    elevation: 0.0,
+                                                    insetPadding: EdgeInsets.zero,
+                                                    titlePadding: EdgeInsets.symmetric(
+                                                        horizontal: 8.0,
+                                                        vertical: 8.0
+                                                    ),
+                                                    title: Row(
+                                                      children: [
+                                                        Expanded(child: Text('Ajouter une personne')),
+                                                        IconButton(
+                                                          onPressed: (){
+                                                            Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
+                                                            Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          icon: Icon(
+                                                              Icons.close,
+                                                              color: Colors.red
+                                                          ),
+                                                          padding: EdgeInsets.zero,
+                                                          constraints: BoxConstraints(),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    content: Container(
+                                                      child: Column(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    'Personne tierce',
+                                                                    style: TextStyle(
+                                                                      fontWeight: FontWeight.w700,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            DecoratedBox(
+                                                              decoration: BoxDecoration(
+                                                                color: Colors.white,
+                                                                borderRadius: BorderRadius.circular(4.0),
+                                                                boxShadow: <BoxShadow>[
+                                                                  BoxShadow(
+                                                                    blurRadius: 1,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.symmetric(
+                                                                    horizontal: 10.0
+                                                                ),
+                                                                child: DropdownButton(
+                                                                  isExpanded: true,
+                                                                  items: Provider.of<GlobalProvider>(context, listen: false).thirdPerson
+                                                                      .map<DropdownMenuItem<String>>((String value) {
+                                                                    return DropdownMenuItem<String>(
+                                                                      value: value,
+                                                                      child: Text(value,),
+                                                                    );
+                                                                  }).toList(),
+                                                                  value: Provider.of<GlobalProvider>(context, listen: true).presentPersonFullName,
+                                                                  onChanged: (String? newValue){
+                                                                    Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = newValue!;
+                                                                  },
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            SizedBox(height: 30.0),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    'Nom complet',
+                                                                    style: TextStyle(
+                                                                      fontWeight: FontWeight.w700,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            TextFormField(
+                                                              enabled: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
+                                                              controller: Provider.of<GlobalProvider>(context, listen: true).presentPersonController,
+                                                              decoration: InputDecoration(
+                                                                enabledBorder: OutlineInputBorder(
+                                                                  borderRadius: BorderRadius.circular(7.0),
+                                                                  borderSide: BorderSide(
+                                                                    color: Color(0xff707070),
+                                                                  ),
+                                                                ),
+                                                                focusedBorder: OutlineInputBorder(
+                                                                  borderRadius: BorderRadius.circular(7.0),
+                                                                  borderSide: BorderSide(
+                                                                      color: Color(0xff707070),
+                                                                      width: 1.0
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              style: TextStyle(
+                                                                fontFamily: 'Arial',
+                                                                fontSize: 15,
+                                                                color: const Color(0xff707070),
+                                                              ),
+                                                              textAlign: TextAlign.start,
+                                                              maxLines: 1,
+                                                            ),
+                                                          ]
+                                                      ),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: const Text('Annuler'),
                                                         onPressed: (){
                                                           Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
                                                           Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
                                                           Navigator.of(context).pop();
                                                         },
-                                                        icon: Icon(
-                                                            Icons.close,
-                                                            color: Colors.red
-                                                        ),
-                                                        padding: EdgeInsets.zero,
-                                                        constraints: BoxConstraints(),
                                                       ),
-                                                    ],
-                                                  ),
-                                                  content: Container(
-                                                    child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        mainAxisSize: MainAxisSize.min,
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Text(
-                                                                  'Personne tierce',
-                                                                  style: TextStyle(
-                                                                    fontWeight: FontWeight.w700,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
+                                                      TextButton(
+                                                        child: const Text(
+                                                          'Ajouter',
+                                                          style: TextStyle(
+                                                              color: Colors.white
                                                           ),
-                                                          DecoratedBox(
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.white,
-                                                              borderRadius: BorderRadius.circular(4.0),
-                                                              boxShadow: <BoxShadow>[
-                                                                BoxShadow(
-                                                                  blurRadius: 1,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.symmetric(
-                                                                  horizontal: 10.0
-                                                              ),
-                                                              child: DropdownButton(
-                                                                isExpanded: true,
-                                                                items: Provider.of<GlobalProvider>(context, listen: false).thirdPerson
-                                                                    .map<DropdownMenuItem<String>>((String value) {
-                                                                  return DropdownMenuItem<String>(
-                                                                    value: value,
-                                                                    child: Text(value,),
-                                                                  );
-                                                                }).toList(),
-                                                                value: Provider.of<GlobalProvider>(context, listen: true).presentPersonFullName,
-                                                                onChanged: (String? newValue){
-                                                                  Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = newValue!;
-                                                                },
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          SizedBox(height: 30.0),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Text(
-                                                                  'Nom complet',
-                                                                  style: TextStyle(
-                                                                    fontWeight: FontWeight.w700,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          TextFormField(
-                                                            controller: Provider.of<GlobalProvider>(context, listen: true).presentPersonController,
-                                                            decoration: InputDecoration(
-                                                              enabledBorder: OutlineInputBorder(
-                                                                borderRadius: BorderRadius.circular(7.0),
-                                                                borderSide: BorderSide(
-                                                                  color: Color(0xff707070),
-                                                                ),
-                                                              ),
-                                                              focusedBorder: OutlineInputBorder(
-                                                                borderRadius: BorderRadius.circular(7.0),
-                                                                borderSide: BorderSide(
-                                                                    color: Color(0xff707070),
-                                                                    width: 1.0
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            style: TextStyle(
-                                                              fontFamily: 'Arial',
-                                                              fontSize: 15,
-                                                              color: const Color(0xff707070),
-                                                            ),
-                                                            textAlign: TextAlign.start,
-                                                            maxLines: 1,
-                                                          ),
-                                                        ]
-                                                    ),
-                                                  ),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      child: const Text('Annuler'),
-                                                      onPressed: (){
-                                                        Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
-                                                        Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
-                                                        Navigator.of(context).pop();
-                                                      },
-                                                    ),
-                                                    TextButton(
-                                                      child: const Text(
-                                                        'Ajouter',
-                                                        style: TextStyle(
-                                                            color: Colors.white
+                                                        ),
+                                                        onPressed: (){
+                                                          Provider.of<GlobalProvider>(context, listen: false).addPersonnesTierces(
+                                                            Provider.of<GlobalProvider>(context, listen: false).presentPersonController.text,
+                                                            Provider.of<GlobalProvider>(context, listen: false).presentPersonFullName,
+                                                          );
+                                                          Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
+                                                          Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
+                                                          Navigator.of(context).pop();
+                                                        },
+                                                        style: TextButton.styleFrom(
+                                                          backgroundColor: Colors.blue,
                                                         ),
                                                       ),
-                                                      onPressed: (){
-                                                        Provider.of<GlobalProvider>(context, listen: false).addPersonnesTierces(
-                                                          Provider.of<GlobalProvider>(context, listen: false).presentPersonController.text,
-                                                          Provider.of<GlobalProvider>(context, listen: false).presentPersonFullName,
-                                                        );
-                                                        Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
-                                                        Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
-                                                        Navigator.of(context).pop();
-                                                      },
-                                                      style: TextButton.styleFrom(
-                                                        backgroundColor: Colors.blue,
-                                                      ),
-                                                    ),
-                                                  ]
-                                              );
-                                            });
-                                          },
-                                          icon: Icon(
-                                            Icons.add,
-                                            size: 23.0,
+                                                    ]
+                                                );
+                                              });
+                                            },
+                                            icon: Icon(
+                                              Icons.add,
+                                              size: 23.0,
+                                            ),
+                                            visualDensity: VisualDensity.compact,
+                                            color: Colors.black,
+                                            highlightColor: Colors.white,
+                                            padding: EdgeInsets.zero,
+                                            constraints: BoxConstraints(),
                                           ),
-                                          visualDensity: VisualDensity.compact,
-                                          color: Colors.black,
-                                          highlightColor: Colors.white,
-                                          padding: EdgeInsets.zero,
-                                          constraints: BoxConstraints(),
                                         ),
-                                      ),
                                     ]
                                 ),
                               ),
@@ -2142,7 +2225,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                   ),
                 ),
               ),
-              if((Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6) && (Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1'))
+              if(
+                (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6) && (Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
+                  &&
+                (Provider.of<Auth>(context, listen: true).user?.modification == '1' && Provider.of<Auth>(context, listen: true).user?.insertion == '1')
+              )
                 Container(
                   margin: EdgeInsets.all(8.0),
                   child: Row(
