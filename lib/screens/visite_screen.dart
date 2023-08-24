@@ -8,6 +8,7 @@ import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class VisiteScreen extends StatefulWidget {
   const VisiteScreen({Key? key}) : super(key: key);
@@ -54,12 +55,13 @@ class _VisiteScreenState extends State<VisiteScreen> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: Provider.of<GlobalProvider>(context, listen: false).selectedDate,
-        firstDate: DateTime(1971),
-        lastDate: DateTime(DateTime.now().year + 1));
+      context: context,
+      initialDate: Provider.of<GlobalProvider>(context, listen: false).selectedDate,
+      firstDate: DateTime(1971),
+      lastDate: DateTime(DateTime.now().year + 1),
+    );
     if (picked != null && picked != Provider.of<GlobalProvider>(context, listen: false).selectedDate)
-        Provider.of<GlobalProvider>(context, listen: false).setSelectedDate = picked;
+      Provider.of<GlobalProvider>(context, listen: false).setSelectedDate = picked;
   }
 
   @override
@@ -87,7 +89,9 @@ class _VisiteScreenState extends State<VisiteScreen> {
                     width: 20.0,
                   ),
                   ElevatedButton(
-                    onPressed: () => _selectDate(context),
+                    onPressed: (Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1') 
+                      ? () => _selectDate(context)
+                        : null,
                     style: ElevatedButton.styleFrom(
                       primary: Colors.blue,
                     ),
@@ -95,7 +99,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                       children: [
                         Text(
                             '${Provider.of<GlobalProvider>(context, listen: true).selectedDate.day} / '
-                                '${Provider.of<GlobalProvider>(context, listen: true).selectedDate.month} / '
+                                '${Provider.of<GlobalProvider>(context, listen: true).selectedDate.month.toString().padLeft(2, '0')} / '
                                 '${Provider.of<GlobalProvider>(context, listen: true).selectedDate.year}'
                         ),
                         SizedBox(
