@@ -8,7 +8,6 @@ import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 class VisiteScreen extends StatefulWidget {
   const VisiteScreen({Key? key}) : super(key: key);
