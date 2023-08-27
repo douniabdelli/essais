@@ -233,6 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ListTile(
                   onTap: () async {
                     await Provider.of<Auth>(context, listen: false).logout();
+                    Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = null;
+                    await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite(null);
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => LoginScreen(isNotFirstTime: widget.isNotFirstTime)));
                   },
