@@ -201,7 +201,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                                     borderRadius: BorderRadius.circular(8.0),
                                                   ),
                                                   child: InkWell(
-                                                    onTap: () {
+                                                    onTap: () async {
                                                       print('XXXXXXXXXXXXXX ${Provider.of<GlobalProvider>(context, listen: false).selectedAffaire} * ${Provider.of<Affaires>(context, listen: false).foundAffaires[index].Code_Affaire} XXXXXXXXXXXXXXX');
                                                       print('YYYYYYYYYYYYYY ${Provider.of<GlobalProvider>(context, listen: false).selectedSite} * ${Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site} YYYYYYYYYYYYYY');
                                                       print('YYYYYYYYYYYYYY ${Provider.of<Affaires>(context, listen: false).selectedAffaireIndex(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire)} YYYYYYYYYYYYYY');
@@ -212,6 +212,8 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                                       )
                                                           ? Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('')
                                                           : Provider.of<GlobalProvider>(context, listen: false).setSelectedSite(Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site);
+
+                                                      await Provider.of<GlobalProvider>(context, listen: false).setVisiteExistes();
                                                     },
                                                     child: Padding(
                                                       padding: EdgeInsets.all(2.0),

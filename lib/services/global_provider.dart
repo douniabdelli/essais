@@ -29,6 +29,13 @@ class GlobalProvider extends ChangeNotifier {
     'Entreprise de réalisation'
   ];
 
+  bool _visiteExistes = false;
+  bool get visiteExistes => _visiteExistes;
+  setVisiteExistes() async {
+    _visiteExistes = await VisitePreliminaireDatabase.instance.checkExistanceVisite(_selectedAffaire, _selectedSite);
+    notifyListeners();
+  }
+
   final _terrainAccessibleController = TextEditingController();
   final _terrainAccessibleInputController = TextEditingController();
 
