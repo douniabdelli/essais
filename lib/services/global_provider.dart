@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 class GlobalProvider extends ChangeNotifier {
   late String _screenTitle = 'Affaires';
   late String _selectedAffaire = '';
+  late int? _selectedAffaireIndex = null;
   late String _selectedSite = '';
   late int _currentIndex = 1;
   late DateTime _dateVisite = DateTime.now();
@@ -121,6 +122,12 @@ class GlobalProvider extends ChangeNotifier {
   int get currentIndex => _currentIndex;
   set setCurrentIndex(value) {
     _currentIndex = value;
+    notifyListeners();
+  }
+////////////////////////////////////////////////////////////////////////////////////////////
+  int get selectedAffaireIndex => _selectedAffaireIndex!;
+  set setSelectedAffaireIndex(value) {
+    _selectedAffaireIndex = value;
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////

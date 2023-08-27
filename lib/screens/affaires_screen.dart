@@ -196,7 +196,13 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                                   decoration: BoxDecoration(
                                                     border: Border.all(
                                                       width: 1.5,
-                                                      color: Colors.black.withOpacity(0.6),
+                                                      color: (
+                                                          Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                              &&
+                                                              Provider.of<GlobalProvider>(context, listen: false).selectedAffaireIndex == index
+                                                      )
+                                                          ? Colors.black.withOpacity(0.6)
+                                                          : Colors.purple.withOpacity(0.6),
                                                     ),
                                                     borderRadius: BorderRadius.circular(8.0),
                                                   ),
@@ -210,6 +216,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                                           ? Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('')
                                                           : Provider.of<GlobalProvider>(context, listen: false).setSelectedSite(Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site);
 
+                                                      Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaireIndex = index;
                                                       await Provider.of<GlobalProvider>(context, listen: false).setVisiteExistes();
                                                     },
                                                     child: Padding(
@@ -218,12 +225,18 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                                           (
                                                               Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
                                                                   &&
-                                                                  Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == Provider.of<Affaires>(context, listen: false).foundAffaires[index].Code_Affaire
+                                                                  Provider.of<GlobalProvider>(context, listen: false).selectedAffaireIndex == index
                                                           )
                                                               ? Icons.keyboard_double_arrow_right_sharp
                                                               : Icons.check,
                                                           size: 20.0,
-                                                          color: Colors.black.withOpacity(0.6)
+                                                          color: (
+                                                              Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
+                                                                  &&
+                                                                  Provider.of<GlobalProvider>(context, listen: false).selectedAffaireIndex == index
+                                                          )
+                                                              ? Colors.black.withOpacity(0.6)
+                                                              : Colors.purple.withOpacity(0.6)
                                                       ),
                                                     ),
                                                   ),
