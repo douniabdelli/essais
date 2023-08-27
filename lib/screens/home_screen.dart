@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 width: MediaQuery.of(context).size.width * 1 / 2,
                 child: AnimatedSearchBar(
-                    label: "Chercher un(e) affaire/site",
+                    label: "Trouver un(e) affaire/site",
                     controller: _searchController,
                     labelStyle: TextStyle(fontSize: 16),
                     searchStyle: TextStyle(color: Colors.white),

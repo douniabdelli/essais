@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mgtrisque_visitepreliminaire/screens/home_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
@@ -36,21 +35,28 @@ class _GetStartedState extends State<GetStarted> {
     }
 
     Future.delayed(new Duration(milliseconds: 2500), () {
-      if(isLoggedIn == 'loggedIn')
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomeScreen(isNotFirstTime: isNotFirstTime ?? ''),
-            )
-        );
-      else
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime ?? ''
-              ),
-            )
-        );
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime ?? ''
+            ),
+          )
+      );
+      // if(isLoggedIn == 'loggedIn')
+      //   Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => HomeScreen(isNotFirstTime: isNotFirstTime ?? ''),
+      //       )
+      //   );
+      // else
+      //   Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime ?? ''
+      //         ),
+      //       )
+      //   );
     });
   }
 
