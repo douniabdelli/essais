@@ -138,7 +138,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                               ),
                                             ),
                                             decoration: BoxDecoration(
-                                                color: Colors.amber,
+                                                color: affaires.affaires[index%affaires.affaires.length].NbrSite > 1 ? Colors.amber : Colors.cyan,
                                                 borderRadius: BorderRadius.circular(8.0)
                                             ),
                                             padding: EdgeInsets.symmetric(
@@ -202,9 +202,6 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                                   ),
                                                   child: InkWell(
                                                     onTap: () async {
-                                                      print('XXXXXXXXXXXXXX ${Provider.of<GlobalProvider>(context, listen: false).selectedAffaire} * ${Provider.of<Affaires>(context, listen: false).foundAffaires[index].Code_Affaire} XXXXXXXXXXXXXXX');
-                                                      print('YYYYYYYYYYYYYY ${Provider.of<GlobalProvider>(context, listen: false).selectedSite} * ${Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site} YYYYYYYYYYYYYY');
-                                                      print('YYYYYYYYYYYYYY ${Provider.of<Affaires>(context, listen: false).selectedAffaireIndex(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire)} YYYYYYYYYYYYYY');
                                                       (
                                                           Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
                                                               &&

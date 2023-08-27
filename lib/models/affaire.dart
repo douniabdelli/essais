@@ -7,6 +7,7 @@ class Affaire {
   final String IntituleAffaire;
   final int NbrSite;
   final String matricule;
+  final int Multisite;
 
 
   const Affaire({
@@ -15,6 +16,7 @@ class Affaire {
     required this.IntituleAffaire,
     required this.NbrSite,
     required this.matricule,
+    required this.Multisite,
   });
 
   factory Affaire.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class Affaire {
         IntituleAffaire: json['IntituleAffaire'],
         NbrSite: json['NbrSite'] == null ? 0 : int.parse(json['NbrSite']),
         matricule: json['matricule'],
+        Multisite: json['Multisite'] == null ? 0 : int.parse(json['Multisite']),
     );
   }
 
@@ -34,6 +37,7 @@ class Affaire {
         'IntituleAffaire': model.IntituleAffaire,
         'NbrSite': model.NbrSite,
         'matricule': model.matricule,
+        'Multisite': model.Multisite,
       };
 
   static String serialize(Affaire model) => json.encode(Affaire.toMap(model));
