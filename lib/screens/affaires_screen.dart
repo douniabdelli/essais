@@ -96,12 +96,14 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                             borderRadius: BorderRadius.circular(8.0),
                                           ),
                                           child: InkWell(
-                                            onTap: () {
+                                            onTap: () async {
                                               Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires.affaires[index%affaires.affaires.length].Code_Affaire
                                                   ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
                                                   : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires.affaires[index%affaires.affaires.length].Code_Affaire;
 
                                               Provider.of<Affaires>(context, listen: false).setfoundSites = affaires.affaires[index%affaires.affaires.length].Code_Affaire;
+                                              if(affaires.affaires[index%affaires.affaires.length].NbrSite <= 1)
+                                                await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('0000');
                                             },
                                             child: Padding(
                                               padding: EdgeInsets.all(2.0),
@@ -173,7 +175,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                       )
                                   ),
                                 ),
-                                if(Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.affaires[index%affaires.affaires.length].Code_Affaire)
+                                if(Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.affaires[index%affaires.affaires.length].Code_Affaire && affaires.affaires[index%affaires.affaires.length].NbrSite > 1)
                                   ListView.custom(
                                     childrenDelegate: SliverChildBuilderDelegate(
                                       (innerContext, innerIndex) {
