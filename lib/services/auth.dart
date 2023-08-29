@@ -61,26 +61,28 @@ class Auth extends ChangeNotifier {
           return 404;
       }
       else {
-        await getApiToken(credentials);
+        var status = await getApiToken(credentials);
         String? token = await storage.read(key: 'token');
         String? userString = await storage.read(key: 'user');
         if(userString != null) {
           User user = User.deserialize(userString);
           _user = user;
         }
+        else
+          return status;
         await VisitePreliminaireDatabase.instance.dropUsers(user?.structure);
-        Dio.Response responseUser = await dio()
-            .get(
-            '/visite-preleminaire/users',
-            options: Dio.Options(
-              headers: {
-                'Authorization': 'Bearer $token',
-                'Content-Type': 'application/json',
-                'Charset': 'utf-8'
-              },
-            )
-        );
-        await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
+        // Dio.Response responseUser = await dio()
+        //     .get(
+        //     '/visite-preleminaire/users',
+        //     options: Dio.Options(
+        //       headers: {
+        //         'Authorization': 'Bearer $token',
+        //         'Content-Type': 'application/json',
+        //         'Charset': 'utf-8'
+        //       },
+        //     )
+        // );
+        // await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
         return 200;
       }
     } catch(e){
@@ -90,13 +92,18 @@ class Auth extends ChangeNotifier {
 
   getApiToken(credentials) async {
     print('****************** ${credentials}');
-    Dio.Response response = await dio()
-        .post(
-        '/token',
-        data: credentials
-    );
-    String token = response.data.toString();
-    await tryToken(token: token);
+    try{
+      Dio.Response response = await dio()
+          .post(
+          '/token',
+          data: credentials
+      );
+      String token = response.data.toString();
+      await tryToken(token: token);
+    } on Dio.DioError catch(e){
+      return e.response!.statusCode;
+    }
+
   }
 
   storeCredentials(credentials) async {

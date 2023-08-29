@@ -234,7 +234,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () async {
                     await Provider.of<Auth>(context, listen: false).logout();
                     Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = '';
-                    await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('---------------------------------');
+                    await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('');
+                    Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 1;
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => LoginScreen(isNotFirstTime: widget.isNotFirstTime)));
                   },

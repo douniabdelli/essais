@@ -36,7 +36,7 @@ class VisitePreliminaireDatabase {
   Future _createDB(Database db, int version) async {
     String userQuery = '''
       CREATE TABLE IF NOT EXISTS users(        
-        matricule TEXT PRIMARY KEY, 
+        matricule TEXT, 
         structure TEXT,
         nom TEXT,
         prenom TEXT,

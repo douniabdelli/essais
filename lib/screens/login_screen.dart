@@ -20,10 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _matriculeController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isSigning = false;
+  bool isSigning = false;
   bool loginMatriculeError = false;
   bool loginPasswordError = false;
-  bool get getIsSigning => _isSigning;
   final storage = new FlutterSecureStorage();
 
   @override
@@ -32,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // _passwordController.text = '123456';
     _matriculeController.text = '';
     _passwordController.text = '';
-    _isSigning = false;
+    isSigning = false;
     super.initState();
   }
 
@@ -132,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         },
                                           validator: (String? value) {
                                             if ((value != null && value.isEmpty) || loginMatriculeError) {
-                                              setState(() => _isSigning = false);
+                                              setState(() => isSigning = false);
                                               setState(() => loginMatriculeError = true);
                                               if(loginMatriculeError)
                                                 return 'Entrez un matricule correct';
@@ -219,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         },
                                           validator: (String? value) {
                                             if((value != null && value.isEmpty) || loginPasswordError) {
-                                              setState(() => _isSigning = false);
+                                              setState(() => isSigning = false);
                                               setState(() => loginPasswordError = true);
                                               if(loginPasswordError)
                                                 return 'Entrez un mot de passe correct';
@@ -285,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       Expanded(
                                         child: Text(
-                                          'Se connecter locallement',
+                                          'Se connecter localement',
                                           style: TextStyle(
                                             fontFamily: 'Arial',
                                             fontSize: 15,
@@ -323,7 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 onPressed: () async {
                                   setState(() {
-                                    _isSigning = true;
+                                    isSigning = true;
                                     loginMatriculeError = false;
                                     loginPasswordError = false;
                                   });
@@ -333,7 +332,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     'password': _passwordController.text,
                                   };
                                   if (_formKey.currentState!.validate()) {
-                                    late int result;
+                                    late int? result;
                                     result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
                                     String? token = await storage.read(key: 'token');
                                     // login result
@@ -345,7 +344,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           builder: (context) => const HomeScreen(isNotFirstTime: '',)));
                                     }
                                     else {
-                                      setState(() => _isSigning = false);
+                                      setState(() => isSigning = false);
                                       if(result == 404){
                                         setState(() => loginMatriculeError = true);
                                         _formKey.currentState!.validate();
@@ -361,7 +360,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       margin: const EdgeInsets.only(right: 20.0),
                                       height: 25.0,
                                       width: 25.0,
-                                      child: getIsSigning
+                                      child: isSigning
                                         ? const CircularProgressIndicator(
                                             color: Colors.white,
                                             strokeWidth: 2,
@@ -369,7 +368,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         : const Icon(Icons.login, size: 26),
                                       ),
                                 label: Text(
-                                  getIsSigning ? 'Connexion en cours...' : 'Se connecter',
+                                  isSigning ? 'Connexion en cours...' : 'Se connecter',
                                   style: TextStyle(
                                     fontFamily: 'Arial',
                                     fontSize: 25,
