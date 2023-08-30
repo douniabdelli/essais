@@ -56,6 +56,7 @@ class VisitePreliminaireDatabase {
         NbrSite TEXT,
         matricule TEXT,
         Multisite TEXT,
+        annee TEXT,
         PRIMARY KEY (Code_Affaire, matricule)
       )
     ''';
@@ -166,8 +167,8 @@ class VisitePreliminaireDatabase {
   Future<void> createAffaires(List<dynamic> affaires) async {
     String affaireQuery = '''
       INSERT INTO affaires
-      (Code_Affaire, Code_Site, matricule, IntituleAffaire, NbrSite, Multisite)
-      VALUES (?, ?, ?, ?, ?, ?)
+      (Code_Affaire, Code_Site, matricule, IntituleAffaire, NbrSite, Multisite, annee)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     ''';
     final db = await instance.database;
     affaires.forEach((element) async {
@@ -181,6 +182,7 @@ class VisitePreliminaireDatabase {
             item['IntituleAffaire'].toString(),
             item['NbrSite'],
             item['Multisite'],
+            item['annee'],
           ]
       );
     });

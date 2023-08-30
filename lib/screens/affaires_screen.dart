@@ -73,7 +73,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                             return Column(
                               children: [
                                 Container(
-                                  height: 75.0,
+                                  height: 80.0,
                                   width: size.width,
                                   margin: EdgeInsets.symmetric(
                                       horizontal: 8.0,
@@ -102,15 +102,17 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                                   : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire;
 
                                               Provider.of<Affaires>(context, listen: false).setfoundSites = affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire;
-                                              if(affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite <= 1)
+                                              if(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire != '' && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite <= 1)
                                                 await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('0000');
                                             },
                                             child: Padding(
                                               padding: EdgeInsets.all(2.0),
                                               child: Icon(
-                                                  Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire
+                                                  (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1)
                                                       ? Icons.keyboard_double_arrow_down
-                                                      : Icons.check,
+                                                      : (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite <= 1)
+                                                        ? Icons.keyboard_double_arrow_right_sharp
+                                                        : Icons.check,
                                                   size: 25.0,
                                                   color: Colors.purple.withOpacity(0.6)
                                               ),
@@ -141,11 +143,31 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                             ),
                                             decoration: BoxDecoration(
                                                 color: affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1 ? Colors.amber : Colors.cyan,
-                                                borderRadius: BorderRadius.circular(8.0)
+                                                borderRadius: BorderRadius.circular(4.0)
                                             ),
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: 5.0,
                                                 vertical: 1.0
+                                            ),
+                                          ),
+                                          Container(
+                                            child: Text(
+                                              affaires.foundAffaires[index%affaires.foundAffaires.length].annee,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15.0
+                                              ),
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: Colors.deepOrangeAccent,
+                                                borderRadius: BorderRadius.circular(4.0)
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5.0,
+                                                vertical: 1.0
+                                            ),
+                                            margin: EdgeInsets.only(
+                                                top: 2.0
                                             ),
                                           ),
                                         ],
