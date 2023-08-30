@@ -27,7 +27,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
           Expanded(
               child: Consumer<Affaires>(
                 builder: (BuildContext context, affaires, Widget? child) {
-                  return affaires.foundAffaires.length == 0
+                  return context.read<Affaires>().foundAffaires.length == 0
                       ? Container(
                         width: size.width,
                         height: size.height,
@@ -97,18 +97,18 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                           ),
                                           child: InkWell(
                                             onTap: () async {
-                                              Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires.affaires[index%affaires.affaires.length].Code_Affaire
+                                              Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire
                                                   ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
-                                                  : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires.affaires[index%affaires.affaires.length].Code_Affaire;
+                                                  : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire;
 
-                                              Provider.of<Affaires>(context, listen: false).setfoundSites = affaires.affaires[index%affaires.affaires.length].Code_Affaire;
-                                              if(affaires.affaires[index%affaires.affaires.length].NbrSite <= 1)
+                                              Provider.of<Affaires>(context, listen: false).setfoundSites = affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire;
+                                              if(affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite <= 1)
                                                 await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('0000');
                                             },
                                             child: Padding(
                                               padding: EdgeInsets.all(2.0),
                                               child: Icon(
-                                                  Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.affaires[index%affaires.affaires.length].Code_Affaire
+                                                  Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire
                                                       ? Icons.keyboard_double_arrow_down
                                                       : Icons.check,
                                                   size: 25.0,
@@ -124,7 +124,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            '${affaires.affaires[index%affaires.affaires.length].Code_Affaire}',
+                                            '${affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire}',
                                             style: TextStyle(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w500,
@@ -133,14 +133,14 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                           ),
                                           Container(
                                             child: Text(
-                                              affaires.affaires[index%affaires.affaires.length].NbrSite > 1 ? 'Multi' : 'Mono',
+                                              affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1 ? 'Multi' : 'Mono',
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 15.0
                                               ),
                                             ),
                                             decoration: BoxDecoration(
-                                                color: affaires.affaires[index%affaires.affaires.length].NbrSite > 1 ? Colors.amber : Colors.cyan,
+                                                color: affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1 ? Colors.amber : Colors.cyan,
                                                 borderRadius: BorderRadius.circular(8.0)
                                             ),
                                             padding: EdgeInsets.symmetric(
@@ -155,7 +155,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                         child: RichText(
                                           overflow: TextOverflow.clip,
                                           text: TextSpan(
-                                              text: '${affaires.affaires[index%affaires.affaires.length].IntituleAffaire}',
+                                              text: '${affaires.foundAffaires[index%affaires.foundAffaires.length].IntituleAffaire}',
                                               style: TextStyle(
                                                   color: Colors.black
                                               )
@@ -168,14 +168,14 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                       color: Colors.white.withOpacity(0.5),
                                       borderRadius: BorderRadius.circular(8.0),
                                       border: Border.all(
-                                          width: Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.affaires[index%affaires.affaires.length].Code_Affaire
+                                          width: Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire
                                               ? 2.0
                                               : 0.0,
                                           color: Colors.purple.withOpacity(0.6)
                                       )
                                   ),
                                 ),
-                                if(Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.affaires[index%affaires.affaires.length].Code_Affaire && affaires.affaires[index%affaires.affaires.length].NbrSite > 1)
+                                if(Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1)
                                   ListView.custom(
                                     childrenDelegate: SliverChildBuilderDelegate(
                                       (innerContext, innerIndex) {

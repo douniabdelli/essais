@@ -11,10 +11,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => Auth()),
-        ChangeNotifierProvider(create: (context) => GlobalProvider()),
-        ChangeNotifierProvider(create: (context) => Affaires()),
-        ChangeNotifierProvider(create: (context) => Sync()),
+        ChangeNotifierProvider<Auth>(create: (context) => Auth()),
+        ChangeNotifierProvider<GlobalProvider>(create: (context) => GlobalProvider()),
+        ChangeNotifierProvider<Affaires>(create: (context) => Affaires()),
+        ChangeNotifierProvider<Sync>(create: (context) => Sync()),
       ],
       child: MyApp(),
     ),

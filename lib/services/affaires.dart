@@ -25,7 +25,10 @@ class Affaires extends ChangeNotifier {
     return _foundAffaires.indexWhere((e) => e.Code_Affaire == value);
   }
   set setfoundAffaires(value) {
-      _foundAffaires = _affaires.where((element) => (element.Code_Affaire.contains(value) || element.Code_Site.contains(value))).toList();
+      _foundAffaires = _affaires.where((element)
+        => 
+          (element.Code_Affaire.toString().toLowerCase().contains(value) || element.Code_Site.toString().toLowerCase().contains(value))).toList();
+      print('>>>>>>>>>>>> >> >  ${value} <> ${_foundAffaires.length}');
       notifyListeners();
   }
 //////////////////////////////////////////////////////////////////////////////////////
