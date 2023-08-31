@@ -236,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = '';
                     await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('');
                     Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 1;
-                    Navigator.of(context).push(
+                    Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) => LoginScreen(isNotFirstTime: widget.isNotFirstTime)));
                   },
                   leading: Icon(Icons.logout),

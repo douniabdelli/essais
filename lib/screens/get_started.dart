@@ -35,28 +35,13 @@ class _GetStartedState extends State<GetStarted> {
     }
 
     Future.delayed(new Duration(milliseconds: 2500), () {
-      Navigator.push(
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime ?? ''
             ),
           )
       );
-      // if(isLoggedIn == 'loggedIn')
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => HomeScreen(isNotFirstTime: isNotFirstTime ?? ''),
-      //       )
-      //   );
-      // else
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime ?? ''
-      //         ),
-      //       )
-      //   );
     });
   }
 

@@ -337,10 +337,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     String? token = await storage.read(key: 'token');
                                     // login result
                                     print('/*/*/* ${result} /*/*/*');
-                                    if(result == 200){
-                                      await Provider.of<Affaires>(context, listen: false).getData(token: token!);
-                                      Navigator.pop(context);
-                                      Navigator.of(context).push(MaterialPageRoute(
+                                    if(result == 200 || result == 201){
+                                      if(result == 200)
+                                        await Provider.of<Affaires>(context, listen: false).getData(token: token!);
+                                      //Navigator.pop(context);
+                                      Navigator.of(context).pushReplacement(MaterialPageRoute(
                                           builder: (context) => const HomeScreen(isNotFirstTime: '',)));
                                     }
                                     else {

@@ -52,7 +52,7 @@ class Auth extends ChangeNotifier {
             await storeUser(user: users.first);
             await storeToken(token: 'token');
             // ok pass
-            return 200;
+            return 201;
           }
           else
             return 401;
@@ -71,18 +71,18 @@ class Auth extends ChangeNotifier {
         else
           return status;
         await VisitePreliminaireDatabase.instance.dropUsers(user?.structure);
-        // Dio.Response responseUser = await dio()
-        //     .get(
-        //     '/visite-preleminaire/users',
-        //     options: Dio.Options(
-        //       headers: {
-        //         'Authorization': 'Bearer $token',
-        //         'Content-Type': 'application/json',
-        //         'Charset': 'utf-8'
-        //       },
-        //     )
-        // );
-        // await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
+        Dio.Response responseUser = await dio()
+            .get(
+            '/visite-preleminaire/users',
+            options: Dio.Options(
+              headers: {
+                'Authorization': 'Bearer $token',
+                'Content-Type': 'application/json',
+                'Charset': 'utf-8'
+              },
+            )
+        );
+        await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
         return 200;
       }
     } catch(e){
