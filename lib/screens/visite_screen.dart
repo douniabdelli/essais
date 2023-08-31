@@ -2430,7 +2430,9 @@ class _VisiteScreenState extends State<VisiteScreen> {
   }
 
   bool canGoToNextStep(stepIndex) {
-    print('>>>>>>>>>>>> >> >  ${stepIndex}');
+    if(Provider.of<GlobalProvider>(context, listen: true).visiteExistes)
+      return true;
+    
     switch(stepIndex){
       case 0:
         if(

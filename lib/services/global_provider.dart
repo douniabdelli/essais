@@ -142,6 +142,7 @@ class GlobalProvider extends ChangeNotifier {
   String get selectedSite => _selectedSite;
   setSelectedSite(value) async {
     _selectedSite = value;
+    await setVisiteExistes();
     if(value != ''){
       var visisteExists = await VisitePreliminaireDatabase
           .instance
