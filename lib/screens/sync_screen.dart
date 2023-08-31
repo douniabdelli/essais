@@ -169,7 +169,10 @@ class _SyncScreenState extends State<SyncScreen> with SingleTickerProviderStateM
                       builder: (context, sync, Widget? child){
                         return SingleChildScrollView(
                           child: Container(
-                            width: size.width * 2/3,
+                            width: size.width,
+                            margin: EdgeInsets.symmetric(
+                              horizontal: size.width * 0.03
+                            ),
                             child: Timeline(
                               children: sync.getSyncHistoryData().toList().reversed.toList().map<Widget>(
                                     (e) => Column(
