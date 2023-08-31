@@ -23,13 +23,13 @@ class Affaire {
 
   factory Affaire.fromJson(Map<String, dynamic> json) {
     return Affaire(
-        Code_Affaire: json['Code_Affaire'],
-        Code_Site: json['Code_Site'],
-        IntituleAffaire: json['IntituleAffaire'],
+        Code_Affaire: json['Code_Affaire'] == null ? '' : json['Code_Affaire'],
+        Code_Site: json['Code_Site'] == null ? '' : json['Code_Site'],
+        IntituleAffaire: json['IntituleAffaire'] == null ? '' : json['IntituleAffaire'],
         NbrSite: json['NbrSite'] == null ? 0 : int.parse(json['NbrSite']),
-        matricule: json['matricule'],
+        matricule: json['matricule'] == null ? '' : json['matricule'],
         Multisite: json['Multisite'] == null ? 0 : int.parse(json['Multisite']),
-        annee: json['annee'],
+        annee: json['annee'] == null ? '' : json['annee'],
     );
   }
 

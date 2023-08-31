@@ -143,11 +143,13 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ),
                             if(Provider.of<GlobalProvider>(context, listen: true).stepIndex < 6)
                               ElevatedButton(
-                                onPressed: () => {
-                                  if (Provider.of<GlobalProvider>(context, listen: false).stepIndex < 6)
-                                    Provider.of<GlobalProvider>(context, listen: false).setStepIndex =
-                                        Provider.of<GlobalProvider>(context, listen: false).stepIndex + 1
-                                },
+                                onPressed: canGoToNextStep(Provider.of<GlobalProvider>(context, listen: false).stepIndex)
+                                    ? () => {
+                                      if (Provider.of<GlobalProvider>(context, listen: false).stepIndex < 6)
+                                        Provider.of<GlobalProvider>(context, listen: false).setStepIndex =
+                                            Provider.of<GlobalProvider>(context, listen: false).stepIndex + 1
+                                    }
+                                    : null,
                                 child: Row(
                                   children: [
                                     Text('Suivant'),
@@ -2234,6 +2236,8 @@ class _VisiteScreenState extends State<VisiteScreen> {
                 (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6) && (Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
                   &&
                 (Provider.of<Auth>(context, listen: true).user?.modification == '1' && Provider.of<Auth>(context, listen: true).user?.insertion == '1')
+                      &&
+                Provider.of<GlobalProvider>(context, listen: true).personnesTierces.isNotEmpty
               )
                 Container(
                   margin: EdgeInsets.all(8.0),
@@ -2423,5 +2427,76 @@ class _VisiteScreenState extends State<VisiteScreen> {
         ..hideCurrentMaterialBanner();
     });
 
+  }
+
+  bool canGoToNextStep(stepIndex) {
+    print('>>>>>>>>>>>> >> >  ${stepIndex}');
+    switch(stepIndex){
+      case 0:
+        if(
+          Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainAccessibleInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainClotureController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainClotureInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainNuController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainNuInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceVegetationController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceVegetationInputController.text == ''
+        )
+          return false;
+        break;
+      case 1:
+        if(
+          Provider.of<GlobalProvider>(context, listen: true).presencePylonesController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presencePylonesInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).existenceMitoyenneteHabitationInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).existenceVoirieMitoyenneteInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceRemblaisInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceSourcesEauCaviteInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).presenceTalwegsInputController.text == ''
+        )
+          return false;
+        break;
+      case 2:
+        if(
+          Provider.of<GlobalProvider>(context, listen: true).terrainInondableController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainInondableInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainPenteController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrainPenteInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).risqueInstabiliteInputController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesController.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).terrassementsEntamesInputController.text == ''
+        )
+          return false;
+        break;
+      case 3:
+        if(
+          Provider.of<GlobalProvider>(context, listen: true).observationsComplementairesInputController.text == ''
+        )
+          return false;
+        break;
+      case 4:
+        if(
+          Provider.of<GlobalProvider>(context, listen: true).conclusion_1Controller.text == '' ||
+          Provider.of<GlobalProvider>(context, listen: true).conclusion_2Controller.text == ''
+        )
+          return false;
+        break;
+      case 5:
+        if(
+          Provider.of<GlobalProvider>(context, listen: true).siteImage == null ||
+          Provider.of<GlobalProvider>(context, listen: true).siteImage == ''
+        )
+          return false;
+        break;
+    }
+
+    return true;
   }
 }

@@ -28,7 +28,6 @@ class Affaires extends ChangeNotifier {
       _foundAffaires = _affaires.where((element)
         => 
           (element.Code_Affaire.toString().toLowerCase().contains(value) || element.Code_Site.toString().toLowerCase().contains(value))).toList();
-      print('>>>>>>>>>>>> >> >  ${value} <> ${_foundAffaires.length}');
       notifyListeners();
   }
 //////////////////////////////////////////////////////////////////////////////////////
