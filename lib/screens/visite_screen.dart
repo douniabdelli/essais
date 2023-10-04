@@ -70,11 +70,12 @@ class _VisiteScreenState extends State<VisiteScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
+    DateTime now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: Provider.of<GlobalProvider>(context, listen: false).selectedDate,
       firstDate: DateTime(1971),
-      lastDate: DateTime(DateTime.now().year + 1),
+      lastDate: DateTime(now.year, now.month, now.day),
     );
     if (picked != null && picked != Provider.of<GlobalProvider>(context, listen: false).selectedDate)
       Provider.of<GlobalProvider>(context, listen: false).setSelectedDate = picked;
