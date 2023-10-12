@@ -41,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
-    final String _screenTitle = Provider.of<GlobalProvider>(context, listen: true).screenTitle;
     return AdvancedDrawer(
       backdropColor: Colors.teal,
       controller: _advancedDrawerController,
@@ -61,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           title: Text(
               '${Provider.of<GlobalProvider>(context, listen: true).screenTitle}'),
           titleSpacing: 0.0,
-          backgroundColor: _screenTitle == 'Affaires'
+          backgroundColor: Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1
               ? Colors.purple.withOpacity(0.7)
-              : (_screenTitle == 'Synchronisation'
+              : (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 0
                   ? Colors.blueAccent.withOpacity(0.7)
                   : Colors.redAccent.withOpacity(0.7)),
           leading: IconButton(
@@ -82,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             ),
           ),
           actions: [
-            if (_screenTitle == 'Affaires')
+            if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1)
               Container(
                 width: MediaQuery.of(context).size.width * 1 / 2,
                 child: AnimatedSearchBar(
@@ -109,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                           .setfoundAffaires = value;
                     }),
               ),
-            if (_screenTitle == 'Visite Préliminaire')
+            if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -125,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                   ),
                 ),
               ),
-            if (_screenTitle == 'Visite Préliminaire' && Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '' && Provider.of<GlobalProvider>(context, listen: true).selectedSite != '' && Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1')
+            if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2 && Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '' && Provider.of<GlobalProvider>(context, listen: true).selectedSite != '' && Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1')
               IconButton(
                 onPressed: () => printPDF(context),
                 icon: Icon(Icons.picture_as_pdf_rounded),
