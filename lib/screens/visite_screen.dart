@@ -2320,7 +2320,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                           Expanded(child: Text('Ajouter une personne')),
                                                           IconButton(
                                                             onPressed: (){
-                                                              Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
+                                                              Provider.of<GlobalProvider>(context, listen: false).presentPersonFullName.clear();
                                                               Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
                                                               Navigator.of(context).pop();
                                                             },
@@ -2374,13 +2374,14 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                                         child: Text(value,),
                                                                       );
                                                                     }).toList(),
-                                                                    value: Provider.of<GlobalProvider>(context, listen: true).presentPersonFullName,
-                                                                    onChanged: (String? newValue){
-                                                                      Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = newValue!;
+                                                                    value: Provider.of<GlobalProvider>(context, listen: true).presentPersonController,
+                                                                    onChanged: (newValue){
+                                                                      Provider.of<GlobalProvider>(context, listen: false).setPresentPersonController = newValue!;
                                                                     },
                                                                   ),
                                                                 ),
                                                               ),
+                                                              SizedBox(height: 30.0),
                                                               SizedBox(height: 30.0),
                                                               Row(
                                                                 children: [
@@ -2396,7 +2397,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                               ),
                                                               TextFormField(
                                                                 enabled: (Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1' && Provider.of<Auth>(context, listen: true).user?.insertion == '1' && Provider.of<Auth>(context, listen: true).user?.modification == '1'),
-                                                                controller: Provider.of<GlobalProvider>(context, listen: true).presentPersonController,
+                                                                controller: Provider.of<GlobalProvider>(context, listen: true).presentPersonFullName,
                                                                 validator: (value) {
                                                                   if (value!.isEmpty || value!.length < 1) {
                                                                     return 'Ce champ est obligatoire !';
@@ -2432,7 +2433,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                         TextButton(
                                                           child: const Text('Annuler'),
                                                           onPressed: (){
-                                                            Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
+                                                            Provider.of<GlobalProvider>(context, listen: false).presentPersonFullName.clear();
                                                             Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
                                                             Navigator.of(context).pop();
                                                           },
@@ -2446,11 +2447,11 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                                           ),
                                                           onPressed: (){
                                                             Provider.of<GlobalProvider>(context, listen: false).addPersonnesTierces(
-                                                              Provider.of<GlobalProvider>(context, listen: false).presentPersonController.text,
-                                                              Provider.of<GlobalProvider>(context, listen: false).presentPersonFullName,
+                                                              Provider.of<GlobalProvider>(context, listen: false).presentPersonController,
+                                                              Provider.of<GlobalProvider>(context, listen: false).presentPersonFullName.text,
                                                             );
-                                                            Provider.of<GlobalProvider>(context, listen: false).setPresentPersonFullName = null;
-                                                            Provider.of<GlobalProvider>(context, listen: false).clearPresentPersonController();
+                                                            Provider.of<GlobalProvider>(context, listen: false).presentPersonFullName.clear();
+                                                            Provider.of<GlobalProvider>(context, listen: false).setPresentPersonController = null;
                                                             Navigator.of(context).pop();
                                                           },
                                                           style: TextButton.styleFrom(

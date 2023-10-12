@@ -57,6 +57,13 @@ class VisitePreliminaireDatabase {
         matricule TEXT,
         Multisite TEXT,
         annee TEXT,
+        Nom_DR TEXT,
+        code_agence TEXT,
+        nom_agence TEXT,
+        adresse TEXT,
+        tel TEXT,
+        fax TEXT,
+        email TEXT,
         PRIMARY KEY (Code_Affaire, matricule)
       )
     ''';
@@ -167,8 +174,8 @@ class VisitePreliminaireDatabase {
   Future<void> createAffaires(List<dynamic> affaires) async {
     String affaireQuery = '''
       INSERT INTO affaires
-      (Code_Affaire, Code_Site, matricule, IntituleAffaire, NbrSite, Multisite, annee)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (Code_Affaire, Code_Site, matricule, IntituleAffaire, NbrSite, Multisite, annee, Nom_DR, code_agence, nom_agence, adresse, tel, fax, email)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''';
     final db = await instance.database;
     affaires.forEach((element) async {
@@ -183,6 +190,13 @@ class VisitePreliminaireDatabase {
             item['NbrSite'],
             item['Multisite'],
             item['annee'],
+            item['Nom_DR'],
+            item['code_agence'],
+            item['nom_agence'],
+            item['adresse'],
+            item['tel'],
+            item['fax'],
+            item['email'],
           ]
       );
     });
@@ -377,6 +391,17 @@ class VisitePreliminaireDatabase {
     return users.map((json) => User.fromJson(json)).toList();
   }
 
+  Future<User> getUserByMatricule(matricule) async {
+    final db = await instance.database;
+    final users = await db.query(
+      'users',
+      where: 'matricule = ?',
+      whereArgs: [ matricule ],
+    );
+
+    return users.map((json) => User.fromJson(json)).toList()[0];
+  }
+
   Future<List<Affaire>> getAffairesFromAffaires() async {
     final db = await instance.database;
     final affaires = await db.query(
@@ -447,6 +472,17 @@ class VisitePreliminaireDatabase {
     );
 
     return affaires.map((json) => Affaire.fromJson(json)).toList();
+  }
+
+  Future<Affaire> getAffaire(codeAffaire) async {
+    final db = await instance.database;
+    final affaires = await db.query(
+      'affaires',
+      where: 'Code_Affaire = ?',
+      whereArgs: [ codeAffaire ],
+    );
+
+    return affaires.map((json) => Affaire.fromJson(json)).toList()[0];
   }
 
   Future<List<Site>> getSites() async {

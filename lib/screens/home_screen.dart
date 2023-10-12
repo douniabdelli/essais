@@ -1,12 +1,15 @@
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/affaires_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/sync_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/visite_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:mgtrisque_visitepreliminaire/services/crvp_printing.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -22,7 +25,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   final _advancedDrawerController = AdvancedDrawerController();
   final List<Widget> bottomBarWidgets = [
     SyncScreen(),
@@ -32,13 +35,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<String> bottomBarNames = [
     'Synchronisation',
     'Affaires',
-    'Visite préliminaire'
+    'Visite préliminaire',
   ];
   TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     final String _screenTitle = Provider.of<GlobalProvider>(context, listen: true).screenTitle;
     return AdvancedDrawer(
       backdropColor: Colors.teal,
@@ -122,6 +124,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
+              ),
+            if (_screenTitle == 'Visite Préliminaire' && Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '' && Provider.of<GlobalProvider>(context, listen: true).selectedSite != '' && Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1')
+              IconButton(
+                onPressed: () => printPDF(context),
+                icon: Icon(Icons.picture_as_pdf_rounded),
               ),
           ],
         ),
@@ -264,8 +271,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleMenuButtonPressed() {
-    // NOTICE: Manage Advanced Drawer state through the Controller.
-    // _advancedDrawerController.value = AdvancedDrawerValue.visible();
     _advancedDrawerController.showDrawer();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -12,12 +12,21 @@ import 'package:path_provider/path_provider.dart';
 class GlobalProvider extends ChangeNotifier {
   late String _screenTitle = 'Affaires';
   late String _selectedAffaire = '';
+  late String _controlleur = '';
+  late String _projet = '';
+  late String _adresse = '';
+  late String _nom_direction = '';
+  late String _code_agence = '';
+  late String _nom_agence = '';
+  late String _tel = '';
+  late String _fax = '';
+  late String _email = '';
   late int? _selectedAffaireIndex = null;
   late String _selectedSite = '';
   late int _currentIndex = 1;
   late DateTime _dateVisite = DateTime.now();
-  late String? _present_person_full_name = null;
-  final _present_person_controller = TextEditingController();
+  final _present_person_full_name = TextEditingController();
+  late String? _present_person_controller = null;
   late int _stepIndex = 0;
   DateTime _selectedDate = DateTime.now();
   var _siteImage = null;
@@ -152,7 +161,22 @@ class GlobalProvider extends ChangeNotifier {
         var visite = await VisitePreliminaireDatabase
             .instance
             .getVisite(_selectedAffaire, _selectedSite);
-        prepareVisiteFormData(visite);
+        var user = await VisitePreliminaireDatabase
+            .instance
+            .getUserByMatricule(visite.matricule);
+        var affaire = await VisitePreliminaireDatabase
+            .instance
+            .getAffaire(visite.Code_Affaire);
+        _controlleur = user.nom +' '+ user.prenom;
+        _projet = affaire.IntituleAffaire;
+        _adresse = affaire.adresse;
+        _nom_direction = affaire.Nom_DR;
+        _code_agence = affaire.code_agence;
+        _nom_agence = affaire.nom_agence;
+        _tel = affaire.tel;
+        _fax = affaire.fax;
+        _email = affaire.email;
+        await prepareVisiteFormData(visite);
       } else
         resetVisiteForm();
       _currentIndex = 2;
@@ -173,6 +197,16 @@ class GlobalProvider extends ChangeNotifier {
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
+  get controlleur => _controlleur;
+  get projet => _projet;
+  get adresse => _adresse;
+  get code_agence => _code_agence;
+  get nom_direction => _nom_direction;
+  get nom_agence => _nom_agence;
+  get tel => _tel;
+  get fax => _fax;
+  get email => _email;
+
   get siteImage => _siteImage;
   set setSiteImage(value) {
     _siteImage = value;
@@ -187,15 +221,19 @@ class GlobalProvider extends ChangeNotifier {
 ////////////////////////////////////////////////////////////////////////////////////////////
   get thirdPerson => _thirdPerson;
 ////////////////////////////////////////////////////////////////////////////////////////////
-  String? get presentPersonFullName => _present_person_full_name;
+  TextEditingController get presentPersonFullName => _present_person_full_name;
   set setPresentPersonFullName(value) {
-    _present_person_full_name = value;
+    _present_person_full_name.text = value;
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
-  TextEditingController get presentPersonController => _present_person_controller;
+  String? get presentPersonController => _present_person_controller;
+  set setPresentPersonController(value) {
+    _present_person_controller = value;
+    notifyListeners();
+  }
   clearPresentPersonController() {
-    _present_person_controller.clear();
+    _present_person_controller = null;
     notifyListeners();
   }
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -464,8 +502,8 @@ class GlobalProvider extends ChangeNotifier {
     _stepIndex = 0;
     _selectedDate = DateTime.now();
     _siteImage = null;
-    _present_person_full_name = null;
-    _present_person_controller.clear();
+    _present_person_full_name.clear();
+    _present_person_controller = null;
     _terrainAccessibleController.clear();
     _terrainAccessibleInputController.clear();
     _terrainClotureController.clear();
@@ -504,10 +542,10 @@ class GlobalProvider extends ChangeNotifier {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // prepareVisiteFormData
-  void prepareVisiteFormData(visite){
+  prepareVisiteFormData(visite) async {
     _stepIndex = 0;
-    _present_person_full_name = null;
-    _present_person_controller.clear();
+    _present_person_full_name.clear();
+    _present_person_controller = null;
     // Editables
     _selectedDate = visite.VisitSiteDate != 'null' ? DateTime.parse(visite.VisitSiteDate) : DateTime.now();
     _siteImage = (visite.siteImage != '' || visite.siteImage != null) ? visite.siteImage : null;
