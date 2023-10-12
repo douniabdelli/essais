@@ -71,6 +71,15 @@ generatePDF(context) async {
         return '('+ e.thirdPerson + ': '+ e.fullName +')';
       })
       .join(', ');
+  var directions = {
+    'DRC': 'Direction Régionale Centre',
+    'DRSE': 'Direction Régionale Sud Est',
+    'DRO': 'Direction Régionale Ouest',
+    'DRE': 'Direction Régionale Est',
+    'DRSO': 'Direction Régionale Sud Ouest',
+    'DG': 'Direction Générale',
+    'DDE': 'Direction Diagnostique et Expertise',
+  };
 
   pdf.addPage(
     pw.Page(
@@ -95,8 +104,8 @@ generatePDF(context) async {
                         children: [
                           pw.Table(
                             columnWidths: {
-                              0: pw.FlexColumnWidth(1),
-                              1: pw.FlexColumnWidth(3),
+                              0: pw.FlexColumnWidth(3),
+                              1: pw.FlexColumnWidth(7),
                             },
                             border: pw.TableBorder(
                               horizontalInside: pw.BorderSide(
@@ -130,7 +139,8 @@ generatePDF(context) async {
                                           height: 50.0,
                                         ),
                                         pw.Text(
-                                            'Direction Régionale Centre',
+                                            directions[nom_direction]!,
+                                            textAlign: pw.TextAlign.center,
                                             style: pw.TextStyle(
                                                 fontSize: 10.0
                                             )
