@@ -157,7 +157,7 @@ class Sync extends ChangeNotifier {
       'Code_Affaire': e.Code_Affaire.toString(),
       'Code_site': e.Code_site.toString(),
     }).toList();
-    
+    print("1111 ${ids}");
     Dio.Response response = await dio()
         .post(
         '/visite-preleminaire/visites-to-be-synced',

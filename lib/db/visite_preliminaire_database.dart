@@ -183,8 +183,8 @@ class VisitePreliminaireDatabase {
       var result = await db.rawInsert(
           affaireQuery,
           [
-            item['Code_Affaire'].toString(),
-            item['Code_Site'].toString(),
+            item['Code_Affaire'].toString().trim(),
+            item['Code_Site'].toString().trim(),
             item['matricule'].toString(),
             item['IntituleAffaire'].toString(),
             item['NbrSite'],
@@ -214,8 +214,8 @@ class VisitePreliminaireDatabase {
       var result = await db.rawInsert(
           siteQuery,
           [
-            item['Code_Affaire'].toString(),
-            item['Code_site'].toString(),
+            item['Code_Affaire'].toString().trim(),
+            item['Code_site'].toString().trim(),
             item['adress_proj'].toString(),
           ]
       );
@@ -236,8 +236,8 @@ class VisitePreliminaireDatabase {
       var result = await db.rawInsert(
           visiteQuery,
           [
-            item['Code_Affaire'],
-            item['Code_site'],
+            item['Code_Affaire'].toString().trim(),
+            item['Code_site'].toString().trim(),
             matricule,
             item['siteImage'],
             item['VisitSiteDate'],
