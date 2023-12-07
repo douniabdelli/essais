@@ -146,7 +146,7 @@ class _CustomDialogBoxState extends State<CustomDialogBox> with SingleTickerProv
                         Navigator.of(context).pop();
                       },
                       child: Text(
-                        'Ok',
+                        'Annuler',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white
