@@ -28,7 +28,7 @@ class GlobalProvider extends ChangeNotifier {
   final _present_person_full_name = TextEditingController();
   late String? _present_person_controller = null;
   late int _stepIndex = 0;
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate = DateTime.now();
   var _siteImage = null;
   var _capturedImage;
   late List<String> _thirdPerson = [
@@ -613,7 +613,7 @@ class GlobalProvider extends ChangeNotifier {
           Code_site: _selectedSite,
           matricule: matricule!,
           siteImage: (siteImagePath != null) ? siteImagePath : '',
-          VisitSiteDate: _dateVisite.toString(),
+          VisitSiteDate: _selectedDate.toString(),
           VisitSite_Btn_terrain_accessible: _terrainAccessibleController.text,
           VisitSiteterrain_accessible: _terrainAccessibleInputController.text,
           VisitSite_Btn_terrain_cloture: _terrainClotureController.text,
