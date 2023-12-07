@@ -591,7 +591,7 @@ class GlobalProvider extends ChangeNotifier {
   }
 ///////////////////////////////////////////////////////////////////////////////////////
 // prepareVisiteFormData
-  void submitForm() async {
+  submitForm() async {
     final storage = new FlutterSecureStorage();
     String? matricule = await storage.read(key: 'matricule');
 

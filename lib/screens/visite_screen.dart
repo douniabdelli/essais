@@ -2634,7 +2634,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                           child: InkWell(
                             borderRadius: BorderRadius.circular(10.0),
                             onTap: () async {
-                              Provider.of<GlobalProvider>(context, listen: false).submitForm();
+                              await Provider.of<GlobalProvider>(context, listen: false).submitForm();
                               await Provider.of<GlobalProvider>(context, listen: false).setVisiteExistes();
                               _showSnackBar(context, 'Enregistrement', 'Le formulaire à été enregistré !');
                             },
