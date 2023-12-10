@@ -16,6 +16,7 @@ class Affaire {
   final String tel;
   final String fax;
   final String email;
+  final String hasVisite;
 
 
   const Affaire({
@@ -33,6 +34,7 @@ class Affaire {
     required this.tel,
     required this.fax,
     required this.email,
+    required this.hasVisite,
   });
 
   factory Affaire.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,7 @@ class Affaire {
         tel: json['tel'] == null ? '' : json['tel'],
         fax: json['fax'] == null ? '' : json['fax'],
         email: json['email'] == null ? '' : json['email'],
+        hasVisite: json['hasVisite'] == null ? '0' : json['hasVisite'],
     );
   }
 
@@ -70,6 +73,7 @@ class Affaire {
         'tel': model.tel,
         'fax': model.fax,
         'email': model.email,
+        'hasVisite': model.hasVisite,
       };
 
   static String serialize(Affaire model) => json.encode(Affaire.toMap(model));
