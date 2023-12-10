@@ -224,6 +224,20 @@ class VisitePreliminaireDatabase {
     });
   }
 
+  Future<void> setHasVisite(code_affaire, code_site) async {
+    final storage = new FlutterSecureStorage();
+    String? matricule = await storage.read(key: 'matricule');
+    final db = await instance.database;
+    await db.update(
+      'affaires',
+      {
+        'hasVisite': '1'
+      },
+      where: 'Code_Affaire = ? AND Code_site = ? AND matricule = ?',
+      whereArgs: [ code_affaire, code_site, matricule ],
+    );
+  }
+
   Future<void> createVisites(List<dynamic> visites) async {
     String visiteQuery = '''
       INSERT INTO visites

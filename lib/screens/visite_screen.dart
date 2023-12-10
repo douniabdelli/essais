@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
+import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'dart:io';
@@ -2596,7 +2597,13 @@ class _VisiteScreenState extends State<VisiteScreen> {
                             ),
                             child: InkWell(
                               borderRadius: BorderRadius.circular(10.0),
-                              onTap: () {
+                              onTap: () async {
+                                var code_affaire = Provider.of<GlobalProvider>(context, listen: false).selectedAffaire;
+                                var code_site = Provider.of<GlobalProvider>(context, listen: false).selectedSite;
+                                await Provider.of<Affaires>(context, listen: false).setHasVisite(
+                                    code_affaire,
+                                    code_site
+                                );
                                 Provider.of<GlobalProvider>(context, listen: false).validateForm();
                                 Provider.of<GlobalProvider>(context, listen: false).setValidCRVPIng = '1';
                                 _showSnackBar(context, 'Validation', 'Le formulaire à été validé !');

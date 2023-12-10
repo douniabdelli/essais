@@ -80,4 +80,25 @@ class Affaire {
 
   static Affaire deserialize(String json) => Affaire.fromJson(jsonDecode(json));
 
+
+  // Setter method
+  Affaire setHasVisite(String newHasVisite) {
+    return Affaire(
+      Code_Affaire: this.Code_Affaire,
+      Code_Site: this.Code_Site,
+      IntituleAffaire: this.IntituleAffaire,
+      NbrSite: this.NbrSite,
+      matricule: this.matricule,
+      Multisite: this.Multisite,
+      annee: this.annee,
+      Nom_DR: this.Nom_DR,
+      code_agence: this.code_agence,
+      nom_agence: this.nom_agence,
+      adresse: this.adresse,
+      tel: this.tel,
+      fax: this.fax,
+      email: this.email,
+      hasVisite: newHasVisite,
+    );
+  }
 }

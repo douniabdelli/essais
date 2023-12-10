@@ -307,7 +307,7 @@ class _AffairesScreenState extends State<AffairesScreen> {
                                       ),
                                   ],
                                 ),
-                                if(affaires.foundAffaires[index%affaires.foundAffaires.length].hasVisite == '1')
+                                if(Provider.of<Affaires>(context).foundAffaires[index%affaires.foundAffaires.length].hasVisite == '1')
                                   Positioned(
                                       top: 8.0,
                                       right: 12.0,

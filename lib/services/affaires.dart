@@ -19,6 +19,19 @@ class Affaires extends ChangeNotifier {
   late List _codes_affaires_sites = [];
 
 //////////////////////////////////////////////////////////////////////////////////////
+
+  Future setHasVisite(code_affaire, code_site) async {
+    var index = _affaires.indexWhere((affaire) => affaire.Code_Affaire == code_affaire && affaire.Code_Site == code_site);
+    if(index > -1)
+      _affaires[index] = _affaires[index].setHasVisite('1');
+    index = _foundAffaires.indexWhere((affaire) => affaire.Code_Affaire == code_affaire && affaire.Code_Site == code_site);
+    if(index > -1)
+      _foundAffaires[index] = _foundAffaires[index].setHasVisite('1');
+
+    await VisitePreliminaireDatabase.instance.setHasVisite(code_affaire, code_site);
+    notifyListeners();
+  }
+  
   List get affaires => _affaires;
   List get foundAffaires => _foundAffaires;
   int selectedAffaireIndex(value) {
