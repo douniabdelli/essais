@@ -340,6 +340,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if(result == 200 || result == 201){
                                       if(result == 200)
                                         await Provider.of<Affaires>(context, listen: false).getData(token: token!);
+                                      Provider.of<Auth>(context, listen: false).setIsLocally = true;
+                                      await storage.write(key: 'isLocally', value: true.toString().toLowerCase());
                                       //Navigator.pop(context);
                                       Navigator.of(context).pushReplacement(MaterialPageRoute(
                                           builder: (context) => const HomeScreen(isNotFirstTime: '',)));

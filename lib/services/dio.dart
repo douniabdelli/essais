@@ -11,8 +11,8 @@ Dio dio() {
   // android
   //dio.options.baseUrl = "http://10.0.2.2:8000/api/mobile";
 
-  dio.options.baseUrl = "http://192.168.15.98:8000/api/mobile";
-  //dio.options.baseUrl = "http://192.168.108.2:96/api/mobile";
+  //dio.options.baseUrl = "http://192.168.15.98:8000/api/mobile";
+  dio.options.baseUrl = "http://192.168.108.2:96/api/mobile";
 
   return dio;
 }
