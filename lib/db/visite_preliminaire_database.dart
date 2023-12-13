@@ -276,7 +276,7 @@ class VisitePreliminaireDatabase {
             (item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
             item['VisitSiteEngHabitant'],
             (item['VisitSite_Btn_presence_talwegs'] == 'Oui' || item['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((item['VisitSite_Btn_presence_talwegs'] == 'Non' || item['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
-            item['visitesitePresDepotremblai'],
+            item['VisitSiteExistGliss'],
             (item['VisitSite_Btn_terrain_inondable'] == 'Oui' || item['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_inondable'] == 'Non' || item['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
             item['VisitSite_terrain_inondable'],
             (item['VisitSite_Btn_terrain_enpente'] == 'Oui' || item['VisitSite_Btn_terrain_enpente'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_enpente'] == 'Non' || item['VisitSite_Btn_terrain_enpente'] == '0') ? '0' : ''),

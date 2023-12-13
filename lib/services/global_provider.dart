@@ -580,7 +580,7 @@ class GlobalProvider extends ChangeNotifier {
     _observationsComplementairesInputController.text = visite.VisitSiteAutre == 'null' ? '' : visite.VisitSiteAutre;
     _conclusion_1Controller.text = visite.VisitSite_Btn_Presence_risque_instab_terasmt == '1' ? 'Oui' : (visite.VisitSite_Btn_Presence_risque_instab_terasmt == '0' ? 'Non' : '');
     _conclusion_2Controller.text = visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '1' ? 'Oui' : (visite.VisitSite_Btn_necessite_courrier_MO_risque_encouru == '0' ? 'Non' : '');
-    _conclusion_3Controller = visite.VisitSite_Btn_doc_annexe == 'Oui' ? true : false;
+    _conclusion_3Controller = visite.VisitSite_Btn_doc_annexe == '1' ? true : false;
     _ValidCRVPIng = visite.ValidCRVPIng == '1' ? '1' : '0';
     _personnesTierces = visite.VisitSite_liste_present != 'null'
         ? ( isJSON(visite.VisitSite_liste_present)
