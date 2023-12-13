@@ -568,7 +568,7 @@ class GlobalProvider extends ChangeNotifier {
     _presenceSourcesEauCaviteController.text = visite.VisitSite_Btn_presence_sources_cours_eau_cavite == '1' ? 'Oui' : (visite.VisitSite_Btn_presence_sources_cours_eau_cavite == '0' ? 'Non' : '');
     _presenceSourcesEauCaviteInputController.text = visite.VisitSiteEngHabitant == 'null' ? '' : visite.VisitSiteEngHabitant;
     _presenceTalwegsController.text = visite.VisitSite_Btn_presence_talwegs == '1' ? 'Oui' : (visite.VisitSite_Btn_presence_talwegs == '0' ? 'Non' : '');
-    _presenceTalwegsInputController.text = visite.visitesitePresDepotremblai == 'null' ? '' : visite.visitesitePresDepotremblai;
+    _presenceTalwegsInputController.text = visite.VisitSiteExistGliss == 'null' ? '' : visite.VisitSiteExistGliss;
     _terrainInondableController.text = visite.VisitSite_Btn_terrain_inondable == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_inondable == '0' ? 'Non' : '');
     _terrainInondableInputController.text = visite.VisitSite_terrain_inondable == 'null' ? '' : visite.VisitSite_terrain_inondable;
     _terrainPenteController.text = visite.VisitSite_Btn_terrain_enpente == '1' ? 'Oui' : (visite.VisitSite_Btn_terrain_enpente == '0' ? 'Non' : '');
@@ -633,7 +633,7 @@ class GlobalProvider extends ChangeNotifier {
           VisitSite_Btn_presence_sources_cours_eau_cavite: presenceSourcesEauCaviteController.text,
           VisitSiteEngHabitant: _presenceSourcesEauCaviteInputController.text,
           VisitSite_Btn_presence_talwegs: _presenceTalwegsController.text,
-          visitesitePresDepotremblai: _presenceTalwegsInputController.text,
+          VisitSiteExistGliss: _presenceTalwegsInputController.text,
           VisitSite_Btn_terrain_inondable: _terrainInondableController.text,
           VisitSite_terrain_inondable: _terrainInondableInputController.text,
           VisitSite_Btn_terrain_enpente: _terrainPenteController.text,

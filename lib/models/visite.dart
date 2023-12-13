@@ -29,7 +29,7 @@ class Visite {
   final String VisitSiteEngHabitant;
   final String VisitSite_Btn_presence_talwegs;
   // presence_talwegs
-  final String visitesitePresDepotremblai;
+  final String VisitSiteExistGliss;
   final String VisitSite_Btn_terrain_inondable;
   final String VisitSite_terrain_inondable;
   final String VisitSite_Btn_terrain_enpente;
@@ -74,7 +74,7 @@ class Visite {
     required this.VisitSiteEngHabitant,
     required this.VisitSite_Btn_presence_talwegs,
     // presence_talwegs
-    required this.visitesitePresDepotremblai,
+    required this.VisitSiteExistGliss,
     required this.VisitSite_Btn_terrain_inondable,
     required this.VisitSite_terrain_inondable,
     required this.VisitSite_Btn_terrain_enpente,
@@ -118,7 +118,7 @@ class Visite {
       VisitSite_Btn_presence_sources_cours_eau_cavite: (json['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || json['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((json['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || json['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
       VisitSiteEngHabitant: json['VisitSiteEngHabitant'].toString(),
       VisitSite_Btn_presence_talwegs: (json['VisitSite_Btn_presence_talwegs'] == 'Oui' || json['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((json['VisitSite_Btn_presence_talwegs'] == 'Non' || json['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
-      visitesitePresDepotremblai: json['visitesitePresDepotremblai'].toString(),
+      VisitSiteExistGliss: json['VisitSiteExistGliss'].toString(),
       VisitSite_Btn_terrain_inondable: (json['VisitSite_Btn_terrain_inondable'] == 'Oui' || json['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((json['VisitSite_Btn_terrain_inondable'] == 'Non' || json['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
       VisitSite_terrain_inondable: json['VisitSite_terrain_inondable'].toString(),
       VisitSite_Btn_terrain_enpente: (json['VisitSite_Btn_terrain_enpente'] == 'Oui' || json['VisitSite_Btn_terrain_enpente'] == '1') ? '1' : ((json['VisitSite_Btn_terrain_enpente'] == 'Non' || json['VisitSite_Btn_terrain_enpente'] == '0') ? '0' : ''),
@@ -162,7 +162,7 @@ class Visite {
         'VisitSite_Btn_presence_sources_cours_eau_cavite': (model.VisitSite_Btn_presence_sources_cours_eau_cavite == 'Oui' || model.VisitSite_Btn_presence_sources_cours_eau_cavite == '1') ? '1' : ((model.VisitSite_Btn_presence_sources_cours_eau_cavite == 'Non' || model.VisitSite_Btn_presence_sources_cours_eau_cavite == '0') ? '0' : ''),
         'VisitSiteEngHabitant': model.VisitSiteEngHabitant,
         'VisitSite_Btn_presence_talwegs': (model.VisitSite_Btn_presence_talwegs == 'Oui' || model.VisitSite_Btn_presence_talwegs == '1') ? '1' : ((model.VisitSite_Btn_presence_talwegs == 'Non' || model.VisitSite_Btn_presence_talwegs == '0') ? '0' : ''),
-        'visitesitePresDepotremblai': model.visitesitePresDepotremblai,
+        'VisitSiteExistGliss': model.VisitSiteExistGliss,
         'VisitSite_Btn_terrain_inondable': (model.VisitSite_Btn_terrain_inondable == 'Oui' || model.VisitSite_Btn_terrain_inondable == '1') ? '1' : ((model.VisitSite_Btn_terrain_inondable == 'Non' || model.VisitSite_Btn_terrain_inondable == '0') ? '0' : ''),
         'VisitSite_terrain_inondable': model.VisitSite_terrain_inondable,
         'VisitSite_Btn_terrain_enpente': (model.VisitSite_Btn_terrain_enpente == 'Oui' || model.VisitSite_Btn_terrain_enpente == '1') ? '1' : ((model.VisitSite_Btn_terrain_enpente == 'Non' || model.VisitSite_Btn_terrain_enpente == '0') ? '0' : ''),

@@ -102,7 +102,7 @@ class VisitePreliminaireDatabase {
         VisitSite_Btn_presence_sources_cours_eau_cavite TEXT,
         VisitSiteEngHabitant TEXT,
         VisitSite_Btn_presence_talwegs TEXT,
-        visitesitePresDepotremblai TEXT,
+        VisitSiteExistGliss TEXT,
         VisitSite_Btn_terrain_inondable TEXT,
         VisitSite_terrain_inondable TEXT,
         VisitSite_Btn_terrain_enpente TEXT,
@@ -241,7 +241,7 @@ class VisitePreliminaireDatabase {
   Future<void> createVisites(List<dynamic> visites) async {
     String visiteQuery = '''
       INSERT INTO visites
-      (Code_Affaire, Code_site, matricule, siteImage, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEngHabitant, VisitSite_Btn_presence_talwegs,  VisitSitePresDepotremblai, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng)
+      (Code_Affaire, Code_site, matricule, siteImage, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEngHabitant, VisitSite_Btn_presence_talwegs,  VisitSiteExistGliss, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''';
     final storage = new FlutterSecureStorage();
@@ -354,7 +354,7 @@ class VisitePreliminaireDatabase {
           'VisitSite_Btn_presence_sources_cours_eau_cavite': (visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
           'VisitSiteEngHabitant': visite['VisitSiteEngHabitant'],
           'VisitSite_Btn_presence_talwegs': (visite['VisitSite_Btn_presence_talwegs'] == 'Oui' || visite['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_talwegs'] == 'Non' || visite['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
-          'visitesitePresDepotremblai': visite['visitesitePresDepotremblai'],
+          'VisitSiteExistGliss': visite['VisitSiteExistGliss'],
           'VisitSite_Btn_terrain_inondable': (visite['VisitSite_Btn_terrain_inondable'] == 'Oui' || visite['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_inondable'] == 'Non' || visite['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
           'VisitSite_terrain_inondable': visite['VisitSite_terrain_inondable'],
           'VisitSite_Btn_terrain_enpente': (visite['VisitSite_Btn_terrain_enpente'] == 'Oui' || visite['VisitSite_Btn_terrain_enpente'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_enpente'] == 'Non' || visite['VisitSite_Btn_terrain_enpente'] == '0') ? '0' : ''),
