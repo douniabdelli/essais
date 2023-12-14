@@ -17,6 +17,8 @@ class Affaires extends ChangeNotifier {
   late List _visites = [];
   late List _codes_affaires = [];
   late List _codes_affaires_sites = [];
+  late String _search = '';
+  late String _filter = 'Toutes les visites';
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,19 +39,35 @@ class Affaires extends ChangeNotifier {
   int selectedAffaireIndex(value) {
     return _foundAffaires.indexWhere((e) => e.Code_Affaire == value);
   }
+
+  void filterAffaire() {
+    if(_filter == 'Toutes les affaires')
+      _foundAffaires = _foundAffaires.where((element)
+      =>
+      (element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search))
+      ).toList();
+    else if(_filter == 'Visitées')
+      _foundAffaires = _foundAffaires.where((element)
+      =>
+      ((element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search)) && element.hasVisite == '1')
+      ).toList();
+    else if(_filter == 'Non visitées')
+      _foundAffaires = _foundAffaires.where((element)
+      =>
+      ((element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search)) && element.hasVisite != '1')
+      ).toList();
+  }
+
   set setfoundAffaires(value) {
-      _foundAffaires = _affaires.where((element)
-        => 
-          (element.Code_Affaire.toString().toLowerCase().contains(value) || element.Code_Site.toString().toLowerCase().contains(value))).toList();
+      _search = value;
+      _foundAffaires = _affaires;
+      filterAffaire();
       notifyListeners();
   }
   set setFilterAffaires(value) {
-      if(value == 'Toutes les affaires')
-        _foundAffaires = _affaires;
-      else if(value == 'Visitées')
-        _foundAffaires = _affaires.where((element) => element.hasVisite == '1').toList();
-      else if(value == 'Non visitées')
-        _foundAffaires = _affaires.where((element) => element.hasVisite != '1').toList();
+      _filter = value;
+      _foundAffaires = _affaires;
+      filterAffaire();
       notifyListeners();
   }
 //////////////////////////////////////////////////////////////////////////////////////
