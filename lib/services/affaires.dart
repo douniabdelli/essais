@@ -43,6 +43,15 @@ class Affaires extends ChangeNotifier {
           (element.Code_Affaire.toString().toLowerCase().contains(value) || element.Code_Site.toString().toLowerCase().contains(value))).toList();
       notifyListeners();
   }
+  set setFilterAffaires(value) {
+      if(value == 'Toutes les affaires')
+        _foundAffaires = _affaires;
+      else if(value == 'Visitées')
+        _foundAffaires = _affaires.where((element) => element.hasVisite == '1').toList();
+      else if(value == 'Non visitées')
+        _foundAffaires = _affaires.where((element) => element.hasVisite != '1').toList();
+      notifyListeners();
+  }
 //////////////////////////////////////////////////////////////////////////////////////
   List get sites => _sites;
   List get foundSites => _foundSites;

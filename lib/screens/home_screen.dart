@@ -82,31 +82,59 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           ),
           actions: [
             if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1)
-              Container(
-                width: MediaQuery.of(context).size.width * 1 / 2,
-                child: AnimatedSearchBar(
-                    label: "Trouver un(e) affaire/site",
-                    controller: _searchController,
-                    labelStyle: TextStyle(fontSize: 16),
-                    searchStyle: TextStyle(color: Colors.white),
-                    cursorColor: Colors.white,
-                    textInputAction: TextInputAction.done,
-                    searchDecoration: InputDecoration(
-                      hintText: "Search",
-                      alignLabelWithHint: true,
-                      fillColor: Colors.white,
-                      focusColor: Colors.white,
-                      hintStyle: TextStyle(color: Colors.white70),
+              Row(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 1 / 3,
+                    child: AnimatedSearchBar(
+                        label: "Trouver un(e) affaire/site",
+                        controller: _searchController,
+                        labelStyle: TextStyle(fontSize: 16),
+                        searchStyle: TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
+                        textInputAction: TextInputAction.done,
+                        searchDecoration: InputDecoration(
+                          hintText: "Search",
+                          alignLabelWithHint: true,
+                          fillColor: Colors.white,
+                          focusColor: Colors.white,
+                          hintStyle: TextStyle(color: Colors.white70),
+                          border: InputBorder.none,
+                        ),
+                        onChanged: (value) {
+                          Provider.of<Affaires>(context, listen: false)
+                              .setfoundAffaires = value;
+                        },
+                        onFieldSubmitted: (value) {
+                          Provider.of<Affaires>(context, listen: false)
+                              .setfoundAffaires = value;
+                        }),
+                  ),
+                  SizedBox(width: 20.0,),
+                  DropdownMenu(
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                    ),
+                    width: 180.0,
+                    dropdownMenuEntries: ['Toutes les affaires', 'Visitées', 'Non visitées'].map<DropdownMenuEntry<String>>((String value) {
+                      return DropdownMenuEntry<String>(
+                        value: value,
+                        label: value,
+                      );
+                    }).toList(),
+                    onSelected: (String? value) {
+                      Provider.of<Affaires>(context, listen: false)
+                          .setFilterAffaires = value;
+                    },
+                    initialSelection: 'Toutes les affaires',
+                    trailingIcon: Icon(Icons.filter_list),
+                    inputDecorationTheme: InputDecorationTheme(
+                      suffixIconColor: Colors.white,
+                      isDense: false,
                       border: InputBorder.none,
                     ),
-                    onChanged: (value) {
-                      Provider.of<Affaires>(context, listen: false)
-                          .setfoundAffaires = value;
-                    },
-                    onFieldSubmitted: (value) {
-                      Provider.of<Affaires>(context, listen: false)
-                          .setfoundAffaires = value;
-                    }),
+                  ),
+                ],
               ),
             if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2)
               Center(
