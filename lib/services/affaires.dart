@@ -82,7 +82,13 @@ class Affaires extends ChangeNotifier {
   getData({required String token}) async {
     try {
       String? _isNotFirstTime = await storage.read(key: 'isNotFirstTime');
-      if(_isNotFirstTime != null && _isNotFirstTime == 'isNotFirstTime'){
+      String? userString = (await storage.read(key: 'user')) as String?;
+      var structureExists = true;
+      if(userString != null) {
+        User _user = User.deserialize(userString);
+        structureExists = await VisitePreliminaireDatabase.instance.checkStructure(_user.structure);
+      }
+      if(_isNotFirstTime != null && _isNotFirstTime == 'isNotFirstTime' && structureExists){
         // get affaires from local database
         _affaires = await VisitePreliminaireDatabase.instance.getAffaires();
         // get sites from local database

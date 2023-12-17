@@ -526,6 +526,16 @@ class VisitePreliminaireDatabase {
     return Visite.fromJson(visite[0]);
   }
 
+  Future<bool> checkStructure(structure) async {
+    final db = await instance.database;
+    final affaires = await db.query(
+        'affaires',
+        where: 'code_agence=?',
+        whereArgs: [structure]
+    );
+    return affaires.isNotEmpty;
+  }
+
   Future<bool> checkExistanceVisite(Code_Affaire, Code_site) async {
     final db = await instance.database;
     final visite = await db.query(
