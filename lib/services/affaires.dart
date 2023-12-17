@@ -43,19 +43,19 @@ class Affaires extends ChangeNotifier {
   void filterAffaire() {
     if(_filter == 'Toutes les affaires')
       _foundAffaires = _foundAffaires.where((element)
-      =>
-      (element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search))
-      ).toList();
+        =>
+          (element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search) || element.IntituleAffaire.toString().toLowerCase().contains(_search))
+          ).toList();
     else if(_filter == 'Visitées')
       _foundAffaires = _foundAffaires.where((element)
-      =>
-      ((element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search)) && element.hasVisite == '1')
-      ).toList();
+        =>
+          ((element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search) || element.IntituleAffaire.toString().toLowerCase().contains(_search)) && element.hasVisite == '1')
+          ).toList();
     else if(_filter == 'Non visitées')
       _foundAffaires = _foundAffaires.where((element)
-      =>
-      ((element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search)) && element.hasVisite != '1')
-      ).toList();
+        =>
+          ((element.Code_Affaire.toString().toLowerCase().contains(_search) || element.Code_Site.toString().toLowerCase().contains(_search) || element.IntituleAffaire.toString().toLowerCase().contains(_search)) && element.hasVisite != '1')
+          ).toList();
   }
 
   set setfoundAffaires(value) {
