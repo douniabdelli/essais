@@ -42,17 +42,115 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     return AdvancedDrawer(
-      backdropColor: Colors.teal,
+      backdropColor: Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1
+        ? Colors.purple.withOpacity(0.6)
+        : (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2
+          ? Colors.redAccent.withOpacity(0.6)
+          : Colors.blueAccent.withOpacity(0.6)
+      ),
       controller: _advancedDrawerController,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
       animateChildDecoration: true,
       rtlOpening: false,
       openScale: 1.0,
-      openRatio: 0.65,
+      openRatio: 0.55,
       disabledGestures: false,
       childDecoration: const BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(16)),
+      ),
+      drawer: SafeArea(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
+          child: ListTileTheme(
+            textColor: Colors.white,
+            iconColor: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: 250.0,
+                  height: 250.0,
+                  margin: const EdgeInsets.only(
+                    top: 24.0,
+                    bottom: 34.0,
+                  ),
+                  padding: const EdgeInsets.only(
+                    top: 5.0
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset(
+                    'assets/images/user_avatar.png',
+                  ),
+                ),
+                Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: const EdgeInsets.only(
+                      bottom: 100.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          '${Provider.of<Auth>(context, listen: false).user?.nom} ${Provider.of<Auth>(context, listen: false).user?.prenom}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25.0,
+                          ),
+                        ),
+                      ],
+                    )),
+                ListTile(
+                  onTap: () {
+                    Provider.of<GlobalProvider>(context, listen: true).setCurrentIndex = 1;
+                  },
+                  leading: Icon(Icons.home),
+                  title: Text('Home'),
+                ),
+                // ListTile(
+                //   onTap: () {},
+                //   leading: Icon(Icons.account_circle_rounded),
+                //   title: Text('Profile'),
+                // ),
+                // ListTile(
+                //   onTap: () {},
+                //   leading: Icon(Icons.settings),
+                //   title: Text('Settings'),
+                // ),
+                ListTile(
+                  onTap: () async {
+                    await Provider.of<Auth>(context, listen: false).logout();
+                    Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = '';
+                    await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('');
+                    Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 1;
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => LoginScreen(isNotFirstTime: widget.isNotFirstTime)));
+                  },
+                  leading: Icon(Icons.logout),
+                  title: Text('Logout'),
+                ),
+                Spacer(),
+                DefaultTextStyle(
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white54,
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 16.0,
+                    ),
+                    child: Text('CTC Algerie © ${DateTime.now().year}'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       child: Scaffold(
         backgroundColor: const Color(0xffe4e9f9),
@@ -202,96 +300,6 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           index:
               Provider.of<GlobalProvider>(context, listen: true).currentIndex,
           children: bottomBarWidgets,
-        ),
-      ),
-      drawer: SafeArea(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          child: ListTileTheme(
-            textColor: Colors.white,
-            iconColor: Colors.white,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Container(
-                  width: 128.0,
-                  height: 128.0,
-                  margin: const EdgeInsets.only(
-                    top: 24.0,
-                    bottom: 34.0,
-                  ),
-                  padding: const EdgeInsets.only(
-                    top: 5.0
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: Colors.black12,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Image.asset(
-                    'assets/images/user_avatar.png',
-                  ),
-                ),
-                Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: const EdgeInsets.only(
-                      bottom: 64.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Text(
-                          '${Provider.of<Auth>(context, listen: false).user?.nom} ${Provider.of<Auth>(context, listen: false).user?.prenom}',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    )),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.home),
-                  title: Text('Home'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.account_circle_rounded),
-                  title: Text('Profile'),
-                ),
-                ListTile(
-                  onTap: () {},
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
-                ),
-                ListTile(
-                  onTap: () async {
-                    await Provider.of<Auth>(context, listen: false).logout();
-                    Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = '';
-                    await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('');
-                    Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 1;
-                    Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => LoginScreen(isNotFirstTime: widget.isNotFirstTime)));
-                  },
-                  leading: Icon(Icons.logout),
-                  title: Text('Logout'),
-                ),
-                Spacer(),
-                DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white54,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 16.0,
-                    ),
-                    child: Text('CTC Algerie'),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
