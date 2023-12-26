@@ -646,10 +646,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ),
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 0,
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 0,
                           state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 0)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 0) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 0) ? StepState.complete : StepState.disabled)
                       ),
                       Step(
                           title: Text(
@@ -1339,10 +1339,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ),
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 1,
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 1,
                           state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 1)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 1) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 1) ? StepState.complete : StepState.disabled)
                       ),
                       Step(
                           title: Text(
@@ -1811,10 +1811,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ),
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 2,
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 2,
                           state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 2)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 2) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 2) ? StepState.complete : StepState.disabled)
                       ),
                       Step(
                           title: Text(
@@ -1882,10 +1882,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ),
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 3,
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 3,
                           state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 3)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 3) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 3) ? StepState.complete : StepState.disabled)
                       ),
                       Step(
                           title: Text(
@@ -2093,10 +2093,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ),
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 4,
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 4,
                           state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 4)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 4) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 4) ? StepState.complete : StepState.disabled)
                       ),
                       Step(
                           title: Text(
@@ -2126,7 +2126,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                       ),
                                     ]
                                 ),
-                                if(Provider.of<GlobalProvider>(context, listen: false).siteImage != null && Provider.of<GlobalProvider>(context, listen: false).siteImage != '')
+                                if(Provider.of<GlobalProvider>(context, listen: false).siteImage != null && Provider.of<GlobalProvider>(context, listen: false).siteImage != 'null' && Provider.of<GlobalProvider>(context, listen: false).siteImage != '')
                                   Container(
                                     width: MediaQuery.of(context).size.width * 2 / 3,
                                     height: MediaQuery.of(context).size.width * 2 / 3,
@@ -2266,10 +2266,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ],
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 5,
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 5,
                           state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 5)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 5) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 5) ? StepState.complete : StepState.disabled)
                       ),
                       Step(
                           title: Text(
@@ -2564,10 +2564,10 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ],
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6,
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6,
                           state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).stepIndex > 6) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 6) ? StepState.complete : StepState.disabled)
                       ),
                     ],
                   ),
@@ -2852,7 +2852,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
   goToNextStep(){
     setState(() => onNextButtonClick = true);
     late bool validationStatus = true;
-    if(formKeys[Provider.of<GlobalProvider>(context, listen: false).stepIndex].currentState!.validate()){
+    if(Provider.of<GlobalProvider>(context, listen: false).validCRVPIng == '1' || formKeys[Provider.of<GlobalProvider>(context, listen: false).stepIndex].currentState!.validate()){
       switch(Provider.of<GlobalProvider>(context, listen: false).stepIndex){
         case 0:
           if(
