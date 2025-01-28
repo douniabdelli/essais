@@ -118,13 +118,13 @@ class Auth extends ChangeNotifier {
       try {
         Dio.Response response = await dio()
             .get(
-              '/user',
-              options: Dio.Options(
-                  headers: {
-                    'Authorization': 'Bearer $token'
-                  }
-              )
-            );
+            '',
+            options: Dio.Options(
+                headers: {
+                  'Authorization': 'Bearer $token'
+                }
+            )
+        );
         _isLoggedIn = true;
         _user = User.fromJson(response.data);
         _token = token;

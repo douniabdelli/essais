@@ -10,6 +10,7 @@ import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
 
+
 class VisiteScreen extends StatefulWidget {
   const VisiteScreen({Key? key}) : super(key: key);
 
@@ -111,7 +112,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                       ? () => _selectDate(context)
                         : null,
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
+                      backgroundColor: Colors.blue,
                     ),
                     child: Row(
                       children: [
@@ -148,7 +149,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                         Provider.of<GlobalProvider>(context, listen: false).stepIndex - 1
                                 },
                                 style: ElevatedButton.styleFrom(
-                                    primary: Theme.of(context).secondaryHeaderColor),
+                                    backgroundColor: Theme.of(context).secondaryHeaderColor),
                                 child: Row(
                                   children: [
                                     Icon(Icons.navigate_before,
@@ -2186,7 +2187,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                             flex: 2,
                                             child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                primary: Color.fromRGBO(0, 0, 0, 0.1),
+                                                backgroundColor: Color.fromRGBO(0, 0, 0, 0.1),
                                                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                                                 shape: RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(20)),
@@ -2218,7 +2219,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                             flex: 2,
                                             child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                primary: Color.fromRGBO(0, 0, 0, 0.1),
+                                                backgroundColor: Color.fromRGBO(0, 0, 0, 0.1),
                                                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                                                 shape: RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(20)),

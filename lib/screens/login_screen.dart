@@ -318,7 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   shape: new RoundedRectangleBorder(
                                     borderRadius: new BorderRadius.circular(17.0),
                                   ),
-                                  backgroundColor: Color(0xff3D73AA), 
+                                  backgroundColor: Color(0xff3D73AA),
                                 ),
                                 onPressed: () async {
                                   setState(() {
@@ -336,7 +336,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
                                     String? token = await storage.read(key: 'token');
                                     // login result
-                                    print('/*/*/* ${result} /*/*/*');
+                                    print('/*/*/* ${token} /*/*/******');
                                     if(result == 200 || result == 201){
                                       if(result == 200)
                                         await Provider.of<Affaires>(context, listen: false).getData(token: token!);
