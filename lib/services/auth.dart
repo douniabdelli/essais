@@ -129,7 +129,9 @@ class Auth extends ChangeNotifier {
         _user = User.fromJson(response.data);
         _token = token;
         await storeToken(token: token);
+
         await storeUser(user: _user);
+
         notifyListeners();
       } catch (e) {
         print(e);
@@ -142,6 +144,8 @@ class Auth extends ChangeNotifier {
   }
 
   storeUser({required User? user}) async {
+
+    print('******************brahimmmm ${user}');
     if(user != null) {
       _user = user;
       await storage.write(key: 'user', value: User.serialize(user));
