@@ -8,6 +8,7 @@ import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dar
 import 'package:mgtrisque_visitepreliminaire/models/third_person.dart';
 import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:geolocator/geolocator.dart';
 
 class GlobalProvider extends ChangeNotifier {
   late String _screenTitle = 'Affaires';
@@ -38,7 +39,33 @@ class GlobalProvider extends ChangeNotifier {
     'BET',
     'Entreprise de réalisation'
   ];
+  //----------------------------*---------------------------------
+  double? _latitude;
+  double? _longitude;
+  TextEditingController latitudeController = TextEditingController();
+  TextEditingController longitudeController = TextEditingController();
 
+  // Méthode pour mettre à jour les coordonnées
+  void setCoordinates(double latitude, double longitude) {
+    latitudeController.text = latitude.toString();
+    longitudeController.text = longitude.toString();
+    notifyListeners();
+  }
+
+  double? get latitude => _latitude;
+  double? get longitude => _longitude;
+  Future<void> initializeCurrentLocation() async {
+    final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    _latitude = position.latitude;
+    _longitude = position.longitude;
+    notifyListeners();
+  }
+  void saveLocation(double latitude, double longitude) {
+    // Logique pour enregistrer les coordonnées dans la base de données
+    print('Enregistrement des coordonnées: Latitude: $latitude, Longitude: $longitude');
+    // Exemple d'appel à une API ou à une base de données
+  }
+  //-----------------*---------------------------------------------
   bool _visiteExistes = false;
   bool get visiteExistes => _visiteExistes;
   setVisiteExistes() async {
@@ -97,7 +124,7 @@ class GlobalProvider extends ChangeNotifier {
   late String _ValidCRVPIng = '';
 
   late List _personnesTierces = [];
-
+  TextEditingController _localisationInputController = TextEditingController();
   List get personnesTierces  {
     return _personnesTierces;
   }
@@ -537,6 +564,8 @@ class GlobalProvider extends ChangeNotifier {
     _conclusion_2Controller.clear();
     _conclusion_3Controller = false;
     _ValidCRVPIng = '0';
+    _latitude = null;
+    _longitude = null;
     _personnesTierces = [];
   }
 
@@ -588,13 +617,21 @@ class GlobalProvider extends ChangeNotifier {
               : []
           )
         : [];
+    _latitude = visite.Latitude;
+    _longitude = visite.Longitude;
   }
 ///////////////////////////////////////////////////////////////////////////////////////
 // prepareVisiteFormData
   submitForm() async {
     final storage = new FlutterSecureStorage();
     String? matricule = await storage.read(key: 'matricule');
+    if (_latitude == null || _longitude == null) {
+      await initializeCurrentLocation();
+    }
 
+    if (_latitude == null || _longitude == null) {
+      throw Exception('Latitude or Longitude is null');
+    }
     late String? siteImagePath = null, path;
     final File image;
     if(_capturedImage != null){
@@ -647,7 +684,9 @@ class GlobalProvider extends ChangeNotifier {
           VisitSite_Btn_necessite_courrier_MO_risque_encouru: _conclusion_2Controller.text,
           VisitSite_Btn_doc_annexe: _conclusion_3Controller ? '1' : '0',
           VisitSite_liste_present: jsonEncode(_personnesTierces),
-          ValidCRVPIng: '0'
+          ValidCRVPIng: '0',
+        Latitude: _latitude!,
+        Longitude: _longitude!
       )
     ];
     var existsVisite = await VisitePreliminaireDatabase.instance.checkExistanceVisite(_selectedAffaire, _selectedSite);
@@ -673,5 +712,5 @@ class GlobalProvider extends ChangeNotifier {
     }
     return true;
   }
-
+  TextEditingController get localisationInputController => _localisationInputController;
 }

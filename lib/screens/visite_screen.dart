@@ -2,7 +2,7 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lottie/lottie.dart';
+
 import 'package:mgtrisque_visitepreliminaire/screens/show_alert.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
@@ -10,7 +10,12 @@ import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
 
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart' as google_maps;
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lottie/lottie.dart' hide Marker;
 class VisiteScreen extends StatefulWidget {
   const VisiteScreen({Key? key}) : super(key: key);
 
@@ -27,17 +32,56 @@ class _VisiteScreenState extends State<VisiteScreen> {
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
     GlobalKey<FormState>()
   ];
   late bool onNextButtonClick = false;
 
+  Set<Marker> _markers = {};
+  GoogleMapController? _mapController;
+  LatLng? _currentLocation;
+  TextEditingController latitudeController = TextEditingController();
+  TextEditingController longitudeController = TextEditingController();
+
   @override
   void initState() {
-    // TODO: implement initState
     this.onNextButtonClick = false;
     super.initState();
+    _getCurrentLocation();
   }
 
+  void _getCurrentLocation() async {
+    final status = await Permission.location.request();
+    if (status.isGranted) {
+      final position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _currentLocation = LatLng(position.latitude, position.longitude);
+        _markers = { // Remplace complètement l'ensemble des markers
+          Marker(
+            markerId: MarkerId('1'),
+            position: _currentLocation!,
+            infoWindow: InfoWindow(title: 'Vous êtes ici'),
+          ),
+        };
+        // Mettez à jour les contrôleurs de latitude et de longitude dans le provider
+        Provider.of<GlobalProvider>(context, listen: false).setCoordinates(position.latitude, position.longitude);
+      });
+
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(_currentLocation!, 15),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Permission de localisation refusée')),
+      );
+    }
+  }
+  void _saveLocationToDatabase(LatLng location) {
+    // Remplacez ceci par votre logique pour enregistrer les coordonnées dans la base de données
+    print('Enregistrement des coordonnées: Latitude: ${location.latitude}, Longitude: ${location.longitude}');
+    // Exemple d'appel à une méthode de votre provider pour enregistrer les coordonnées
+    Provider.of<GlobalProvider>(context, listen: false).saveLocation(location.latitude, location.longitude);
+  }
   ImagePicker imagePicker = ImagePicker();
 
   _imageFromCamera() async {
@@ -161,7 +205,7 @@ class _VisiteScreenState extends State<VisiteScreen> {
                                   ],
                                 ),
                               ),
-                            if(Provider.of<GlobalProvider>(context, listen: true).stepIndex < 6)
+                            if(Provider.of<GlobalProvider>(context, listen: true).stepIndex < 7)
                               ElevatedButton(
                                 onPressed: () => {
                                       goToNextStep()
@@ -2273,16 +2317,79 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 5) ? StepState.complete : StepState.disabled)
                       ),
                       Step(
+                        title: Text(
+                          'Localisation',
+                          style: TextStyle(
+                            color: (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6) ? Colors.blue : Colors.black,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        content: Form(
+                          key: formKeys[6],
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 300,
+                                child: GoogleMap(
+                                  initialCameraPosition: CameraPosition(
+                                    target: _currentLocation ?? LatLng(0, 0),
+                                    zoom: 15,
+                                  ),
+                                  markers: _markers,
+                                  onMapCreated: (controller) {
+                                    _mapController = controller;
+                                  },
+                                  onTap: (position) {
+                                    setState(() {
+                                      _markers = { // Remplace tous les markers par un seul
+                                        Marker(
+                                          markerId: MarkerId('selected_location'),
+                                          position: position,
+                                          infoWindow: InfoWindow(title: 'Position sélectionnée'),
+                                        ),
+                                      };
+                                      _currentLocation = position;
+                                      print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
+                                    });
+                                  },
+
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_currentLocation != null) {
+                                    // Enregistrez les coordonnées dans la base de données
+                                    _saveLocationToDatabase(_currentLocation!);
+                                    // Passez à l'étape suivante
+
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Veuillez sélectionner une localisation')),
+                                    );
+                                  }
+                                },
+                                child: Text('Confirmer la localisation'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6,
+                        state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6)
+                            ? StepState.editing
+                            : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 6) ? StepState.complete : StepState.disabled),
+                      ),
+
+                      Step(
                           title: Text(
                             'Liste des présents',
                             style: TextStyle(
                                 color:
-                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6) ? Colors.blue : Colors.black,
+                                (Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 7) ? Colors.blue : Colors.black,
                                 fontSize: 18.0
                             ),
                           ),
                           content: Form(
-                            key: formKeys[6],
+                            key: formKeys[7],
                             child: Column(
                               children: [
                                 Container(
@@ -2565,17 +2672,17 @@ class _VisiteScreenState extends State<VisiteScreen> {
                               ],
                             ),
                           ),
-                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 6,
-                          state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6)
+                          isActive: Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex >= 7,
+                          state: (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 7)
                               ? StepState.editing
-                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 6) ? StepState.complete : StepState.disabled)
+                              : ((Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1' || Provider.of<GlobalProvider>(context, listen: true).stepIndex > 7) ? StepState.complete : StepState.disabled)
                       ),
                     ],
                   ),
                 ),
               ),
               if(
-                (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 6) && (Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
+                (Provider.of<GlobalProvider>(context, listen: true).stepIndex == 7) && (Provider.of<GlobalProvider>(context, listen: true).validCRVPIng != '1')
                   &&
                 (Provider.of<Auth>(context, listen: true).user?.modification == '1' && Provider.of<Auth>(context, listen: true).user?.insertion == '1')
                       &&
@@ -2845,6 +2952,13 @@ class _VisiteScreenState extends State<VisiteScreen> {
         )
           return false;
         break;
+      case 6:
+        if(
+        Provider.of<GlobalProvider>(context, listen: true).latitudeController.text == '' ||
+            Provider.of<GlobalProvider>(context, listen: true).longitudeController.text == ''
+        )
+          return false;
+        break;
     }
 
     return true;
@@ -2891,15 +3005,24 @@ class _VisiteScreenState extends State<VisiteScreen> {
           )
             validationStatus = false;
           break;
-        case 5:
-          if(
-            Provider.of<GlobalProvider>(context, listen: false).siteImage == null ||
+          case 5:
+        if(
+        Provider.of<GlobalProvider>(context, listen: false).siteImage == null ||
             Provider.of<GlobalProvider>(context, listen: false).siteImage == ''
+        )
+          validationStatus = false;
+        break;
+        case 6:
+          if(
+          Provider.of<GlobalProvider>(context, listen: false).latitudeController.text == '' ||
+              Provider.of<GlobalProvider>(context, listen: false).longitudeController.text == ''
           )
             validationStatus = false;
           break;
+
+
       }
-      if(validationStatus && Provider.of<GlobalProvider>(context, listen: false).stepIndex < 6) {
+      if(validationStatus && Provider.of<GlobalProvider>(context, listen: false).stepIndex < 7) {
         Provider.of<GlobalProvider>(context, listen: false).setStepIndex = Provider.of<GlobalProvider>(context, listen: false).stepIndex + 1;
         setState(() => onNextButtonClick = false);
       }

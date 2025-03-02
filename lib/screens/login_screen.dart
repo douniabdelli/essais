@@ -46,31 +46,31 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: const Color(0xffe4e9f9),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            height: size.height,
-            child: Column(
+        backgroundColor: const Color(0xffe4e9f9),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              height: size.height,
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Column(
-                    children: [
-                      Container(
-                        width: size.width * 3/5,
-                        height: size.width * 3/5,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: const AssetImage('assets/images/login_image.jpg'),
-                            fit: BoxFit.cover,
-                            colorFilter: new ColorFilter.mode(
-                                Colors.black.withOpacity(0.8), BlendMode.dstIn),
+                      children: [
+                        Container(
+                          width: size.width * 3/5,
+                          height: size.width * 3/5,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: const AssetImage('assets/images/login_image.jpg'),
+                              fit: BoxFit.cover,
+                              colorFilter: new ColorFilter.mode(
+                                  Colors.black.withOpacity(0.8), BlendMode.dstIn),
+                            ),
+                            borderRadius:
+                            BorderRadius.all(Radius.elliptical(9999.0, 9999.0)),
                           ),
-                          borderRadius:
-                          BorderRadius.all(Radius.elliptical(9999.0, 9999.0)),
                         ),
-                      ),
-                    ]
+                      ]
                   ),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 40.0),
@@ -87,311 +87,311 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 5.0,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 5.0,
+                          ),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                    width: size.width * 2/3,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          padding: EdgeInsets.only(
+                                              left: 15.0,
+                                              right: 15.0,
+                                              bottom: 5.0
+                                          ),
+                                          child: Text(
+                                            'Matricule',
+                                            style: TextStyle(
+                                              fontFamily: 'Arial',
+                                              fontSize: 20,
+                                              color: const Color(0xff333030),
+                                            ),
+                                            textAlign: TextAlign.start,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        Container(
+                                          width: double.infinity,
+                                          child: TextFormField(
+                                            controller: _matriculeController,
+                                            onChanged: (String? value) {
+                                              if(loginMatriculeError) {
+                                                _formKey.currentState!.reset();
+                                                _matriculeController.clear();
+                                                setState(() => loginMatriculeError = false);
+                                              }
+                                            },
+                                            validator: (String? value) {
+                                              if ((value != null && value.isEmpty) || loginMatriculeError) {
+                                                setState(() => isSigning = false);
+                                                setState(() => loginMatriculeError = true);
+                                                if(loginMatriculeError)
+                                                  return 'Entrez un matricule correct';
+                                                else if(value != null && value.isEmpty)
+                                                  return 'Le matricule ne doit pas être null';
+                                              }
+                                              return null;
+                                            },
+                                            decoration: InputDecoration(
+                                              hintText: 'Entrez le matricule',
+                                              errorBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                    color: Color(0xffFF0000),
+                                                    width: 1.0
+                                                ),
+                                              ),
+                                              focusedErrorBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                    color: Color(0xffFF0000),
+                                                    width: 1.0
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                    color: Color(0xff707070),
+                                                    width: 2.0
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                  color: Color(0xff707070),
+                                                ),
+                                              ),
+                                            ),
+                                            style: TextStyle(
+                                              fontFamily: 'Arial',
+                                              fontSize: 15,
+                                              color: const Color(0x8c333030),
+                                            ),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10.0),
+                                    width: size.width * 2/3,
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: double.infinity,
+                                          padding: EdgeInsets.only(
+                                              left: 15.0,
+                                              right: 15.0,
+                                              bottom: 5.0
+                                          ),
+                                          child: Text(
+                                            'Mot de passe',
+                                            style: TextStyle(
+                                              fontFamily: 'Arial',
+                                              fontSize: 20,
+                                              color: const Color(0xff333030),
+                                            ),
+                                            textAlign: TextAlign.start,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        Container(
+                                          width: double.infinity,
+                                          child: TextFormField(
+                                            obscureText: true,
+                                            controller: _passwordController,
+                                            onChanged: (String? value) {
+                                              if(loginPasswordError) {
+                                                _formKey.currentState!.reset();
+                                                _passwordController.clear();
+                                                setState(() => loginPasswordError = false);
+                                              }
+                                            },
+                                            validator: (String? value) {
+                                              if((value != null && value.isEmpty) || loginPasswordError) {
+                                                setState(() => isSigning = false);
+                                                setState(() => loginPasswordError = true);
+                                                if(loginPasswordError)
+                                                  return 'Entrez un mot de passe correct';
+                                                else if(value != null && value.isEmpty)
+                                                  return 'Le mot de passe ne doit pas être null';
+                                              }
+                                              return null;
+                                            },
+                                            decoration: InputDecoration(
+                                              hintText: 'Entrez le mot de passe',
+                                              errorBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                    color: Color(0xffFF0000),
+                                                    width: 1.0
+                                                ),
+                                              ),
+                                              focusedErrorBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                    color: Color(0xffFF0000),
+                                                    width: 1.0
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                    color: Color(0xff707070),
+                                                    width: 2.0
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(17.0),
+                                                borderSide: BorderSide(
+                                                  color: Color(0xff707070),
+                                                ),
+                                              ),
+                                            ),
+                                            style: TextStyle(
+                                              fontFamily: 'Arial',
+                                              fontSize: 15,
+                                              color: const Color(0x8c333030),
+                                            ),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10.0),
+                                    width: size.width * 2/3,
+                                    child: Row(
+                                      children: [
+                                        Checkbox(
+                                          value: Provider.of<Auth>(context, listen: true).isLocally,
+                                          onChanged: (value) async {
+                                            setState(
+                                                    () => Provider.of<Auth>(context, listen: false).setIsLocally = value ?? false
+                                            );
+                                            await storage.write(key: 'isLocally', value: value.toString().toLowerCase());
+                                          },
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'Se connecter localement',
+                                            style: TextStyle(
+                                              fontFamily: 'Arial',
+                                              fontSize: 15,
+                                              color: Colors.blue,
+                                            ),
+                                            textAlign: TextAlign.start,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Form(
-                          key: _formKey,
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 5.0,
+                            vertical: 5.0,
+                          ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                  width: size.width * 2/3,
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.only(
-                                            left: 15.0,
-                                            right: 15.0,
-                                            bottom: 5.0
-                                        ),
-                                        child: Text(
-                                          'Matricule',
-                                          style: TextStyle(
-                                            fontFamily: 'Arial',
-                                            fontSize: 20,
-                                            color: const Color(0xff333030),
-                                          ),
-                                          textAlign: TextAlign.start,
-                                          softWrap: false,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        child: TextFormField(
-                                          controller: _matriculeController,
-                                          onChanged: (String? value) {
-                                            if(loginMatriculeError) {
-                                              _formKey.currentState!.reset();
-                                              _matriculeController.clear();
-                                              setState(() => loginMatriculeError = false);
-                                            }
-                                        },
-                                          validator: (String? value) {
-                                            if ((value != null && value.isEmpty) || loginMatriculeError) {
-                                              setState(() => isSigning = false);
-                                              setState(() => loginMatriculeError = true);
-                                              if(loginMatriculeError)
-                                                return 'Entrez un matricule correct';
-                                              else if(value != null && value.isEmpty)
-                                                return 'Le matricule ne doit pas être null';
-                                            }
-                                          return null;
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: 'Entrez le matricule',
-                                            errorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                  color: Color(0xffFF0000),
-                                                  width: 1.0
-                                              ),
-                                            ),
-                                            focusedErrorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                  color: Color(0xffFF0000),
-                                                  width: 1.0
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                  color: Color(0xff707070),
-                                                  width: 2.0
-                                              ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                color: Color(0xff707070),
-                                              ),
-                                            ),
-                                          ),
-                                          style: TextStyle(
-                                            fontFamily: 'Arial',
-                                            fontSize: 15,
-                                            color: const Color(0x8c333030),
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                              ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 10.0),
-                                  width: size.width * 2/3,
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        padding: EdgeInsets.only(
-                                            left: 15.0,
-                                            right: 15.0,
-                                            bottom: 5.0
-                                        ),
-                                        child: Text(
-                                          'Mot de passe',
-                                          style: TextStyle(
-                                            fontFamily: 'Arial',
-                                            fontSize: 20,
-                                            color: const Color(0xff333030),
-                                          ),
-                                          textAlign: TextAlign.start,
-                                          softWrap: false,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        child: TextFormField(
-                                          obscureText: true,
-                                          controller: _passwordController,
-                                          onChanged: (String? value) {
-                                            if(loginPasswordError) {
-                                              _formKey.currentState!.reset();
-                                              _passwordController.clear();
-                                              setState(() => loginPasswordError = false);
-                                            }
-                                        },
-                                          validator: (String? value) {
-                                            if((value != null && value.isEmpty) || loginPasswordError) {
-                                              setState(() => isSigning = false);
-                                              setState(() => loginPasswordError = true);
-                                              if(loginPasswordError)
-                                                return 'Entrez un mot de passe correct';
-                                              else if(value != null && value.isEmpty)
-                                                return 'Le mot de passe ne doit pas être null';
-                                            }
-                                          return null;
-                                          },
-                                          decoration: InputDecoration(
-                                            hintText: 'Entrez le mot de passe',
-                                            errorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                  color: Color(0xffFF0000),
-                                                  width: 1.0
-                                              ),
-                                            ),
-                                            focusedErrorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                  color: Color(0xffFF0000),
-                                                  width: 1.0
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                  color: Color(0xff707070),
-                                                  width: 2.0
-                                              ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(17.0),
-                                              borderSide: BorderSide(
-                                                color: Color(0xff707070),
-                                              ),
-                                            ),
-                                          ),
-                                          style: TextStyle(
-                                            fontFamily: 'Arial',
-                                            fontSize: 15,
-                                            color: const Color(0x8c333030),
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                              ),
-                              Container(
-                                  margin: EdgeInsets.only(top: 10.0),
-                                  width: size.width * 2/3,
-                                  child: Row(
-                                    children: [
-                                      Checkbox(
-                                        value: Provider.of<Auth>(context, listen: true).isLocally,
-                                        onChanged: (value) async {
-                                          setState(
-                                            () => Provider.of<Auth>(context, listen: false).setIsLocally = value ?? false
-                                          );
-                                          await storage.write(key: 'isLocally', value: value.toString().toLowerCase());
-                                        },
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          'Se connecter localement',
-                                          style: TextStyle(
-                                            fontFamily: 'Arial',
-                                            fontSize: 15,
-                                            color: Colors.blue,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                          softWrap: false,
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                                width: size.width * 2/3,
+                                height: 55,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: new RoundedRectangleBorder(
+                                      borderRadius: new BorderRadius.circular(17.0),
+                                    ),
+                                    backgroundColor: Color(0xff3D73AA),
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      isSigning = true;
+                                      loginMatriculeError = false;
+                                      loginPasswordError = false;
+                                    });
+
+                                    Map credentials = {
+                                      'matricule': _matriculeController.text,
+                                      'password': _passwordController.text,
+                                    };
+                                    if (_formKey.currentState!.validate()) {
+                                      late int? result;
+                                      result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
+                                      String? token = await storage.read(key: 'token');
+                                      // login result
+                                      print('/*/*/* ${token} /*/*/******');
+                                      if(result == 200 || result == 201){
+                                        if(result == 200)
+                                          await Provider.of<Affaires>(context, listen: false).getData(token: token!);
+                                        Provider.of<Auth>(context, listen: false).setIsLocally = true;
+                                        await storage.write(key: 'isLocally', value: true.toString().toLowerCase());
+                                        //Navigator.pop(context);
+                                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                            builder: (context) => const HomeScreen(isNotFirstTime: '',)));
+                                      }
+                                      else {
+                                        setState(() => isSigning = false);
+                                        if(result == 404){
+                                          setState(() => loginMatriculeError = true);
+                                          _formKey.currentState!.validate();
+                                        }
+                                        if(result == 401) {
+                                          setState(() => loginPasswordError = true);
+                                          _formKey.currentState!.validate();
+                                        }
+                                      }
+                                    }
+                                  },
+                                  icon: Container(
+                                    margin: const EdgeInsets.only(right: 20.0),
+                                    height: 25.0,
+                                    width: 25.0,
+                                    child: isSigning
+                                        ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    )
+                                        : const Icon(Icons.login, size: 26),
+                                  ),
+                                  label: Text(
+                                    isSigning ? 'Connexion en cours...' : 'Se connecter',
+                                    style: TextStyle(
+                                      fontFamily: 'Arial',
+                                      fontSize: 25,
+                                      color: const Color(0xffFFFFFF),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 5.0,
-                          vertical: 5.0,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: size.width * 2/3,
-                              height: 55,
-                              child: ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(17.0),
-                                  ),
-                                  backgroundColor: Color(0xff3D73AA),
-                                ),
-                                onPressed: () async {
-                                  setState(() {
-                                    isSigning = true;
-                                    loginMatriculeError = false;
-                                    loginPasswordError = false;
-                                  });
-
-                                  Map credentials = {
-                                    'matricule': _matriculeController.text,
-                                    'password': _passwordController.text,
-                                  };
-                                  if (_formKey.currentState!.validate()) {
-                                    late int? result;
-                                    result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
-                                    String? token = await storage.read(key: 'token');
-                                    // login result
-                                    print('/*/*/* ${token} /*/*/******');
-                                    if(result == 200 || result == 201){
-                                      if(result == 200)
-                                        await Provider.of<Affaires>(context, listen: false).getData(token: token!);
-                                      Provider.of<Auth>(context, listen: false).setIsLocally = true;
-                                      await storage.write(key: 'isLocally', value: true.toString().toLowerCase());
-                                      //Navigator.pop(context);
-                                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                          builder: (context) => const HomeScreen(isNotFirstTime: '',)));
-                                    }
-                                    else {
-                                      setState(() => isSigning = false);
-                                      if(result == 404){
-                                        setState(() => loginMatriculeError = true);
-                                        _formKey.currentState!.validate();
-                                      }
-                                      if(result == 401) {
-                                        setState(() => loginPasswordError = true);
-                                        _formKey.currentState!.validate();
-                                      }
-                                  }
-                                  }
-                                },
-                                icon: Container(
-                                      margin: const EdgeInsets.only(right: 20.0),
-                                      height: 25.0,
-                                      width: 25.0,
-                                      child: isSigning
-                                        ? const CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2,
-                                          )
-                                        : const Icon(Icons.login, size: 26),
-                                      ),
-                                label: Text(
-                                  isSigning ? 'Connexion en cours...' : 'Se connecter',
-                                  style: TextStyle(
-                                    fontFamily: 'Arial',
-                                    fontSize: 25,
-                                    color: const Color(0xffFFFFFF),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  softWrap: false,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ]
+                      ]
                   ),
                 ],
               ),
+            ),
           ),
-        ),
-      )
+        )
     );
   }
 }

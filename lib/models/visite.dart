@@ -45,7 +45,8 @@ class Visite {
   final String VisitSite_Btn_doc_annexe;
   final String VisitSite_liste_present;
   final String ValidCRVPIng;
-
+  final double Latitude;
+  final double Longitude;
   const Visite({
     required this.Code_Affaire,
     required this.Code_site,
@@ -90,6 +91,8 @@ class Visite {
     required this.VisitSite_Btn_doc_annexe,
     required this.VisitSite_liste_present,
     required this.ValidCRVPIng,
+    required this.Latitude,
+    required this.Longitude,
   });
 
   factory Visite.fromJson(Map<String, dynamic> json) {
@@ -133,6 +136,8 @@ class Visite {
       VisitSite_Btn_doc_annexe: (json['VisitSite_Btn_doc_annexe'] == 'Oui' || json['VisitSite_Btn_doc_annexe'] == '1') ? '1' : ((json['VisitSite_Btn_doc_annexe'] == 'Non' || json['VisitSite_Btn_doc_annexe'] == '0') ? '0' : ''),
       VisitSite_liste_present: json['VisitSite_liste_present'].toString(),
       ValidCRVPIng: (json['ValidCRVPIng'] == 'Oui' || json['ValidCRVPIng'] == '1') ? '1' : ((json['ValidCRVPIng'] == 'Non' || json['ValidCRVPIng'] == '0') ? '0' : ''),
+      Latitude: json['Latitude'] != null ? double.tryParse(json['Latitude'].toString()) ?? 0.0 : 0.0,
+      Longitude: json['Longitude'] != null ? double.tryParse(json['Longitude'].toString()) ?? 0.0 : 0.0,
     );
   }
 
@@ -177,7 +182,8 @@ class Visite {
         'VisitSite_Btn_doc_annexe': (model.VisitSite_Btn_doc_annexe == 'Oui' || model.VisitSite_Btn_doc_annexe == '1') ? '1' : ((model.VisitSite_Btn_doc_annexe == 'Non' || model.VisitSite_Btn_doc_annexe == '0') ? '0' : ''),
         'VisitSite_liste_present': model.VisitSite_liste_present,
         'ValidCRVPIng': (model.ValidCRVPIng == 'Oui' || model.ValidCRVPIng == '1') ? '1' : ((model.ValidCRVPIng == 'Non' || model.ValidCRVPIng == '0') ? '0' : ''),
-      };
+        'Latitude': model.Latitude,
+        'Longitude': model.Longitude, };
 
   static String serialize(Visite model) => json.encode(Visite.toMap(model));
 
