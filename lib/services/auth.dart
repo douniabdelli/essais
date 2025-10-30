@@ -5,170 +5,219 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
 import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
 import '../models/user.dart';
+import 'package:collection/collection.dart'; 
 
 class Auth extends ChangeNotifier {
-  late bool? _isLoggedIn = false;
-  late bool? _isNotFirstTime = false;
-  late String? _token = null;
-  late User? _user = null;
-  late bool _isLocally = false;
-
-  final storage = new FlutterSecureStorage();
-
-  bool? get isLoggedIn => _isLoggedIn;
-  bool? get isNotFirstTime => _isNotFirstTime;
+  bool _isLoggedIn = false;
+  String? _token;
+  User? _user;
+  bool _isLocally = false;
+  final storage = FlutterSecureStorage();
+  bool get isLoggedIn => _isLoggedIn;
   User? get user => _user;
-
   bool get isLocally => _isLocally;
+
   set setIsLocally(bool value) {
     _isLocally = value;
+    notifyListeners();
   }
 
-  checkLoggedUser() async {
+  
+  Future<void> checkLoggedUser() async {
     try {
-      String? status = await storage.read(key: 'isLoggedIn');
-      String? token = await storage.read(key: 'token');
-      _isLoggedIn = ((status != null) && (status == 'isLoggedIn')) ? true : false;
-      if((_isLoggedIn != null) && (_isLoggedIn == true)){
-        await tryToken(token: token ?? '');
-      }
-    } catch(e){
-      print(e);
-    }
-  }
+      final status = await storage.read(key: 'isLoggedIn');
+      final token = await storage.read(key: 'token');
+      final userData = await storage.read(key: 'user');
 
-  login({required Map credentials}) async {
-    try {
-      await storeCredentials(credentials);
-      String? isNotFirstTime = await storage.read(key: 'isNotFirstTime');
-      String? isLocally = await storage.read(key: 'isLocally');
-      if(isNotFirstTime != null && isNotFirstTime == 'isNotFirstTime' && (isLocally == 'true')){
-        List<User> users = (await VisitePreliminaireDatabase.instance.getUser()).cast<User>();
-        // check if user exists && check verify password then store logged user
-        if(users.length >= 1) {
-          final bool checkedPassword = BCrypt.checkpw(credentials['password'], users.first.password);
-          if(checkedPassword) {
-            _user = users.first;
-            await storeUser(user: users.first);
-            await storeToken(token: 'token');
-            // ok pass
-            return 201;
-          }
-          else
-            return 401;
-        }
-        else
-          return 404;
-      }
-      else {
-        var status = await getApiToken(credentials);
-        String? token = await storage.read(key: 'token');
-        String? userString = await storage.read(key: 'user');
-        if(userString != null) {
-          User user = User.deserialize(userString);
-          _user = user;
-        }
-        else
-          return status;
-        await VisitePreliminaireDatabase.instance.dropUsers(user?.structure);
-        Dio.Response responseUser = await dio()
-            .get(
-            '/visite-preleminaire/users',
-            options: Dio.Options(
-              headers: {
-                'Authorization': 'Bearer $token',
-                'Content-Type': 'application/json',
-                'Charset': 'utf-8'
-              },
-            )
-        );
-        await VisitePreliminaireDatabase.instance.createUsers(responseUser.data.map((data) => User.fromJson(data)).toList());
-        return 200;
-      }
-    } catch(e){
-      print(e);
-    }
-  }
+      _isLoggedIn = (status == 'loggedIn' && token != null && userData != null);
 
-  getApiToken(credentials) async {
-    print('****************** ${credentials}');
-    try{
-      Dio.Response response = await dio()
-          .post(
-          '/token',
-          data: credentials
-      );
-      String token = response.data.toString();
-      await tryToken(token: token);
-    } on Dio.DioError catch(e){
-      return e.response!.statusCode;
-    }
-
-  }
-
-  storeCredentials(credentials) async {
-    await storage.write(key: 'matricule', value: credentials['matricule']);
-    await storage.write(key: 'password', value: credentials['password']);
-  }
-
-  tryToken({required String token}) async {
-    if(token == null)
-      return;
-    else {
-      try {
-        Dio.Response response = await dio()
-            .get(
-            '',
-            options: Dio.Options(
-                headers: {
-                  'Authorization': 'Bearer $token'
-                }
-            )
-        );
-        _isLoggedIn = true;
-        _user = User.fromJson(response.data);
+      if (_isLoggedIn) {
         _token = token;
-        await storeToken(token: token);
-
-        await storeUser(user: _user);
-
-        notifyListeners();
-      } catch (e) {
-        print(e);
+        _user = User.deserialize(userData!);
       }
+    } catch (e) {
+      print('Erreur checkLoggedUser: $e');
+      _isLoggedIn = false;
     }
+    notifyListeners();
   }
 
-  storeToken({required String? token}) async {
-    await storage.write(key: 'token', value: token);
-  }
-
-  storeUser({required User? user}) async {
-
-    print('******************brahimmmm ${user}');
-    if(user != null) {
-      _user = user;
-      await storage.write(key: 'user', value: User.serialize(user));
-      await storage.write(key: 'isLoggedIn', value: 'loggedIn');
-    }
-  }
-
-  logout() async {
+  
+  Future<int> login({required Map credentials}) async {
     try {
-      await cleanUp();
-      notifyListeners();
-    } catch(e) {
-      print(e);
+      print('Tentative de connexion: $credentials');
+      await storeCredentials(credentials);
+      final isNotFirstTime = await storage.read(key: 'isNotFirstTime');
+      final isLocallyFlag = await storage.read(key: 'isLocally');
+      final useLocalAuth = (isNotFirstTime == 'isNotFirstTime' && isLocallyFlag == 'true');
+      if (useLocalAuth) {
+        return await _handleLocalLogin(credentials);
+      }
+      final apiStatus = await _handleApiLogin(credentials);
+      if (apiStatus != 200) {
+       return await _handleLocalLogin(credentials);
+      }
+      return apiStatus;
+    } catch (e) {
+      print('Erreur login: $e');
+      return await _handleLocalLogin(credentials);
     }
   }
 
-  cleanUp() async {
+  
+  Future<int> _handleLocalLogin(Map credentials) async {
+    try {
+      final List<User> users = await VisitePreliminaireDatabase.instance.getUser();
+
+      if (users.isEmpty) {
+        print('Aucun utilisateur trouvé en base locale');
+        return 404;
+      }
+
+      final String inputMatricule = (credentials['Matricule'] ?? '').toString().trim();
+      final User? localUser = users.firstWhereOrNull(
+            (u) => u.matricule?.toString().trim() == inputMatricule,
+      );
+
+      if (localUser == null) {
+        print('Utilisateur non trouvé dans la base locale');
+        return 401;
+      }
+      
+      final bool isPasswordValid = BCrypt.checkpw(
+        credentials['password']?.toString() ?? '',
+        localUser.password,
+      );
+
+      if (!isPasswordValid) {
+        print('Mot de passe incorrect');
+        return 401;
+      }
+
+      
+      await _setUserLoggedIn(localUser, 'local_token');
+      print('Connexion offline réussie pour ${localUser.matricule}');
+      return 200;
+
+    } catch (e) {
+      print('Erreur connexion locale: $e');
+      return 500;
+    }
+  }
+
+
+  
+  Future<int> _handleApiLogin(Map credentials) async {
+    try {
+      final statusCode = await _getApiToken(credentials);
+      print(' connexion API:');
+      if (statusCode != 200) return statusCode;
+      return await _fetchUserData();
+    } catch (e) {
+      print('Erreur connexion API: $e');
+      return 500;
+    }
+  }
+
+  
+  Future<int> _getApiToken(Map credentials) async {
+    try {
+      final response = await dio().post(
+        '/login',
+        data: credentials,
+        options: Dio.Options(validateStatus: (status) => status! < 500),
+      );
+
+      if (response.statusCode == 200) {
+        final String token = response.data['token'] ??
+            response.data['access_token'] ??
+            response.data.toString();
+
+        _token = token;
+        await storage.write(key: 'token', value: token);
+        return 200;
+      } else {
+        return response.statusCode ?? 401;
+      }
+    } on Dio.DioError catch (e) {
+      print('Erreur Dio: ${e.response?.statusCode} - ${e.message}');
+      return 500;
+    }
+  }
+
+Future<int> _fetchUserData() async {
+  final String? matricule = await storage.read(key: 'matricule');
+  try {
+    if (_token == null) return 401;
+
+    final response = await dio().get(
+      '/prelevements/users',
+      queryParameters: {'matricule': matricule},
+      options: Dio.Options(headers: {
+        'Authorization': 'Bearer $_token',
+        'Content-Type': 'application/json',
+      }),
+    );
+
+    if (response.statusCode == 200 && response.data is Map<String, dynamic>) {
+      
+      final Map<String, dynamic> data = response.data;
+      final User connectedUser = User.fromJson(data);
+      print("Utilisateur récupéré: ${connectedUser.matricule}");
+      await VisitePreliminaireDatabase.instance.dropUsers(connectedUser.structure);
+      await VisitePreliminaireDatabase.instance.createUsers([connectedUser]);
+      await _setUserLoggedIn(connectedUser, _token!);
+      return 200;
+    }
+    return response.statusCode ?? 401;
+  } catch (e) {
+    print('Erreur fetchUserData: $e');
+    return 500;
+  }
+}
+
+  
+  Future<void> _setUserLoggedIn(User user, String token) async {
+    _user = user;
+    _token = token;
+    _isLoggedIn = true;
+    await storage.write(key: 'user', value: User.serialize(user));
+    await storage.write(key: 'token', value: token);
+    await storage.write(key: 'isLoggedIn', value: 'loggedIn');
+
+    notifyListeners();
+  }
+
+  
+  Future<void> storeCredentials(Map credentials) async {
+    try {
+      await storage.write(key: 'matricule', value: credentials['Matricule']?.toString() ?? '');
+      await storage.write(key: 'password', value: credentials['password']?.toString() ?? '');
+    } catch (e) {
+      print('Erreur storeCredentials: $e');
+    }
+  }
+
+  
+  Future<void> logout() async {
+    try {
+      await _cleanUp();
+      notifyListeners();
+    } catch (e) {
+      print('Erreur logout: $e');
+    }
+  }
+
+  
+  Future<void> _cleanUp() async {
     _user = null;
     _isLoggedIn = false;
     _token = null;
-    await storage.delete(key: 'isLoggedIn');
-    await storage.delete(key: 'user');
-    await storage.delete(key: 'token');
-  }
 
+    try {
+      await storage.deleteAll();
+    } catch (e) {
+      print('Erreur cleanUp: $e');
+    }
+  }
 }

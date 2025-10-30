@@ -1,0 +1,2 @@
+D:/Session/d.abdelli/Desktop/CTC/VisitePreliminaire/android/app/.cxx/Debug/2425c601/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Session/d.abdelli/Desktop/CTC/VisitePreliminaire/android/app/.cxx/Debug/2425c601/arm64-v8a/CMakeFiles/rebuild_cache.dir

@@ -5,6 +5,7 @@ import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:mgtrisque_visitepreliminaire/services/sync.dart';
+import 'package:mgtrisque_visitepreliminaire/services/visiteprovider.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -14,7 +15,9 @@ void main() async {
         ChangeNotifierProvider<Auth>(create: (context) => Auth()),
         ChangeNotifierProvider<GlobalProvider>(create: (context) => GlobalProvider()),
         ChangeNotifierProvider<Affaires>(create: (context) => Affaires()),
-        ChangeNotifierProvider<Sync>(create: (context) => Sync()),
+       // ChangeNotifierProvider<Sync>(create: (context) => Sync()),
+
+
       ],
       child: MyApp(),
     ),

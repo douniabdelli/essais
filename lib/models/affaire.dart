@@ -39,8 +39,8 @@ class Affaire {
 
   factory Affaire.fromJson(Map<String, dynamic> json) {
     return Affaire(
-        Code_Affaire: json['Code_Affaire'] == null ? '' : json['Code_Affaire'],
-        Code_Site: json['Code_Site'] == null ? '' : json['Code_Site'],
+      Code_Affaire: json['Code_Affaire']?.toString() ?? '',
+    Code_Site: json['Code_Site']?.toString() ?? '',
         IntituleAffaire: json['IntituleAffaire'] == null ? '' : json['IntituleAffaire'],
         NbrSite: json['NbrSite'] == null ? 0 : int.parse(json['NbrSite']),
         matricule: json['matricule'] == null ? '' : json['matricule'],
@@ -75,13 +75,9 @@ class Affaire {
         'email': model.email,
         'hasVisite': model.hasVisite,
       };
-
   static String serialize(Affaire model) => json.encode(Affaire.toMap(model));
-
   static Affaire deserialize(String json) => Affaire.fromJson(jsonDecode(json));
 
-
-  // Setter method
   Affaire setHasVisite(String newHasVisite) {
     return Affaire(
       Code_Affaire: this.Code_Affaire,

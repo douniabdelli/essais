@@ -1,0 +1,2 @@
+C:/VisitePreliminaire/android/app/.cxx/RelWithDebInfo/541005u5/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/VisitePreliminaire/android/app/.cxx/RelWithDebInfo/541005u5/arm64-v8a/CMakeFiles/rebuild_cache.dir

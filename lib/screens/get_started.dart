@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:lottie/lottie.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
@@ -8,9 +7,7 @@ import 'package:mgtrisque_visitepreliminaire/services/sync.dart';
 import 'package:provider/provider.dart';
 
 class GetStarted extends StatefulWidget {
-  GetStarted({
-    Key? key,
-  }) : super(key: key);
+  GetStarted({Key? key}) : super(key: key);
 
   @override
   State<GetStarted> createState() => _GetStartedState();
@@ -19,7 +16,6 @@ class GetStarted extends StatefulWidget {
 class _GetStartedState extends State<GetStarted> {
   final storage = new FlutterSecureStorage();
   final Auth _auth = Auth();
-  late bool isReady = false;
   String? isLoggedIn;
   String? isNotFirstTime;
 
@@ -29,115 +25,38 @@ class _GetStartedState extends State<GetStarted> {
     isNotFirstTime = await storage.read(key: 'isNotFirstTime');
     final String? token = await storage.read(key: 'token');
 
-    if(token != null && token != '') {
+    if (token != null && token != '') {
       await Provider.of<Affaires>(context, listen: false).getData(token: token);
-      await Provider.of<Sync>(context, listen: false).getSyncHistory();
+     // await Provider.of<Sync>(context, listen: false).getSyncHistory();
     }
 
-    Future.delayed(new Duration(milliseconds: 2500), () {
+    Future.delayed(const Duration(milliseconds: 2500), () {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => LoginScreen(isNotFirstTime: isNotFirstTime ?? ''
-            ),
-          )
-      );
+            builder: (context) =>
+                LoginScreen(isNotFirstTime: isNotFirstTime ?? ''),
+          ));
     });
   }
 
   @override
   void initState() {
-    loadData();
     super.initState();
+    loadData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xffe4e9f9),
-        body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Image.asset(
-                    //   'assets/images/visite_preliminaire.png',
-                    //   scale: 1.2,
-                    // ),
-                    Lottie.asset(
-                      'assets/animations/area-map-animation.json',
-                      width: 100.0,
-                      height: 100.0,
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 5.0),
-                      child: Text(
-                        'Visite Préliminaire',
-                        style: TextStyle(
-                          fontFamily: 'Malgun Gothic',
-                          fontSize: 25,
-                          color: const Color(0xff707070),
-                          fontWeight: FontWeight.w400,
-                        ),
-                        textAlign: TextAlign.center,
-                        softWrap: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Center(
-                  child: Container(
-                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                    width: MediaQuery.of(context).size.width * 9 / 10,
-                    height: MediaQuery.of(context).size.width * 9 / 10,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: const AssetImage('assets/images/engineers.png'),
-                        fit: BoxFit.fill,
-                        colorFilter: new ColorFilter.mode(
-                          Colors.black,
-                          BlendMode.dstIn,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 50.0,
-                      margin: EdgeInsets.only(
-                        top: 10.0,
-                        bottom: 10.0,
-                      ),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: const AssetImage(
-                            'assets/images/mgt_logo.png',
-                          ),
-                          fit: BoxFit.scaleDown,
-                          scale: 1.8
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ));
+      backgroundColor: const Color(0xfff5f0e1), 
+      body: Center(
+        child: Image.asset(
+          "assets/images/mgt_logo.png",
+          width: MediaQuery.of(context).size.width * 0.8,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
   }
 }

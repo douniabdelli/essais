@@ -1,0 +1,2 @@
+D:/Session/d.abdelli/Desktop/CTC/VisitePreliminaire/android/app/.cxx/Debug/2425c601/x86/CMakeFiles/edit_cache.dir
+D:/Session/d.abdelli/Desktop/CTC/VisitePreliminaire/android/app/.cxx/Debug/2425c601/x86/CMakeFiles/rebuild_cache.dir

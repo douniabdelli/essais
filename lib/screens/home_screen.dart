@@ -4,12 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 
 import 'package:mgtrisque_visitepreliminaire/screens/login_screen.dart';
-import 'package:mgtrisque_visitepreliminaire/screens/affaires_screen.dart';
-import 'package:mgtrisque_visitepreliminaire/screens/sync_screen.dart';
-import 'package:mgtrisque_visitepreliminaire/screens/visite_screen.dart';
+import 'package:mgtrisque_visitepreliminaire/screens/interventions_screen.dart';
+
 import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
-import 'package:mgtrisque_visitepreliminaire/services/crvp_printing.dart';
+import 'package:mgtrisque_visitepreliminaire/services/pdf_generator.dart';
 import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -28,9 +27,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   final _advancedDrawerController = AdvancedDrawerController();
   final List<Widget> bottomBarWidgets = [
-    SyncScreen(),
+
     AffairesScreen(),
-    VisiteScreen(),
+
   ];
   final List<String> bottomBarNames = [
     'Synchronisation',
@@ -43,8 +42,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   Widget build(BuildContext context) {
     return AdvancedDrawer(
       backdropColor: Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1
-        ? Colors.purple.withOpacity(0.6)
-        : (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2
+          ? Colors.purple.withOpacity(0.6)
+          : (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2
           ? Colors.redAccent.withOpacity(0.6)
           : Colors.blueAccent.withOpacity(0.6)
       ),
@@ -76,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                     bottom: 34.0,
                   ),
                   padding: const EdgeInsets.only(
-                    top: 5.0
+                      top: 5.0
                   ),
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
@@ -125,8 +124,8 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                 ListTile(
                   onTap: () async {
                     await Provider.of<Auth>(context, listen: false).logout();
-                    Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = '';
-                    await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('');
+                   // Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = '';
+
                     Provider.of<GlobalProvider>(context, listen: false).setCurrentIndex = 1;
                     Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) => LoginScreen(isNotFirstTime: widget.isNotFirstTime)));
@@ -154,30 +153,45 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
       ),
       child: Scaffold(
         backgroundColor: const Color(0xffe4e9f9),
-        appBar: AppBar(
-          title: Text(
-              '${Provider.of<GlobalProvider>(context, listen: true).screenTitle}'),
-          titleSpacing: 0.0,
-          backgroundColor: Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1
-              ? Colors.purple.withOpacity(0.7)
-              : (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 0
-                  ? Colors.blueAccent.withOpacity(0.7)
-                  : Colors.redAccent.withOpacity(0.7)),
-          leading: IconButton(
-            onPressed: _handleMenuButtonPressed,
-            icon: ValueListenableBuilder<AdvancedDrawerValue>(
-              valueListenable: _advancedDrawerController,
-              builder: (_, value, __) {
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 250),
-                  child: Icon(
-                    value.visible ? Icons.clear : Icons.menu,
-                    key: ValueKey<bool>(value.visible),
-                  ),
-                );
-              },
+        appBar:AppBar(
+            title: Text(
+              '${Provider.of<GlobalProvider>(context, listen: true).screenTitle}',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-          ),
+                  titleSpacing: 0.0,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1
+                              ? Colors.purple.withOpacity(0.7)
+                              : (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 0
+                                  ? Colors.blueAccent.withOpacity(0.7)
+                                  : Colors.redAccent.withOpacity(0.7)),
+                          Colors.black.withOpacity(0.5),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
+                  leading: IconButton(
+                    onPressed: _handleMenuButtonPressed,
+                    icon: ValueListenableBuilder<AdvancedDrawerValue>(
+                      valueListenable: _advancedDrawerController,
+                      builder: (_, value, __) {
+                        return AnimatedSwitcher(
+                          duration: Duration(milliseconds: 250),
+                          child: Icon(
+                            value.visible ? Icons.clear : Icons.menu,
+                            key: ValueKey<bool>(value.visible),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           actions: [
             if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1)
               Row(
@@ -192,80 +206,64 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         cursorColor: Colors.white,
                         textInputAction: TextInputAction.done,
                         searchDecoration: InputDecoration(
-                          hintText: "Search",
+                          hintText: "Chercher une affaire",
                           alignLabelWithHint: true,
                           fillColor: Colors.white,
                           focusColor: Colors.white,
                           hintStyle: TextStyle(color: Colors.white70),
                           border: InputBorder.none,
                         ),
-                        onChanged: (value) {
-                          Provider.of<Affaires>(context, listen: false)
-                              .setfoundAffaires = value;
-                        },
-                        onFieldSubmitted: (value) {
-                          Provider.of<Affaires>(context, listen: false)
-                              .setfoundAffaires = value;
-                        }),
-                  ),
-                  SizedBox(width: 20.0,),
-                  DropdownMenu(
-                    textStyle: TextStyle(
-                      color: Colors.white,
-                    ),
-                    width: 180.0,
-                    dropdownMenuEntries: ['Toutes les affaires', 'Visitées', 'Non visitées'].map<DropdownMenuEntry<String>>((String value) {
-                      return DropdownMenuEntry<String>(
-                        value: value,
-                        label: value,
-                      );
-                    }).toList(),
-                    onSelected: (String? value) {
-                      Provider.of<Affaires>(context, listen: false)
-                          .setFilterAffaires = value;
-                    },
-                    initialSelection: 'Toutes les affaires',
-                    trailingIcon: Icon(Icons.filter_list),
-                    inputDecorationTheme: InputDecorationTheme(
-                      suffixIconColor: Colors.white,
-                      isDense: false,
-                      border: InputBorder.none,
-                    ),
-                  ),
+                     onChanged: (value) {
+  
+                  Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
+                },
+                onFieldSubmitted: (value) {
+
+                  Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
+                },),
+                                  ),
+                                  SizedBox(width: 20.0,),
+                                  DropdownMenu(
+                  dropdownMenuEntries: ['Toutes les affaires', 'Visitées', 'Non visitées','Brouillons']
+                      .map<DropdownMenuEntry<String>>((String value) {
+                    return DropdownMenuEntry<String>(
+                      value: value,
+                      label: value,
+                    );
+                  }).toList(),
+                  onSelected: (String? value) {
+                    if (value != null) {
+                      Provider.of<Affaires>(context, listen: false).setFilterAffaires = value;
+                    }
+                  },
+                  initialSelection: 'Toutes les affaires',
+                  trailingIcon: Icon(Icons.filter_list),
+                ),
                 ],
               ),
             if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0
+                      horizontal: 8.0
                   ),
-                  child: Text(
-                    '${Provider.of<GlobalProvider>(context, listen: true).selectedAffaire}'
-                        ' / '
-                        '${Provider.of<GlobalProvider>(context, listen: true).selectedSite}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+
                 ),
               ),
-            if (Provider.of<GlobalProvider>(context, listen: true).currentIndex == 2 && Provider.of<GlobalProvider>(context, listen: true).selectedAffaire != '' && Provider.of<GlobalProvider>(context, listen: true).selectedSite != '' && Provider.of<GlobalProvider>(context, listen: true).validCRVPIng == '1')
-              IconButton(
-                onPressed: () => printPDF(context),
-                icon: Icon(Icons.picture_as_pdf_rounded),
-              ),
+
           ],
         ),
         bottomNavigationBar: SalomonBottomBar(
           margin: EdgeInsets.symmetric(horizontal: 30.0),
           currentIndex:
-              Provider.of<GlobalProvider>(context, listen: true).currentIndex,
-          onTap: (i) {
+          Provider.of<GlobalProvider>(context, listen: true).currentIndex,
+          onTap: (i) async {  if (i == 1) {
+      await Provider.of<Affaires>(context, listen: false).refreshAffaires();
+    }
             Provider.of<GlobalProvider>(context, listen: false)
                 .setCurrentIndex = i;
             Provider.of<GlobalProvider>(context, listen: false).setScreenTitle =
-                bottomBarNames[i];
+            bottomBarNames[i];
           },
           items: [
             /// Synchronisation
@@ -281,8 +279,10 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
             SalomonBottomBarItem(
               icon: Image.asset(
                 'assets/images/affaires.png',
+                 width: 24,
+    height: 24, 
               ),
-              title: Text("Affaires"),
+              title: Text("commandes"),
               selectedColor: Colors.purple,
             ),
 
@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         ),
         body: IndexedStack(
           index:
-              Provider.of<GlobalProvider>(context, listen: true).currentIndex,
+          Provider.of<GlobalProvider>(context, listen: true).currentIndex,
           children: bottomBarWidgets,
         ),
       ),

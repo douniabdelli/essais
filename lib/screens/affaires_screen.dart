@@ -1,347 +1,272 @@
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:mgtrisque_visitepreliminaire/services/affaires.dart';
-import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
-import 'package:provider/provider.dart';
+// import 'package:flutter/material.dart';
+// import 'package:dio/dio.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:provider/provider.dart';
+// import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
+// import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
+// import 'package:mgtrisque_visitepreliminaire/screens/CreationPv.dart';
+// import 'package:mgtrisque_visitepreliminaire/screens/interventionsBeton.dart';
+// import 'package:mgtrisque_visitepreliminaire/services/preview_pv_page.dart';
+// class AffairesScreen extends StatefulWidget {
+//   const AffairesScreen({Key? key}) : super(key: key);
 
-class AffairesScreen extends StatefulWidget {
-  const AffairesScreen({Key? key}) : super(key: key);
+//   @override
+//   State<AffairesScreen> createState() => _AffairesScreenState();
+// }
 
+// class _AffairesScreenState extends State<AffairesScreen> {
+//   List<dynamic> interventions = [];
+//   bool isLoading = true;
+//   final storage = const FlutterSecureStorage();
 
-  @override
-  State<AffairesScreen> createState() => _AffairesScreenState();
-}
+//   // Couleurs du thème
+//   static const Color chantierBlue = Color(0xFF1E3A8A);
+//   static const Color chantierAccent = Color(0xFFFBBF24); // accent optionnel pour call-to-action
 
-class _AffairesScreenState extends State<AffairesScreen> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     fetchInterventions();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Container(
-        width: size.width,
-        height: size.height-135.0,
-        color: Colors.purple.withOpacity(0.1),
-        child: Column(
-          children: [
-          Expanded(
-              child: Consumer<Affaires>(
-                builder: (BuildContext context, affaires, Widget? child) {
-                  return context.read<Affaires>().foundAffaires.length == 0
-                      ? Container(
-                        width: size.width,
-                        height: size.height,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Lottie.asset(
-                              'assets/animations/nodata-animation.json',
-                            ),
-                            const Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20.0,
-                                vertical: 10.0
-                              ),
-                              child: const Text(
-                                'Aucune affaire trouvée !',
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 28.0,
-                                ),
-                              ),
-                            ),
-                            const Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                  vertical: 10.0
-                              ),
-                              child: const Text(
-                                'Aucune affaire n\'a été assignée à cet utilisateur',
-                                style: TextStyle(
-                                    color: Colors.black38,
-                                    fontSize: 18.0
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      : ListView.custom(
-                        childrenDelegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            return Stack(
-                              children: [
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 80.0,
-                                      width: size.width,
-                                      margin: EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                          vertical: 4.0
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                          vertical: 8.0
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Material(
-                                            type: MaterialType.transparency,
-                                            child: Ink(
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                  width: 1.5,
-                                                  color: Colors.purple.withOpacity(0.6),
-                                                ),
-                                                borderRadius: BorderRadius.circular(8.0),
-                                              ),
-                                              child: InkWell(
-                                                onTap: () async {
-                                                  Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire
-                                                      ? Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = ''
-                                                      : Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaire = affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire;
+//   Future<void> fetchInterventions() async {
+//     String? token = await storage.read(key: 'token');
 
-                                                  Provider.of<Affaires>(context, listen: false).setfoundSites = affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire;
-                                                  if(Provider.of<GlobalProvider>(context, listen: false).selectedAffaire != '' && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite <= 1)
-                                                    await Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('0000');
-                                                },
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(2.0),
-                                                  child: Icon(
-                                                      (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1)
-                                                          ? Icons.keyboard_double_arrow_down
-                                                          : (Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite <= 1)
-                                                            ? Icons.keyboard_double_arrow_right_sharp
-                                                            : Icons.check,
-                                                      size: 25.0,
-                                                      color: Colors.purple.withOpacity(0.6)
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 10.0),
-                                          Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire}',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 15.0
-                                                ),
-                                              ),
-                                              Container(
-                                                child: Text(
-                                                  affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1 ? 'Multi' : 'Mono',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15.0
-                                                  ),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    color: affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1 ? Colors.amber : Colors.cyan,
-                                                    borderRadius: BorderRadius.circular(4.0)
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 5.0,
-                                                    vertical: 1.0
-                                                ),
-                                              ),
-                                              Container(
-                                                child: Text(
-                                                  affaires.foundAffaires[index%affaires.foundAffaires.length].annee,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15.0
-                                                  ),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                    color: Colors.deepOrangeAccent,
-                                                    borderRadius: BorderRadius.circular(4.0)
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 5.0,
-                                                    vertical: 1.0
-                                                ),
-                                                margin: EdgeInsets.only(
-                                                    top: 2.0
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(width: 10.0),
-                                          Expanded(
-                                            child: RichText(
-                                              overflow: TextOverflow.clip,
-                                              text: TextSpan(
-                                                  text: '${affaires.foundAffaires[index%affaires.foundAffaires.length].IntituleAffaire}',
-                                                  style: TextStyle(
-                                                      color: Colors.black
-                                                  )
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.5),
-                                          borderRadius: BorderRadius.circular(8.0),
-                                          border: Border.all(
-                                              width: Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire
-                                                  ? 2.0
-                                                  : 0.0,
-                                              color: Colors.purple.withOpacity(0.6)
-                                          )
-                                      ),
-                                    ),
-                                    if(Provider.of<GlobalProvider>(context, listen: true).selectedAffaire == affaires.foundAffaires[index%affaires.foundAffaires.length].Code_Affaire && affaires.foundAffaires[index%affaires.foundAffaires.length].NbrSite > 1)
-                                      ListView.custom(
-                                        childrenDelegate: SliverChildBuilderDelegate(
-                                          (innerContext, innerIndex) {
-                                            return Container(
-                                              height: 45.0,
-                                              width: size.width,
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 40.0,
-                                                  vertical: 2.0
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 8.0,
-                                                  vertical: 8.0
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  Material(
-                                                    type: MaterialType.transparency,
-                                                    child: Ink(
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                          width: 1.5,
-                                                          color: (
-                                                              Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
-                                                                  &&
-                                                                  Provider.of<GlobalProvider>(context, listen: false).selectedAffaireIndex == index
-                                                          )
-                                                              ? Colors.black.withOpacity(0.6)
-                                                              : Colors.purple.withOpacity(0.6),
-                                                        ),
-                                                        borderRadius: BorderRadius.circular(8.0),
-                                                      ),
-                                                      child: InkWell(
-                                                        onTap: () async {
-                                                          (
-                                                              Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
-                                                                  &&
-                                                                  Provider.of<GlobalProvider>(context, listen: false).selectedAffaire == Provider.of<Affaires>(context, listen: false).foundAffaires[index].Code_Affaire
-                                                          )
-                                                              ? Provider.of<GlobalProvider>(context, listen: false).setSelectedSite('')
-                                                              : Provider.of<GlobalProvider>(context, listen: false).setSelectedSite(Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site);
+//     if (token == null) {
+//       setState(() => isLoading = false);
+//       return;
+//     }
 
-                                                          Provider.of<GlobalProvider>(context, listen: false).setSelectedAffaireIndex = index;
-                                                          await Provider.of<GlobalProvider>(context, listen: false).setVisiteExistes();
-                                                        },
-                                                        child: Padding(
-                                                          padding: EdgeInsets.all(2.0),
-                                                          child: Icon(
-                                                              (
-                                                                  Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
-                                                                      &&
-                                                                      Provider.of<GlobalProvider>(context, listen: false).selectedAffaireIndex == index
-                                                              )
-                                                                  ? Icons.keyboard_double_arrow_right_sharp
-                                                                  : Icons.check,
-                                                              size: 20.0,
-                                                              color: (
-                                                                  Provider.of<GlobalProvider>(context, listen: false).selectedSite == Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site
-                                                                      &&
-                                                                      Provider.of<GlobalProvider>(context, listen: false).selectedAffaireIndex == index
-                                                              )
-                                                                  ? Colors.black.withOpacity(0.6)
-                                                                  : Colors.purple.withOpacity(0.6)
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 10.0),
-                                                  Text(
-                                                    '${Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].Code_site}',
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight: FontWeight.w500,
-                                                        fontSize: 15.0
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 10.0),
-                                                  Expanded(
-                                                    child: RichText(
-                                                      text: TextSpan(
-                                                          text: '${Provider.of<Affaires>(context, listen: false).foundSites[innerIndex].adress_proj}',
-                                                          style: TextStyle(
-                                                              color: Colors.black
-                                                          )
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.purple.withOpacity(0.3),
-                                                  borderRadius: BorderRadius.circular(8.0),
-                                                  border: Border.all(
-                                                    width: 1.5,
-                                                    color: Colors.purple.withOpacity(0.6),
-                                                  )
-                                              ),
-                                            );
-                                          },
-                                          childCount: Provider.of<Affaires>(context, listen: true).foundSites.length,
-                                        ),
-                                        shrinkWrap: true,
-                                        physics: ScrollPhysics(),
-                                      ),
-                                  ],
-                                ),
-                                if(Provider.of<Affaires>(context).foundAffaires[index%affaires.foundAffaires.length].hasVisite == '1')
-                                  Positioned(
-                                      top: 8.0,
-                                      right: 12.0,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                          vertical: 2.0,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.teal,
-                                          borderRadius: BorderRadius.circular(4.0),
-                                        ),
-                                        child: Text(
-                                          'Visitée',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.w600
-                                          ),
-                                        ),
-                                      ) //Icon
-                                  ),
-                              ],
-                            );
-                          },
-                          childCount: affaires.foundAffaires.length,
-                        )
-                      );
-                },
-              )
-          ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//     try {
+//       final response = await dio().get(
+//         '/essais/interventions',
+//         options: Options(headers: {'Authorization': 'Bearer $token'}),
+//       );
+
+//       if (response.statusCode == 200) {
+//         setState(() {
+//           interventions = response.data['data'] ?? [];
+//           isLoading = false;
+//         });
+//       } else {
+//         setState(() => isLoading = false);
+//       }
+//     } catch (e) {
+//       setState(() => isLoading = false);
+//       print("⚠️ Erreur API: $e");
+//     }
+//   }
+
+//   // Fonctions statut + couleur + icône
+//   String _getStatutValidation(dynamic v) {
+//     final int? val = int.tryParse(v?.toString() ?? '');
+//     if (val == 1) return 'Validée';
+//     if (val == 0 || val == null) return 'Brouillon';
+//     return 'Inconnue';
+//   }
+
+//   Color _getCouleurStatut(dynamic v) {
+//     final int? val = int.tryParse(v?.toString() ?? '');
+//     if (val == 1) return Colors.green;
+//     if (val == 0 || val == null) return Colors.orange;
+//     return Colors.grey;
+//   }
+
+//   IconData _getIconStatut(dynamic v) {
+//     final int? val = int.tryParse(v?.toString() ?? '');
+//     if (val == 1) return Icons.check_circle;
+//     if (val == 0 || val == null) return Icons.edit;
+//     return Icons.help;
+//   }
+
+//   Widget buildStatCard(String title, String value, Color color, IconData icon) {
+//     return Expanded(
+//       child: AnimatedContainer(
+//         duration: const Duration(milliseconds: 300),
+//         curve: Curves.easeInOut,
+//         child: Card(
+//           elevation: 5,
+//           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+//           child: Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(18),
+//               gradient: LinearGradient(
+//                 colors: [color.withOpacity(0.95), color.withOpacity(0.55)],
+//                 begin: Alignment.topLeft,
+//                 end: Alignment.bottomRight,
+//               ),
+//             ),
+//             padding: const EdgeInsets.all(16.0),
+//             child: Column(
+//               children: [
+//                 Icon(icon, size: 30, color: Colors.white),
+//                 const SizedBox(height: 8),
+//                 Text(title,
+//                     style: const TextStyle(
+//                         fontWeight: FontWeight.bold, color: Colors.white)),
+//                 const SizedBox(height: 4),
+//                 Text(value,
+//                     style: const TextStyle(
+//                         fontSize: 22,
+//                         fontWeight: FontWeight.bold,
+//                         color: Colors.white)),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF5F6FA),
+
+//       body: isLoading
+//           ? const Center(child: CircularProgressIndicator())
+//           : Column(
+//         children: [
+//           // Section Statistiques
+//           Padding(
+//             padding: const EdgeInsets.all(12.0),
+//             child: Row(
+//               children: [
+//                 // Toutes les cartes utilisent maintenant la couleur principale chantierBlue
+//                 buildStatCard("Total", "${interventions.length}", chantierBlue, Icons.list),
+//                 const SizedBox(width: 8),
+//                 buildStatCard("Validées", "${_countValidated()}", chantierBlue, Icons.check_circle),
+//                 const SizedBox(width: 8),
+//                 buildStatCard("Brouillons", "${_countDrafts()}", chantierBlue, Icons.pending_actions),
+//               ],
+//             ),
+//           ),
+
+//           // Liste principale
+//           Expanded(
+//             child: interventions.isEmpty
+//                 ? const Center(
+//               child: Text(
+//                 'Aucune donnée disponible',
+//                 style: TextStyle(fontSize: 16, color: Colors.grey),
+//               ),
+//             )
+//                 : ListView.builder(
+//               itemCount: interventions.length,
+//               itemBuilder: (context, index) {
+//                 final item = interventions[index];
+//                 final statut = _getStatutValidation(item['Validation_labo']);
+//                 final couleur = _getCouleurStatut(item['Validation_labo']);
+//                 final icon = _getIconStatut(item['Validation_labo']);
+//                 final val = int.tryParse(item['Validation_labo']?.toString() ?? '0');
+//                 final isValidated = val == 1;
+//                 return Card(
+//                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+//                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+//                   elevation: 2,
+//                   child: ListTile(
+//                     contentPadding: const EdgeInsets.all(16),
+//                     leading: CircleAvatar(
+//                       radius: 26,
+//                       backgroundColor: chantierBlue.withOpacity(0.15),
+//                       child: Icon(Icons.engineering, color: chantierBlue),
+//                     ),
+//                     title: Text(
+//                       item['NumCommande'] ?? 'Commande inconnue',
+//                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+//                     ),
+//                     subtitle: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text("PV: ${item['pe_id'] ?? '—'}", style: TextStyle(color: Colors.grey[600])),
+//                         const SizedBox(height: 6),
+//                         Row(
+//                           children: [
+//                             Icon(_getIconStatut(item['Validation_labo']), size: 16, color: _getCouleurStatut(item['Validation_labo'])),
+//                             const SizedBox(width: 6),
+//                             Text(
+//                               _getStatutValidation(item['Validation_labo']),
+//                               style: TextStyle(color: _getCouleurStatut(item['Validation_labo']), fontWeight: FontWeight.bold),
+//                             ),
+//                           ],
+//                         ),
+//                       ],
+//                     ),
+//                     trailing: Row(
+//                       mainAxisSize: MainAxisSize.min,
+//                       children: [
+//                         if (isValidated)
+
+//                           IconButton(
+//                             icon: const Icon(Icons.print, color: Colors.grey),
+//                             onPressed: () {
+//                               Navigator.push(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                   builder: (context) => PreviewPVPage(pvData: item),
+//                                 ),
+//                               );
+//                             },
+//                           ),
+//                         const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+//                       ],
+//                     ),
+
+//                     onTap: () {
+//                       final val = int.tryParse(item['Validation_labo']?.toString() ?? '0');
+//                       final isValidated = val == 1;
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                           builder: (context) => InterventionsPage(
+//                             canEdit: !isValidated,
+//                             commandeData: item,
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 );
+
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//       floatingActionButton: FloatingActionButton.extended(
+//         onPressed: () async {
+//           await showDialog(
+//             context: context,
+//             builder: (context) => const ChoixPVDialog(),
+//           );
+//         },
+//         backgroundColor: chantierBlue,
+//         icon: const Icon(Icons.add),
+//         label: const Text(""),
+//       ),
+//     );
+//   }
+
+//   // petites fonctions utilitaires pour remplir les cartes (exemple)
+//   int _countValidated() {
+//     try {
+//       return interventions.where((i) {
+//         final v = int.tryParse(i['Validation_labo']?.toString() ?? '');
+//         return v == 1;
+//       }).length;
+//     } catch (_) {
+//       return 0;
+//     }
+//   }
+
+//   int _countDrafts() {
+//     try {
+//       return interventions.where((i) {
+//         final v = int.tryParse(i['Validation_labo']?.toString() ?? '');
+//         return v == 0 || v == null;
+//       }).length;
+//     } catch (_) {
+//       return 0;
+//     }
+//   }
+// }

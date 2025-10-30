@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+ 
+
 class User {
   String matricule;
   String structure;
   String nom;
   String prenom;
   String password;
+  String privilege;
   String? role;
   String? consultation;
   String? insertion;
@@ -19,19 +22,35 @@ class User {
     required this.nom,
     required this.prenom,
     required this.password,
+    required this.privilege,
     required this.role,
     required this.consultation,
     required this.insertion,
     required this.modification,
     required this.suppression,
   });
-
+  Map<String, dynamic> toJson() {
+    return {
+      'matricule': matricule,
+      'structure': structure,
+      'nom': nom,
+      'prenom': prenom,
+      'password': password,
+      'privilege': privilege,
+      'role': role,
+      'consultation': consultation,
+      'insertion': insertion,
+      'modification': modification,
+      'suppression': suppression,
+    };
+  }
   User.fromJson(Map<String, dynamic> json)
       : matricule = json['matricule'] == null ? '' : json['matricule'],
         structure = json['structure'] == null ? '' : json['structure'],
         nom = json['nom'] == null ? '' : json['nom'],
         prenom = json['prenom'] == null ? '' : json['prenom'],
         password = json['password'] == null ? '' : json['password'],
+        privilege= json['privilege'] == null ? '' : json['privilege'], 
         role = json['role'] == null ? '' : json['role'],
         consultation = json['consultation'] == null ? '' : json['consultation'],
         insertion = json['insertion'] == null ? '' : json['insertion'],
@@ -46,6 +65,7 @@ class User {
         'nom': model.nom,
         'prenom': model.prenom,
         'password': model.password,
+        'privilege': model.privilege,
         'role': model.role,
         'consultation': model.consultation,
         'insertion': model.insertion,

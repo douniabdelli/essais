@@ -1,15 +1,26 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/models/affaire.dart';
+import 'package:mgtrisque_visitepreliminaire/models/commande.dart';
+import 'package:mgtrisque_visitepreliminaire/models/image_data.dart';
 import 'package:mgtrisque_visitepreliminaire/models/site.dart';
 import 'package:mgtrisque_visitepreliminaire/models/sync_history.dart';
 import 'package:mgtrisque_visitepreliminaire/models/user.dart';
-import 'package:mgtrisque_visitepreliminaire/models/visite.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 
+import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
+import 'package:path/path.dart' as p;
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:developer';
+import 'package:bcrypt/bcrypt.dart';
+import 'package:mgtrisque_visitepreliminaire/models/document_annexe.dart';
 class VisitePreliminaireDatabase {
   static final VisitePreliminaireDatabase instance =
-      VisitePreliminaireDatabase._init();
+  VisitePreliminaireDatabase._init();
 
   static Database? _database;
 
@@ -18,20 +29,112 @@ class VisitePreliminaireDatabase {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await _initDB('visite_preliminaire.db');
+    _database = await _initDB('interventions_essai.db');
     return _database!;
   }
 
-  Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
 
-    return await openDatabase(
-      path,
-      version: 3,
-      onCreate: _createDB,
-    );
+
+  Future<void> deleteLocalDatabase() async {
+  // Récupère le chemin complet de la base
+  final dbPath = await getDatabasesPath();
+  final path = '$dbPath/visite_preliminaire.db'; // 🔹 adapte le nom ici
+
+  // Supprime la base si elle existe
+  await deleteDatabase(path);
+  print('🗑️ Base de données supprimée : $path');
+}
+Future<void> createInterventions(List<dynamic> interventions) async {
+  final db = await instance.database;
+
+  print('📦 [DB] Début de l\'insertion des interventions (${interventions.length})...');
+
+  await db.transaction((txn) async {
+    for (var element in interventions) {
+      try {
+        // Vérifier si c'est déjà une Map
+        Map<String, dynamic> interventionData;
+        if (element is Map<String, dynamic>) {
+          interventionData = element;
+        } else {
+          // Si c'est un autre type, essayer de convertir en JSON d'abord
+          interventionData = element.toJson();
+        }
+
+        // Convertir les données API en Commande
+        final commande = Commande.fromJson(interventionData);
+
+        print('🟢 Insertion intervention CodeCommande: ${commande.codeCommande}');
+
+        // Préparer la map pour l'insertion
+        final commandeMap = commande.toMap();
+        
+          final cleanMap = Map<String, dynamic>.fromEntries(
+          commandeMap.entries.map((entry) {
+            final key = entry.key;
+            var value = entry.value;
+            // Sérialiser les Map et les List non vides en JSON texte
+            if (value is Map || (value is List && value.isNotEmpty)) {
+              try {
+                value = jsonEncode(value);
+              } catch (_) {
+                value = value.toString();
+              }
+            }
+            // Garder Uint8List, num, String, null, ou chaîne JSON générée
+            return MapEntry(key, value);
+          }).where((entry) {
+            final v = entry.value;
+            return v == null || v is num || v is String || v is Uint8List;
+          })
+        );
+
+        await txn.insert(
+          'commandes',
+          cleanMap,
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+
+      } catch (e) {
+        print('❌ Erreur lors de l\'insertion d\'une intervention: $e');
+        print('❌ Données problématiques: $element');
+      }
+    }
+  });
+
+  print('✅ [DB] Insertion des interventions terminée.');
+}
+
+ Future<Database> _initDB(String filePath) async {
+  final dbPath = await getDatabasesPath();
+  final path = join(dbPath, filePath);
+
+  return await openDatabase(
+    path,
+    version: 9, 
+    onCreate: _createDB,
+    onUpgrade: (db, oldVersion, newVersion) async {
+      if (oldVersion < 5) {
+        // Recréer la table avec le bon schéma
+        await db.execute('DROP TABLE IF EXISTS commandes');
+        await _createDB(db, newVersion);
+      }
+    },
+  );
+}
+
+Future<void> debugTableSchema() async {
+  final db = await instance.database;
+  try {
+    final result = await db.rawQuery('PRAGMA table_info(commandes)');
+    print('📋 Schema de la table commandes:');
+    for (var column in result) {
+      print(' - ${column['name']} (${column['type']})');
+    }
+  } catch (e) {
+    print('❌ Erreur lors de la lecture du schéma: $e');
   }
+}
 
   Future _createDB(Database db, int version) async {
     String userQuery = '''
@@ -41,6 +144,7 @@ class VisitePreliminaireDatabase {
         nom TEXT,
         prenom TEXT,
         password TEXT,
+        privilege TEXT,
         role TEXT,
         consultation TEXT,
         insertion TEXT,
@@ -76,104 +180,199 @@ class VisitePreliminaireDatabase {
         PRIMARY KEY (Code_site, Code_Affaire) 
       )
     ''';
-    String visiteQuery = '''
-      CREATE TABLE IF NOT EXISTS visites(
-        Code_Affaire TEXT,
-        Code_site TEXT,
-        matricule TEXT,
-        siteImage TEXT,
-        VisitSiteDate TEXT,
-        VisitSite_Btn_terrain_accessible TEXT,
-        VisitSiteterrain_accessible TEXT,
-        VisitSite_Btn_terrain_cloture TEXT,
-        VisitSiteterrain_cloture TEXT,
-        VisitSite_Btn_terrain_nu TEXT,
-        VisitSiteterrain_nu TEXT,
-        VisitSite_Btn_presence_vegetation TEXT,
-        VisitSitePresVeget TEXT,
-        VisitSite_Btn_presence_pylones TEXT,
-        VisitSite_presence_pylones TEXT,
-        VisitSite_Btn_existance_mitoyntehab TEXT,
-        VisitSiteExistantsvoisin TEXT,
-        VisitSite_Btn_existance_voirie_mitoyenne TEXT,
-        VisitSite_existance_voirie_mitoyenne TEXT,
-        VisitSite_Btn_presence_remblais TEXT,
-        VisitSitePresDepotremblai TEXT,
-        VisitSite_Btn_presence_sources_cours_eau_cavite TEXT,
-        VisitSiteEngHabitant TEXT,
-        VisitSite_Btn_presence_talwegs TEXT,
-        VisitSiteExistGliss TEXT,
-        VisitSite_Btn_terrain_inondable TEXT,
-        VisitSite_terrain_inondable TEXT,
-        VisitSite_Btn_terrain_enpente TEXT,
-        VisitSite_terrain_enpente TEXT,
-        VisitSite_Btn_risque_InstabiliteGlisTerrain TEXT,
-        VisitSite_risque_InstabiliteGlisTerrain TEXT,
-        VisitSite_Btn_terrassement_entame TEXT,
-        VisitSite_terrassement_entame TEXT,
-        VisitSiteAutre TEXT,
-        VisitSite_Btn_Presence_risque_instab_terasmt TEXT,
-        VisitSite_Btn_necessite_courrier_MO_risque_encouru TEXT,
-        VisitSite_Btn_doc_annexe TEXT,
-        VisitSite_liste_present TEXT,
-        ValidCRVPIng TEXT,
-        Longitude REAL,
-        Latitude REAL,
-        PRIMARY KEY (Code_Affaire, Code_site) 
-      )
-    ''';
-    String syncQuery = '''
-      CREATE TABLE IF NOT EXISTS sync(        
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        matricule TEXT, 
-        syncedAt TEXT,
-        syncedData TEXT        
-      )
-    ''';
+
+ String commandesQuery = '''
+    CREATE TABLE IF NOT EXISTS commandes(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+     CodeCommande TEXT,
+      NumCommande TEXT,
+      
+      IntituleAffaire TEXT,
+      peid TEXT,
+      pe_id TEXT,
+      Code_Affaire TEXT,
+      pe_date_pv TEXT,
+      ChargedAffaire TEXT,
+      CatChantier TEXT,
+      Validation_labo TEXT,
+      user_code TEXT,
+      Nom_DR_Laboratoire TEXT,
+      Structure_Laboratoire TEXT,
+      TypeIntervention TEXT,
+      Motif_non_prelevement TEXT,
+      Ouvrage TEXT,
+      Bloc TEXT,
+      ElemBloc TEXT,
+      Localisation TEXT,
+  
+      Partie_Ouvrage TEXT,
+      Entreprises TEXT,
+      Blocs TEXT,
+      Elemouvrages TEXT,
+        EntrepriseRealisation TEXT,   -- <-- colonne pour stocker JSON ou nom
+      maitre_ouvrage TEXT 
+    )
+  ''';
 
     await db.execute(userQuery);
     await db.execute(affaireQuery);
     await db.execute(siteQuery);
-    await db.execute(visiteQuery);
-    await db.execute(syncQuery);
+  
+    await db.execute(commandesQuery);
+    await _updateDatabaseSchema(db, version);
   }
 
-  Future<Future<int>> dropUsers(String? structure) async {
-    final db = await instance.database;
-    String query = "DELETE FROM users";
-    if(structure != null)
-      query += " WHERE structure=${structure}";
-    print("++++=>> ${query}");
-    return db.rawDelete(query);
+Future<void> _updateDatabaseSchema(Database db, int version) async {
+  try {
+    // Vérifier si la colonne existe déjà
+    await db.rawQuery('SELECT pe_date_pv FROM commandes LIMIT 1');
+    print('✅ La colonne pe_date_pv existe déjà');
+  } catch (e) {
+    print('➡️ Ajout de la colonne pe_date_pv...');
+    try {
+      await db.execute('ALTER TABLE commandes ADD COLUMN pe_date_pv TEXT');
+      print('✅ Colonne pe_date_pv ajoutée avec succès');
+    } catch (alterError) {
+      print('❌ Erreur lors de l’ajout de la colonne pe_date_pv: $alterError');
+    }
   }
+
+
+    // Vérifier les autres colonnes si nécessaire
+    final columnsToCheck = ['role', 'consultation', 'insertion', 'modification', 'suppression'];
+
+    for (final column in columnsToCheck) {
+      try {
+        await db.rawQuery('SELECT $column FROM users LIMIT 1');
+        print('✅ La colonne $column existe');
+      } catch (e) {
+        print('➡️ Ajout de la colonne $column...');
+        try {
+          await db.execute('ALTER TABLE users ADD COLUMN $column TEXT');
+          print('✅ Colonne $column ajoutée');
+        } catch (alterError) {
+          print('❌ Erreur avec la colonne $column: $alterError');
+        }
+      }
+    }
+  }
+  Future<int> dropUsers(String? structure) async {
+    final db = await instance.database;
+
+    if (structure != null && structure.isNotEmpty) {
+      // ✅ Utilisation de whereArgs pour éviter l'injection SQL
+      return await db.rawDelete(
+        'DELETE FROM users WHERE structure = ?',
+        [structure],
+      );
+    } else {
+      return await db.rawDelete('DELETE FROM users');
+    }
+  }
+  
+Future<int> insertCommande(Commande commande) async {
+  final db = await database;
+
+  // 🔹 Log 1 : début de l'insertion
+  print('🟡 [DB] Insertion d\'une commande dans la table "commandes"...');
+
+  // 🔹 Log 2 : afficher la map complète
+  final commandeMap = commande.toMap();
+  print('📦 [DB] Données de la commande à insérer :');
+  commandeMap.forEach((key, value) {
+    print('   ➜ $key: $value');
+  });
+
+  try {
+    // 🔹 Insertion dans la base
+    final id = await db.insert(
+      'commandes',
+      commandeMap,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+
+    // 🔹 Log 3 : succès
+    print('✅ [DB] Commande insérée avec succès. ID = $id');
+    return id;
+  } catch (e) {
+    // 🔹 Log 4 : erreur
+    print('❌ [DB] Erreur lors de l\'insertion de la commande : $e');
+    rethrow;
+  }
+}
+
+
 
   Future<void> createUsers(List<dynamic> users) async {
-    String userQuery = '''
-      INSERT INTO users
-      (matricule, structure, nom, prenom, password, role, consultation, insertion, modification, suppression)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''';
     final db = await instance.database;
-    users.forEach((element) async {
-      var item = User.toMap(element);
-      var result = await db.rawInsert(
-          userQuery,
-          [
-            item['matricule'],
-            item['structure'],
-            item['nom'],
-            item['prenom'],
-            item['password'],
-            item['role'],
-            item['consultation'],
-            item['insertion'],
-            item['modification'],
-            item['suppression'],
-          ]
-      );
+
+    // Commencer une transaction pour plus de performance
+    await db.transaction((txn) async {
+      for (var element in users) {
+        try {
+          print('📥 Traitement utilisateur: $element');
+
+          // ✅ Vérification plus robuste du type
+          Map<String, dynamic> userMap;
+          if (element is Map<String, dynamic>) {
+            userMap = element;
+          } else if (element is User) {
+            // Si c'est un objet User, convertir en Map
+            userMap = element.toJson();
+          } else {
+            print('❌ Type d\'utilisateur non supporté: ${element.runtimeType}');
+            continue;
+          }
+
+          // ✅ Normalisation avec valeurs par défaut sécurisées
+          final mappedUser = {
+            'matricule': userMap['matricule']?.toString() ?? '',
+            'structure': userMap['Structure']?.toString() ?? userMap['structure']?.toString() ?? '',
+            'nom': (userMap['nom']?.toString() ?? '').trim(),
+            'prenom': (userMap['prenom']?.toString() ?? '').trim(),
+            'password': userMap['password']?.toString() ?? '',
+            'privilege': userMap['privilege']?.toString() ?? '',
+            'role': userMap['role']?.toString() ?? '',
+            'consultation': userMap['consultation']?.toString() ?? '0',
+            'insertion': userMap['insertion']?.toString() ?? '0',
+            'modification': userMap['modification']?.toString() ?? '0',
+            'suppression': userMap['suppression']?.toString() ?? '0',
+          };
+
+          // ✅ Vérification des données requises
+          if (mappedUser['matricule']?.isEmpty ?? true) {
+            print('❌ Matricule manquant, utilisateur ignoré');
+            continue;
+          }
+
+          // ✅ Insertion sécurisée avec gestion des conflits
+          await txn.rawInsert('''
+          INSERT OR REPLACE INTO users 
+          (matricule, structure, nom, prenom, password, privilege, role, consultation, insertion, modification, suppression)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', [
+            mappedUser['matricule'],
+            mappedUser['structure'],
+            mappedUser['nom'],
+            mappedUser['prenom'],
+            mappedUser['password'],
+            mappedUser['privilege'],
+            mappedUser['role'],
+            mappedUser['consultation'],
+            mappedUser['insertion'],
+            mappedUser['modification'],
+            mappedUser['suppression'],
+          ]);
+
+          print("💾 Utilisateur inséré: ${mappedUser['matricule']}");
+
+        } catch (e) {
+          print('❌ Erreur insertion utilisateur $element: $e');
+          // Continuer avec les autres utilisateurs même en cas d'erreur
+        }
+      }
     });
   }
-
   Future<void> createAffaires(List<dynamic> affaires) async {
     String affaireQuery = '''
       INSERT INTO affaires
@@ -227,7 +426,7 @@ class VisitePreliminaireDatabase {
   }
 
   Future<void> setHasVisite(code_affaire, code_site) async {
-    final storage = new FlutterSecureStorage();
+    final storage =new FlutterSecureStorage();
     String? matricule = await storage.read(key: 'matricule');
     final db = await instance.database;
     await db.update(
@@ -239,65 +438,27 @@ class VisitePreliminaireDatabase {
       whereArgs: [ code_affaire, code_site, matricule ],
     );
   }
-
-  Future<void> createVisites(List<dynamic> visites) async {
-    String visiteQuery = '''
-      INSERT INTO visites
-      (Code_Affaire, Code_site, matricule, siteImage, VisitSiteDate, VisitSite_Btn_terrain_accessible,  VisitSiteterrain_accessible, VisitSite_Btn_terrain_cloture,  VisitSiteterrain_cloture, VisitSite_Btn_terrain_nu, VisitSiteterrain_nu, VisitSite_Btn_presence_vegetation,  VisitSitePresVeget, VisitSite_Btn_presence_pylones,  VisitSite_presence_pylones, VisitSite_Btn_existance_mitoyntehab,  VisitSiteExistantsvoisin, VisitSite_Btn_existance_voirie_mitoyenne,  VisitSite_existance_voirie_mitoyenne, VisitSite_Btn_presence_remblais,  VisitSitePresDepotremblai, VisitSite_Btn_presence_sources_cours_eau_cavite,  VisitSiteEngHabitant, VisitSite_Btn_presence_talwegs,  VisitSiteExistGliss, VisitSite_Btn_terrain_inondable,  VisitSite_terrain_inondable, VisitSite_Btn_terrain_enpente,  VisitSite_terrain_enpente, VisitSite_Btn_risque_InstabiliteGlisTerrain,  VisitSite_risque_InstabiliteGlisTerrain, VisitSite_Btn_terrassement_entame,  VisitSite_terrassement_entame, VisitSiteAutre, VisitSite_Btn_Presence_risque_instab_terasmt,  VisitSite_Btn_necessite_courrier_MO_risque_encouru,  VisitSite_Btn_doc_annexe,  VisitSite_liste_present, ValidCRVPIng, Longitude, Latitude)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''';
-    final storage = new FlutterSecureStorage();
-    String? matricule = await storage.read(key: 'matricule');
+  Future<bool> existeVisite(String code_affaire, String code_site) async {
     final db = await instance.database;
-    visites.forEach((element) async {
-      var item = Visite.toMap(element);
-      var result = await db.rawInsert(
-          visiteQuery,
-          [
-            item['Code_Affaire'].toString().trim(),
-            item['Code_site'].toString().trim(),
-            matricule,
-            item['siteImage'],
-            item['VisitSiteDate'],
-            (item['VisitSite_Btn_terrain_accessible'] == 'Oui' || item['VisitSite_Btn_terrain_accessible'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_accessible'] == 'Non' || item['VisitSite_Btn_terrain_accessible'] == '0') ? '0' : ''),
-            item['VisitSiteterrain_accessible'],
-            (item['VisitSite_Btn_terrain_cloture'] == 'Oui' || item['VisitSite_Btn_terrain_cloture'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_cloture'] == 'Non' || item['VisitSite_Btn_terrain_cloture'] == '0') ? '0' : ''),
-            item['VisitSiteterrain_cloture'],
-            (item['VisitSite_Btn_terrain_nu'] == 'Oui' || item['VisitSite_Btn_terrain_nu'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_nu'] == 'Non' || item['VisitSite_Btn_terrain_nu'] == '0') ? '0' : ''),
-            item['VisitSiteterrain_nu'],
-            (item['VisitSite_Btn_presence_vegetation'] == 'Oui' || item['VisitSite_Btn_presence_vegetation'] == '1') ? '1' : ((item['VisitSite_Btn_presence_vegetation'] == 'Non' || item['VisitSite_Btn_presence_vegetation'] == '0') ? '0' : ''),
-            item['VisitSitePresVeget'],
-            (item['VisitSite_Btn_presence_pylones'] == 'Oui' || item['VisitSite_Btn_presence_pylones'] == '1') ? '1' : ((item['VisitSite_Btn_presence_pylones'] == 'Non' || item['VisitSite_Btn_presence_pylones'] == '0') ? '0' : ''),
-            item['VisitSite_presence_pylones'],
-            (item['VisitSite_Btn_existance_mitoyntehab'] == 'Oui' || item['VisitSite_Btn_existance_mitoyntehab'] == '1') ? '1' : ((item['VisitSite_Btn_existance_mitoyntehab'] == 'Non' || item['VisitSite_Btn_existance_mitoyntehab'] == '0') ? '0' : ''),
-            item['VisitSiteExistantsvoisin'],
-            (item['VisitSite_Btn_existance_voirie_mitoyenne'] == 'Oui' || item['VisitSite_Btn_existance_voirie_mitoyenne'] == '1') ? '1' : ((item['VisitSite_Btn_existance_voirie_mitoyenne'] == 'Non' || item['VisitSite_Btn_existance_voirie_mitoyenne'] == '0') ? '0' : ''),
-            item['VisitSite_existance_voirie_mitoyenne'],
-            (item['VisitSite_Btn_presence_remblais'] == 'Oui' || item['VisitSite_Btn_presence_remblais'] == '1') ? '1' : ((item['VisitSite_Btn_presence_remblais'] == 'Non' || item['VisitSite_Btn_presence_remblais'] == '0') ? '0' : ''),
-            item['VisitSitePresDepotremblai'],
-            (item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || item['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
-            item['VisitSiteEngHabitant'],
-            (item['VisitSite_Btn_presence_talwegs'] == 'Oui' || item['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((item['VisitSite_Btn_presence_talwegs'] == 'Non' || item['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
-            item['VisitSiteExistGliss'],
-            (item['VisitSite_Btn_terrain_inondable'] == 'Oui' || item['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_inondable'] == 'Non' || item['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
-            item['VisitSite_terrain_inondable'],
-            (item['VisitSite_Btn_terrain_enpente'] == 'Oui' || item['VisitSite_Btn_terrain_enpente'] == '1') ? '1' : ((item['VisitSite_Btn_terrain_enpente'] == 'Non' || item['VisitSite_Btn_terrain_enpente'] == '0') ? '0' : ''),
-            item['VisitSite_terrain_enpente'],
-            (item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == 'Oui' || item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == '1') ? '1' : ((item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == 'Non' || item['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == '0') ? '0' : ''),
-            item['VisitSite_risque_InstabiliteGlisTerrain'],
-            (item['VisitSite_Btn_terrassement_entame'] == 'Oui' || item['VisitSite_Btn_terrassement_entame'] == '1') ? '1' : ((item['VisitSite_Btn_terrassement_entame'] == 'Non' || item['VisitSite_Btn_terrassement_entame'] == '0') ? '0' : ''),
-            item['VisitSite_terrassement_entame'],
-            item['VisitSiteAutre'],
-            (item['VisitSite_Btn_Presence_risque_instab_terasmt'] == 'Oui' || item['VisitSite_Btn_Presence_risque_instab_terasmt'] == '1') ? '1' : ((item['VisitSite_Btn_Presence_risque_instab_terasmt'] == 'Non' || item['VisitSite_Btn_Presence_risque_instab_terasmt'] == '0') ? '0' : ''),
-            (item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == 'Oui' || item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == '1') ? '1' : ((item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == 'Non' || item['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == '0') ? '0' : ''),
-            (item['VisitSite_Btn_doc_annexe'] == 'Oui' || item['VisitSite_Btn_doc_annexe'] == '1') ? '1' : ((item['VisitSite_Btn_doc_annexe'] == 'Non' || item['VisitSite_Btn_doc_annexe'] == '0') ? '0' : ''),
-            item['VisitSite_liste_present'],
-            (item['ValidCRVPIng'] == 'Oui' || item['ValidCRVPIng'] == '1') ? '1' : ((item['ValidCRVPIng'] == 'Non' || item['ValidCRVPIng'] == '0') ? '0' : ''),
-            item['Longitude'],
-            item['Latitude'],  ]
-      );
-    });
+    var result = await db.rawQuery('''
+      SELECT COUNT(*) FROM visites WHERE code_affaire = ? AND code_site = ?
+    ''', [code_affaire, code_site]);
+
+    return Sqflite.firstIntValue(result)! > 0;
   }
+
+  Future<bool> checkVisiteExists(String codeAffaire, String codeSite) async {
+    final db = await instance.database;
+
+    final result = await db.query(
+      'visites',
+      where: 'Code_Affaire = ? AND Code_site = ?',
+      whereArgs: [codeAffaire, codeSite],
+    );
+
+    return result.isNotEmpty;
+  }
+
 
   Future<void> createSync(sync) async {
     String syncQuery = '''
@@ -326,91 +487,22 @@ class VisitePreliminaireDatabase {
       where: 'matricule = ?',
       whereArgs: [ matricule ],
     );
-
     return sync.map((json) => SyncHistory.fromJson(json)).toList();
   }
 
-  Future<void> updateVisite(List<dynamic> visites) async {
-    final db = await instance.database;
-    visites.forEach((element) async {
-      var visite = Visite.toMap(element);
-      await db.update(
-        'visites',
-        {
-          'VisitSiteDate': visite['VisitSiteDate'],
-          'VisitSite_Btn_terrain_accessible': (visite['VisitSite_Btn_terrain_accessible'] == 'Oui' || visite['VisitSite_Btn_terrain_accessible'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_accessible'] == 'Non' || visite['VisitSite_Btn_terrain_accessible'] == '0') ? '0' : ''),
-          'VisitSiteterrain_accessible': visite['VisitSiteterrain_accessible'],
-          'VisitSite_Btn_terrain_cloture': (visite['VisitSite_Btn_terrain_cloture'] == 'Oui' || visite['VisitSite_Btn_terrain_cloture'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_cloture'] == 'Non' || visite['VisitSite_Btn_terrain_cloture'] == '0') ? '0' : ''),
-          'VisitSiteterrain_cloture': visite['VisitSiteterrain_cloture'],
-          'VisitSite_Btn_terrain_nu': (visite['VisitSite_Btn_terrain_nu'] == 'Oui' || visite['VisitSite_Btn_terrain_nu'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_nu'] == 'Non' || visite['VisitSite_Btn_terrain_nu'] == '0') ? '0' : ''),
-          'VisitSiteterrain_nu': visite['VisitSiteterrain_nu'],
-          'VisitSite_Btn_presence_vegetation': (visite['VisitSite_Btn_presence_vegetation'] == 'Oui' || visite['VisitSite_Btn_presence_vegetation'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_vegetation'] == 'Non' || visite['VisitSite_Btn_presence_vegetation'] == '0') ? '0' : ''),
-          'VisitSitePresVeget': visite['VisitSitePresVeget'],
-          'VisitSite_Btn_presence_pylones': (visite['VisitSite_Btn_presence_pylones'] == 'Oui' || visite['VisitSite_Btn_presence_pylones'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_pylones'] == 'Non' || visite['VisitSite_Btn_presence_pylones'] == '0') ? '0' : ''),
-          'VisitSite_presence_pylones': visite['VisitSite_presence_pylones'],
-          'VisitSite_Btn_existance_mitoyntehab': (visite['VisitSite_Btn_existance_mitoyntehab'] == 'Oui' || visite['VisitSite_Btn_existance_mitoyntehab'] == '1') ? '1' : ((visite['VisitSite_Btn_existance_mitoyntehab'] == 'Non' || visite['VisitSite_Btn_existance_mitoyntehab'] == '0') ? '0' : ''),
-          'VisitSiteExistantsvoisin': visite['VisitSiteExistantsvoisin'],
-          'VisitSite_Btn_existance_voirie_mitoyenne': (visite['VisitSite_Btn_existance_voirie_mitoyenne'] == 'Oui' || visite['VisitSite_Btn_existance_voirie_mitoyenne'] == '1') ? '1' : ((visite['VisitSite_Btn_existance_voirie_mitoyenne'] == 'Non' || visite['VisitSite_Btn_existance_voirie_mitoyenne'] == '0') ? '0' : ''),
-          'VisitSite_existance_voirie_mitoyenne': visite['VisitSite_existance_voirie_mitoyenne'],
-          'VisitSite_Btn_presence_remblais': (visite['VisitSite_Btn_presence_remblais'] == 'Oui' || visite['VisitSite_Btn_presence_remblais'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_remblais'] == 'Non' || visite['VisitSite_Btn_presence_remblais'] == '0') ? '0' : ''),
-          'VisitSitePresDepotremblai': visite['VisitSitePresDepotremblai'],
-          'VisitSite_Btn_presence_sources_cours_eau_cavite': (visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Oui' || visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == 'Non' || visite['VisitSite_Btn_presence_sources_cours_eau_cavite'] == '0') ? '0' : ''),
-          'VisitSiteEngHabitant': visite['VisitSiteEngHabitant'],
-          'VisitSite_Btn_presence_talwegs': (visite['VisitSite_Btn_presence_talwegs'] == 'Oui' || visite['VisitSite_Btn_presence_talwegs'] == '1') ? '1' : ((visite['VisitSite_Btn_presence_talwegs'] == 'Non' || visite['VisitSite_Btn_presence_talwegs'] == '0') ? '0' : ''),
-          'VisitSiteExistGliss': visite['VisitSiteExistGliss'],
-          'VisitSite_Btn_terrain_inondable': (visite['VisitSite_Btn_terrain_inondable'] == 'Oui' || visite['VisitSite_Btn_terrain_inondable'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_inondable'] == 'Non' || visite['VisitSite_Btn_terrain_inondable'] == '0') ? '0' : ''),
-          'VisitSite_terrain_inondable': visite['VisitSite_terrain_inondable'],
-          'VisitSite_Btn_terrain_enpente': (visite['VisitSite_Btn_terrain_enpente'] == 'Oui' || visite['VisitSite_Btn_terrain_enpente'] == '1') ? '1' : ((visite['VisitSite_Btn_terrain_enpente'] == 'Non' || visite['VisitSite_Btn_terrain_enpente'] == '0') ? '0' : ''),
-          'VisitSite_terrain_enpente': visite['VisitSite_terrain_enpente'],
-          'VisitSite_Btn_risque_InstabiliteGlisTerrain': (visite['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == 'Oui' || visite['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == '1') ? '1' : ((visite['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == 'Non' || visite['VisitSite_Btn_risque_InstabiliteGlisTerrain'] == '0') ? '0' : ''),
-          'VisitSite_risque_InstabiliteGlisTerrain': visite['VisitSite_risque_InstabiliteGlisTerrain'],
-          'VisitSite_Btn_terrassement_entame': (visite['VisitSite_Btn_terrassement_entame'] == 'Oui' || visite['VisitSite_Btn_terrassement_entame'] == '1') ? '1' : ((visite['VisitSite_Btn_terrassement_entame'] == 'Non' || visite['VisitSite_Btn_terrassement_entame'] == '0') ? '0' : ''),
-          'VisitSite_terrassement_entame': visite['VisitSite_terrassement_entame'],
-          'VisitSiteAutre': visite['VisitSiteAutre'],
-          'VisitSite_Btn_Presence_risque_instab_terasmt': (visite['VisitSite_Btn_Presence_risque_instab_terasmt'] == 'Oui' ||visite['VisitSite_Btn_Presence_risque_instab_terasmt'] == '1')? '1': ((visite['VisitSite_Btn_Presence_risque_instab_terasmt'] =='Non' ||visite['VisitSite_Btn_Presence_risque_instab_terasmt'] == '0')? '0': ''),
-          'VisitSite_Btn_necessite_courrier_MO_risque_encouru': (visite['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == 'Oui' || visite['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == '1') ? '1' : ((visite['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == 'Non' || visite['VisitSite_Btn_necessite_courrier_MO_risque_encouru'] == '0') ? '0' : ''),
-          'VisitSite_Btn_doc_annexe': (visite['VisitSite_Btn_doc_annexe'] == 'Oui' || visite['VisitSite_Btn_doc_annexe'] == '1') ? '1' : ((visite['VisitSite_Btn_doc_annexe'] == 'Non' || visite['VisitSite_Btn_doc_annexe'] == '0') ? '0' : ''),
-          'VisitSite_liste_present': visite['VisitSite_liste_present'],
-          'ValidCRVPIng': (visite['ValidCRVPIng'] == 'Oui' || visite['ValidCRVPIng'] == '1') ? '1' : ((visite['ValidCRVPIng'] == 'Non' || visite['ValidCRVPIng'] == '0') ? '0' : ''),
-          'Code_Affaire': visite['Code_Affaire'],
-          'Code_site': visite['Code_site'],
-          'siteImage': visite['siteImage'].toString(),
-          'Longitude': visite['Longitude'],
-          'Latitude': visite['Latitude'],
-        },
-        where: 'Code_Affaire = ? AND Code_site = ?',
-        whereArgs: [ visite['Code_Affaire'], visite['Code_site'] ],
-      );
-    });
-  }
+Future<List<Commande>> getAllCommandes() async {
+  final db = await instance.database;
+  final result = await db.query('commandes');
+  return result.map((json) => Commande.fromJson(json)).toList();
+}
 
-  Future<void> validateVisite(Code_Affaire, Code_site) async {
-    String visiteQuery = '''
-      UPDATE visites
-      SET      
-      ValidCRVPIng = 1     
-      where Code_Affaire = ? AND Code_site = ?
-    ''';
-    final db = await instance.database;
-    var result = await db.rawInsert(
-        visiteQuery,
-        [ Code_Affaire, Code_site ]
-    );
-  }
 
   Future<List<User>> getUser() async {
-    final storage = new FlutterSecureStorage();
-    String? matricule = await storage.read(key: 'matricule');
-
     final db = await instance.database;
-    final users = await db.query(
-      'users',
-      where: 'matricule = ?',
-      whereArgs: [ matricule ],
-    );
-
+    final users = await db.query('users');
     return users.map((json) => User.fromJson(json)).toList();
   }
+
 
   Future<User> getUserByMatricule(matricule) async {
     final db = await instance.database;
@@ -419,7 +511,6 @@ class VisitePreliminaireDatabase {
       where: 'matricule = ?',
       whereArgs: [ matricule ],
     );
-
     return users.map((json) => User.fromJson(json)).toList()[0];
   }
 
@@ -435,44 +526,105 @@ class VisitePreliminaireDatabase {
   Future<List<Affaire>> getAffairesFromAffairesWhereMatricule(matricule) async {
     final db = await instance.database;
     final affaires = await db.query(
-      'affaires',
-      where: 'matricule = ?',
-      whereArgs: [ matricule ]
+        'affaires',
+        where: 'matricule = ?',
+        whereArgs: [ matricule ]
     );
 
     return affaires.map((json) => Affaire.fromJson(json)).toList();
   }
 
-  Future<List<Visite>> getInvalidVisitesWhereMatricule(matricule) async {
-    final db = await instance.database;
-    final visites = await db.query(
-        'visites',
-        where: 'matricule = ? AND ValidCRVPIng = 0',
-        whereArgs: [ matricule ]
+
+
+
+Future<Map<String, dynamic>> getVisitesWhereAffairesSites(args) async {
+  if (args.isEmpty) {
+    return {'visites': [], 'images': [], 'documentsAnnexes': []};
+  }
+
+  final db = await instance.database;
+
+  // Créer les conditions WHERE correctement
+  final whereConditions = args.map((e) {
+    final codeAffaire = e['Code_Affaire']?.toString() ?? '';
+    final codeSite = e['Code_site']?.toString() ?? '';
+    return '(Code_Affaire = "$codeAffaire" AND Code_site = "$codeSite")';
+  }).toList().join(' OR ');
+
+  final visites = await db.rawQuery('''
+    SELECT * FROM visites 
+    WHERE $whereConditions
+  ''');
+
+  print("Visites récupérées getVisitesWhereAffairesSites: ${visites.length}");
+
+  final Map<String, dynamic> result = {
+    'visites': [],
+    'images': [],
+    'documentsAnnexes': []
+  };
+
+  for (var visite in visites) {
+    final codeAffaire = visite['Code_Affaire'].toString();
+    final codeSite = visite['Code_site'].toString();
+
+    // Récupérer les images avec DEUX patterns différents
+    final imagePattern1 = "${codeAffaire}_${codeSite}_%"; // format: codeaffaire_codesite_path
+    final imagePattern2 = "${codeAffaire}${codeSite}%";   // format: codeaffairecodesite (concaténation)
+    
+    final images = await db.query(
+      'images',
+      where: 'name LIKE ? OR name LIKE ?',
+      whereArgs: [imagePattern1, imagePattern2]
     );
 
-    return visites.map((json) => Visite.fromJson(json)).toList();
-  }
+    print("Images trouvées pour $codeAffaire/$codeSite: ${images.length}");
+    print("Patterns utilisés: '$imagePattern1' et '$imagePattern2'");
 
-  Future<List<Visite>> getAffairesSitesFromVisitesWhereMatricule(matricule) async {
-    final db = await instance.database;
-    final visites = await db.query(
-      'visites',
-      where: 'matricule = ? AND ValidCRVPIng = 1',
-      whereArgs: [ matricule ]
+    final imagePaths = await Future.wait(images.map((img) async {
+      final bytes = img['imageBytes'] as List<int>?;
+      final name = img['name'] as String? ?? '';
+      final path = img['path'] as String? ?? ''; // Ajout du champ path si nécessaire
+      
+      print("Traitement image: $path");
+      
+      try {
+        if (bytes != null && bytes.isNotEmpty) {
+
+          final imageFile = await getImage(bytes, name: path);
+          print("Image traitée avec succès: ${imageFile.path}");
+          return imageFile.path;
+        } else {
+          print("Image sans bytes: $path");
+          return null;
+        }
+      } catch (e) {
+        print("Erreur lors du traitement de l'image $name: $e");
+        return null;
+      }
+    }));
+
+     // Récupérer les documents annexes
+    final documents = await db.query(
+      'DocumentsAnnexe',
+      where: 'Code_Affaire = ? AND Code_site = ?',
+      whereArgs: [codeAffaire, codeSite]
     );
 
-    return visites.map((json) => Visite.fromJson(json)).toList();
+    // Filtrer les documents avec contenu valide
+    final validDocuments = documents.where((doc) {
+      final content = doc['nom_document']?.toString();
+      return content != null && content.isNotEmpty;
+    }).toList();
+
+    result['visites'].add(visite);
+    result['images'].addAll(imagePaths.where((path) => path != null).cast<String>());
+    result['documentsAnnexes'].addAll(validDocuments);
   }
 
-  getVisitesWhereAffairesSites(args) async {
-    late String whereArgs = args.map((e) => '"'+(e['Code_Affaire'].toString() + e['Code_site']).toString()+'"').toList().join(',');
-    final db = await instance.database;
-    final visites = await db.rawQuery('SELECT * FROM visites WHERE Code_Affaire || Code_site IN (${whereArgs})');
-
-    return visites;
-  }
-
+  print("Résultat - Visites: ${result['visites'].length}, Images: ${result['images'].length}, Documents: ${result['documentsAnnexes'].length}");
+  return result;
+}
   Future<List<Site>> getAffairesFromSites() async {
     final db = await instance.database;
     final sites = await db.query(
@@ -513,23 +665,8 @@ class VisitePreliminaireDatabase {
     return sites.map((json) => Site.fromJson(json)).toList();
   }
 
-  Future<List<Visite>> getVisites() async {
-    final db = await instance.database;
-    final visites = await db.query('visites');
 
-    return visites.map((json) => Visite.fromJson(json)).toList();
-  }
 
-  getVisite(Code_Affaire, Code_site) async {
-    final db = await instance.database;
-    final visite = await db.query(
-      'visites',
-      where: 'Code_Affaire=? and Code_site=?',
-      whereArgs: [Code_Affaire, Code_site]
-    );
-
-    return Visite.fromJson(visite[0]);
-  }
 
   Future<bool> checkStructure(structure) async {
     final db = await instance.database;
@@ -555,5 +692,170 @@ class VisitePreliminaireDatabase {
     final db = await instance.database;
     db.close();
   }
+
+
+  static Future<void> saveImage(Database db, ImageData imageData) async {
+    try {
+      await db.insert(
+        'images',
+        {
+          'name': imageData.name,
+          'path': imageData.path,
+          'imageBytes': imageData.imageBytes,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      print('Image sauvegardée avec succès: ${imageData.name}');
+    } catch (e) {
+      print('Erreur dans saveImage: $e');
+      rethrow;
+    }
+  }
+
+  static Future<List<int>> getImageBytes(String imagePath) async {
+    try {
+      final imageFile = File(imagePath);
+      if (!await imageFile.exists()) {
+        throw Exception('Fichier introuvable: $imagePath');
+      }
+      return await imageFile.readAsBytes();
+    } catch (e) {
+      print('Erreur dans getImageBytes: $e');
+      rethrow;
+    }
+  }
+
+ static Future<void> insertImage(String imagePath, String name) async {
+  final db = await instance.database;
+  try {
+    print('Tentative de lecture du fichier: $imagePath');
+
+    final file = File(imagePath);
+    if (!await file.exists()) {
+      throw Exception('Le fichier image n\'existe pas: $imagePath');
+    }
+
+    final List<int> imageBytes = await file.readAsBytes();
+    print('Fichier lu avec succès, taille: ${imageBytes.length} bytes');
+
+    final imageData = ImageData(
+      name: name,
+      path: p.basename(imagePath),
+      imageBytes: Uint8List.fromList(imageBytes),
+    );
+
+    await saveImage(db, imageData);
+    print('Image insérée avec succès dans la base de données');
+  } catch (e, stacktrace) {
+    print('Erreur dans insertImage: $e');
+    print('Stacktrace: $stacktrace');
+    rethrow;
+  }
+}
+
+  static Future<File> getImageFromBytes(List<int> byte, {required String name}) async {
+    try {
+      final bytes = Uint8List.fromList(byte);
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/$name';
+      return await File(filePath).writeAsBytes(bytes);
+    } catch (e) {
+      print('Erreur dans getImage: $e');
+      rethrow;
+    }
+  }
+
+Future<List<ImageData>> getAllImages() async {
+  try {
+    final List<Map<String, dynamic>> maps = await _database!.query('images');
+    return List.generate(maps.length, (i) {
+      return ImageData(
+        id: maps[i]['id'], // <-- AJOUTE CETTE LIGNE
+        name: maps[i]['name'],
+        path: maps[i]['path'],
+        imageBytes: Uint8List.fromList(maps[i]['imageBytes']),
+      );
+    });
+  } catch (e) {
+    print('Erreur dans getAllImages: $e');
+    return [];
+  }
+}
+
+  static Future<String> convertBase64ToFile(String base64String, String fileName) async {
+    try {
+      final decodedBytes = base64Decode(base64String);
+      final directory = await getApplicationDocumentsDirectory();
+      final filePath = '${directory.path}/$fileName';
+      await File(filePath).writeAsBytes(decodedBytes);
+      return filePath;
+    } catch (e) {
+      print('Erreur dans convertBase64ToFile: $e');
+      rethrow;
+    }
+  }
+  Future<List<ImageData>> getImagesByVisite(String codeAffaire, String codeSite) async {
+    try {
+      
+      final allImages = await getAllImages();
+      final filteredImages = allImages.where((image) {
+        final name = image.name.toLowerCase();
+        return name.contains(codeSite.toLowerCase()) &&
+            name.contains(codeAffaire.toLowerCase());
+      }).toList();
+
+      return filteredImages;
+    } catch (e) {
+      print('Erreur dans getImagesByVisite: $e');
+      rethrow;
+    }
+  }
+  static Future<void> deleteImage(int id) async {
+    try {
+      final db = await instance.database;
+      await db.delete(
+        'images',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    } catch (e) {
+      print('Erreur dans deleteImage: $e');
+      rethrow;
+    }
+  }
+  static Future<void> deleteImagesForVisite(String codeAffaire, String codeSite) async {
+    try {
+      final db = await instance.database;
+      await db.delete(
+        'images',
+        where: 'code_affaire = ? AND code_site = ?',
+        whereArgs: [codeAffaire, codeSite],
+      );
+      print('🗑️ Images supprimées pour la visite: $codeAffaire / $codeSite');
+    } catch (e) {
+      print('Erreur dans deleteImagesForVisite: $e');
+      rethrow;
+    }
+  }
+
+static Future<File> getImage(List<int>? byte, {required String name}) async {
+  if (byte == null) {
+    throw Exception("Les données de l'image sont nulles pour le fichier: $name");
+  }
+  final bytes = Uint8List.fromList(byte);
+  String filePath = '${Directory.systemTemp.path}/$name';
+  return await convertUint8ListToFile(bytes, filePath);
+}
+
+
+  static Future<File> convertUint8ListToFile(
+      Uint8List uint8List, String filePath) async {
+    File file = File(filePath);
+    return await file.writeAsBytes(uint8List);
+  }
+
+
+
+
 
 }
