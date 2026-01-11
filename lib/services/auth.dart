@@ -2,7 +2,7 @@ import 'package:bcrypt/bcrypt.dart';
 import 'package:dio/dio.dart' as Dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:mgtrisque_visitepreliminaire/db/visite_preliminaire_database.dart';
+import 'package:mgtrisque_visitepreliminaire/db/local_database.dart';
 import 'package:mgtrisque_visitepreliminaire/services/dio.dart';
 import '../models/user.dart';
 import 'package:collection/collection.dart'; 
@@ -67,7 +67,7 @@ class Auth extends ChangeNotifier {
   
   Future<int> _handleLocalLogin(Map credentials) async {
     try {
-      final List<User> users = await VisitePreliminaireDatabase.instance.getUser();
+      final List<User> users = await LocalDatabase.instance.getUser();
 
       if (users.isEmpty) {
         print('Aucun utilisateur trouvé en base locale');
@@ -83,7 +83,7 @@ class Auth extends ChangeNotifier {
         print('Utilisateur non trouvé dans la base locale');
         return 401;
       }
-      
+
       final bool isPasswordValid = BCrypt.checkpw(
         credentials['password']?.toString() ?? '',
         localUser.password,
@@ -94,7 +94,6 @@ class Auth extends ChangeNotifier {
         return 401;
       }
 
-      
       await _setUserLoggedIn(localUser, 'local_token');
       print('Connexion offline réussie pour ${localUser.matricule}');
       return 200;
@@ -104,7 +103,6 @@ class Auth extends ChangeNotifier {
       return 500;
     }
   }
-
 
   
   Future<int> _handleApiLogin(Map credentials) async {
@@ -164,8 +162,8 @@ Future<int> _fetchUserData() async {
       final Map<String, dynamic> data = response.data;
       final User connectedUser = User.fromJson(data);
       print("Utilisateur récupéré: ${connectedUser.matricule}");
-      await VisitePreliminaireDatabase.instance.dropUsers(connectedUser.structure);
-      await VisitePreliminaireDatabase.instance.createUsers([connectedUser]);
+      await LocalDatabase.instance.dropUsers(connectedUser.structure);
+      await LocalDatabase.instance.createUsers([connectedUser]);
       await _setUserLoggedIn(connectedUser, _token!);
       return 200;
     }

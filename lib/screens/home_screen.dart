@@ -26,11 +26,36 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
   final _advancedDrawerController = AdvancedDrawerController();
-  final List<Widget> bottomBarWidgets = [
+  List<Widget> _bottomBarWidgets(BuildContext context) => [
+        Consumer<GlobalProvider>(
+          builder: (context, gp, _) {
+            if (!gp.isSyncing) {
+              return const Center(child: Text('Synchronisation'));
+            }
+            final total = gp.syncTotal;
+            final completed = gp.syncCompleted;
+            final percent = total > 0 ? (completed / total) : 0.0;
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    child: LinearProgressIndicator(value: percent),
+                  ),
+                  const SizedBox(height: 12),
+                  Text('$completed / $total'),
+                ],
+              ),
+            );
+          },
+        ),
 
-    AffairesScreen(),
+        AffairesScreen(isNotFirstTime: widget.isNotFirstTime, isOffline: false),
 
-  ];
+        const Center(child: Text('Visite préliminaire')),
+      ];
+
   final List<String> bottomBarNames = [
     'Synchronisation',
     'Affaires',
@@ -39,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
   TextEditingController _searchController = TextEditingController();
 
   @override
+
   Widget build(BuildContext context) {
     return AdvancedDrawer(
       backdropColor: Provider.of<GlobalProvider>(context, listen: true).currentIndex == 1
@@ -215,11 +241,11 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                         ),
                      onChanged: (value) {
   
-                  Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
+                 // Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
                 },
                 onFieldSubmitted: (value) {
 
-                  Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
+                 // Provider.of<Affaires>(context, listen: false).setfoundAffaires = value;
                 },),
                                   ),
                                   SizedBox(width: 20.0,),
@@ -233,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
                   }).toList(),
                   onSelected: (String? value) {
                     if (value != null) {
-                      Provider.of<Affaires>(context, listen: false).setFilterAffaires = value;
+                     // Provider.of<Affaires>(context, listen: false).setFilterAffaires = value;
                     }
                   },
                   initialSelection: 'Toutes les affaires',
@@ -258,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
           currentIndex:
           Provider.of<GlobalProvider>(context, listen: true).currentIndex,
           onTap: (i) async {  if (i == 1) {
-      await Provider.of<Affaires>(context, listen: false).refreshAffaires();
+     // await Provider.of<Affaires>(context, listen: false).refreshAffaires();
     }
             Provider.of<GlobalProvider>(context, listen: false)
                 .setCurrentIndex = i;
@@ -299,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         body: IndexedStack(
           index:
           Provider.of<GlobalProvider>(context, listen: true).currentIndex,
-          children: bottomBarWidgets,
+          children: _bottomBarWidgets(context),
         ),
       ),
     );

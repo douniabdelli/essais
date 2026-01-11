@@ -6,6 +6,7 @@ class Commande {
   final String? intituleAffaire;
   final String peId;
   final String codeAffaire;
+    final String? datevalidationpm;
   final String codeSite;
   final String chargeAffaire;
   final String catChantier;
@@ -17,26 +18,28 @@ class Commande {
   final String? peDatePv;
 final String? entrepriseRealisationNom;
 final String? maitreOuvrageNom;
-  final String age1;
-  final String age2;
-  final String age3;
-  final String age4;
-  final String age5;
+  final int age1;
+  final int age2;
+  final int age3;
+  final int age4;
+  final int age5;
   final String? validationLabo;
   final String userCode;
   final String nomDRLaboratoire;
   final String structureLaboratoire;
   final String typeIntervention;
   final String? motifNonPrelevement;
-  final List<Entreprise> entreprises;
+   List<Entreprise> entreprises;
   final List<Bloc> blocs;
   final List<Elemouvrage> elemouvrages;
     final FamillePred? partieOuvrage;
+    final String? partieOuvrageJson;
   Commande({
     required this.codeCommande,
     required this.numCommande,
     required this.intituleAffaire,
     required this.peId,
+    required this.datevalidationpm,
     required this.codeAffaire,
     required this.codeSite,
     required this.chargeAffaire,
@@ -51,7 +54,7 @@ final String? maitreOuvrageNom;
     required this.peDatePv,
 required this.entrepriseRealisationNom,
 required this.maitreOuvrageNom,
-
+this.partieOuvrageJson,
     required this.age1,
     required this.age2,
     required this.age3,
@@ -85,14 +88,15 @@ required this.maitreOuvrageNom,
       blocs: [],
       elemouvrages: [],
       peDatePv: '',
+      datevalidationpm: '',
 entrepriseRealisationNom: '',
 maitreOuvrageNom: '',
 
-      age1: '',
-      age2: '',
-      age3: '',
-      age4: '',
-      age5: '',
+      age1: 0,
+      age2: 0,
+      age3: 0,
+      age4: 0,
+      age5: 0,
       motifNonPrelevement:'',
        validationLabo:'',
       userCode:'',
@@ -110,45 +114,9 @@ maitreOuvrageNom: '',
     );
   }
   
-//   factory Commande.fromJson(Map<String, dynamic> json) {
-//     return Commande(
-//       codeCommande: json['CodeCommande'] ?? 0,
-//       numCommande: json['NumCommande']?.toString() ?? '',
-//       codeAffaire: json['Code_Affaire']?.toString() ?? '',
-//       peId: json['pe_id']?.toString() ?? '',
-//       intituleAffaire: json['IntituleAffaire']?.toString() ?? '',
-//       codeSite: json['Code_Site']?.toString() ?? '',
-//       chargeAffaire: json['chargedaffaire']?.toString() ?? '',
-//       catChantier: json['catChantier']?.toString() ?? '',
-//       entreprises: (json['TEntreRealSite'] as List? ?? [])
-//           .map((e) => Entreprise.fromJson(e))
-//           .toList(),
-//      ouvrage: json['partie_ouvrage']?.toString() ?? '',
-//      bloc: json['Bloc']?.toString() ?? '',
-//      localisation: json['Localisation']?.toString() ?? '',
-//      elembloc: json['bloc']?.toString() ?? '',
-//      age1: json['age1']?.toString() ?? '',
-//      age2: json['age2']?.toString() ?? '',
-//      age3: json['age3']?.toString() ?? '',
-//      age4: json['age4']?.toString() ?? '',
-//      age5: json['age5']?.toString() ?? '',
-//     blocs: (json['blocs'] as List? ?? [])
-//           .map((e) => Bloc.fromJson(e))
-//           .toList(),
-//    elemouvrages: (json['elementOuvrages'] as List?)
-//         ?.map((e) => Elemouvrage.fromJson(e))
-//         .toList() 
-//         ?? [],
-// motifNonPrelevement: json['motif_non_ecrasement']?.toString() ?? '',
-//  validationLabo: json['Validation_labo'],
-//       userCode: json['user_code'],
-//       nomDRLaboratoire: json['Nom_DR_Laboratoire'],
-//       structureLaboratoire: json['Structure_Laboratoire'],
-//       typeIntervention: json['TypeIntervention'],
-//     );
-//   }
 
 factory Commande.fromJson(Map<String, dynamic> json) {
+  
   // helper: convert dynamic item to Map<String, dynamic> if possible
   Map<String, dynamic> _toMap(dynamic item) {
     if (item == null) return {};
@@ -195,8 +163,11 @@ factory Commande.fromJson(Map<String, dynamic> json) {
     return out;
   }
 
-  final dynamic entreprisesRaw = json['EntrepriseRealisation'] ?? json['TEntreRealSite'] ?? json['entreprises'];
+  final dynamic entreprisesRaw = json['Entreprises'] ?? json['entreprises'] ?? json['EntrepriseRealisation'] ?? json['TEntreRealSite'];
   final entreprisesList = _mapList<Entreprise>(entreprisesRaw, (e) {
+    if (e is String) {
+      return Entreprise(code: '', nom: e);
+    }
     final m = _toMap(e);
     return Entreprise.fromJson(m);
   });
@@ -209,15 +180,16 @@ factory Commande.fromJson(Map<String, dynamic> json) {
 
   final elemOuvs = _mapList<Elemouvrage>(json['elementOuvrages'] ?? json['ElementOuvrages'] ?? json['elementOuvrage'], (e) {
     if (e is Map) return Elemouvrage.fromJson(Map<String, dynamic>.from(e));
-    if (e is String) return Elemouvrage(nom: e, axe: '', file: '', niveau: '', famille: '');
-    return Elemouvrage(nom: e?.toString() ?? '', axe: '', file: '', niveau: '', famille: '');
+    if (e is String) return Elemouvrage(nom: e, axe: '', file: '', niveau: '', bloc:'', famille: '');
+    return Elemouvrage(nom: e?.toString() ?? '', axe: '', file: '', niveau: '', bloc:'', famille: '');
   });
 
   final partie= json['partie_ouvrage'];
   final partieObj = (partie is Map) ? FamillePred.fromJson(Map<String, dynamic>.from(partie)) : null;
 
   return Commande(
-    codeCommande: json['CodeCommande'] ?? 0,
+    codeCommande: int.tryParse(json['CodeCommande']?.toString() ?? '0') ?? 0,
+datevalidationpm: json['date_validation_pm']?.toString() ?? '',
     numCommande: json['NumCommande']?.toString() ?? '',
     intituleAffaire: json['IntituleAffaire']?.toString() ?? '',
     peId: json['pe_id']?.toString() ?? '',
@@ -232,11 +204,13 @@ factory Commande.fromJson(Map<String, dynamic> json) {
     bloc: json['Bloc']?.toString() ?? '',
     localisation: json['Localisation']?.toString() ?? '',
     elembloc: json['ElemBloc']?.toString() ?? json['bloc']?.toString() ?? '',
-    age1: json['Age1']?.toString() ?? json['age1']?.toString() ?? '',
-    age2: json['Age2']?.toString() ?? json['age2']?.toString() ?? '',
-    age3: json['Age3']?.toString() ?? json['age3']?.toString() ?? '',
-    age4: json['Age4']?.toString() ?? json['age4']?.toString() ?? '',
-    age5: json['Age5']?.toString() ?? json['age5']?.toString() ?? '',
+    age1: int.tryParse(json['Age1']?.toString() ?? json['age1']?.toString() ?? '0') ?? 0,
+    age2: int.tryParse(json['Age2']?.toString() ?? json['age2']?.toString() ?? '0') ?? 0,
+    age3: int.tryParse(json['Age3']?.toString() ?? json['age3']?.toString() ?? '0') ?? 0,
+    age4: int.tryParse(json['Age4']?.toString() ?? json['age4']?.toString() ?? '0') ?? 0,
+    age5: int.tryParse(json['Age5']?.toString() ?? json['age5']?.toString() ?? '0') ?? 0,
+
+
     blocs: blocsList,
     elemouvrages: elemOuvs,
     partieOuvrage: partieObj,
@@ -257,6 +231,7 @@ Map<String, dynamic> toMap() {
     'NumCommande': numCommande,
     'pe_id': peId,
     'pe_date_pv': peDatePv,
+    'date_validation_pm': datevalidationpm,
     'Code_Affaire': codeAffaire,
     'Code_Site': codeSite,
     'ChargedAffaire': chargeAffaire,
@@ -265,45 +240,147 @@ Map<String, dynamic> toMap() {
     'Nom_DR_Laboratoire': nomDRLaboratoire,
     'Structure_Laboratoire': structureLaboratoire,
     'TypeIntervention': typeIntervention,
-    // 'Motif_non_prelevement': motifNonPrelevement,
-    // 'Ouvrage': ouvrage,
-    // 'Bloc': bloc,
-    // 'ElemBloc': elembloc,
-    // 'Localisation': localisation,
-   
-    // 'Partie_Ouvrage': partieOuvrage != null ? jsonEncode({
-    //   'id': partieOuvrage!.id,
-    //   'code': partieOuvrage!.code,
-    //   'designation': partieOuvrage!.designation,
-    //   'mission': partieOuvrage!.mission,
-    //   'type': partieOuvrage!.type,
-    // }) : '',
-    // 'Entreprises': entreprisesJson,
-    // 'Blocs': jsonEncode(blocs.map((b) => {'value': b.value, 'label': b.label}).toList()),
-    // 'Elemouvrages': jsonEncode(elemouvrages.map((el) => {
-    //   'elem_nom': el.nom,
-    //   'elem_axe': el.axe,
-    //   'elem_file': el.file,
-    //   'elem_niveau': el.niveau,
-    //   'elem_famille': el.famille,
-    // }).toList()),
-    'EntrepriseRealisation': entrepriseRealisationNom,
+  'EntrepriseRealisation': entrepriseRealisationNom,
     'maitre_ouvrage': maitreOuvrageNom,
     'partie_ouvrage': partieouvrage,
   };
 }
+
+  Map<String, Object?> toJson() {
+    return {
+      'CodeCommande': codeCommande,
+      'NumCommande': numCommande,
+      'IntituleAffaire': intituleAffaire,
+      'pe_id': peId,
+      'date_validation_pm': datevalidationpm,
+      'Code_Affaire': codeAffaire,
+      'Code_Site': codeSite,
+      'ChargedAffaire': chargeAffaire,
+      'CatChantier': catChantier,
+      'ElemBloc': elembloc,
+      'Ouvrage': ouvrage,
+      'partie_ouvrage': partieouvrage,
+      'Bloc': bloc,
+      'Localisation': localisation,
+      'pe_date_pv': peDatePv,
+      'EntrepriseRealisation': entrepriseRealisationNom,
+      'maitre_ouvrage': maitreOuvrageNom,
+      'Age1': age1,
+      'Age2': age2,
+      'Age3': age3,
+      'Age4': age4,
+      'Age5': age5,
+      'Validation_labo': validationLabo,
+      'user_code': userCode,
+      'Nom_DR_Laboratoire': nomDRLaboratoire,
+      'Structure_Laboratoire': structureLaboratoire,
+      'TypeIntervention': typeIntervention,
+      'motif_non_prelevement': motifNonPrelevement,
+      'Entreprises': entreprises.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+class TEntreRealSite {
+  String codeAffaire;
+  String codeSite;
+  String codeEntreprise;
+  DateTime? dateDebutService;
+  DateTime? dateFinService;
+  String etat;
+  String nom;
+  String utiliserREP;
+  String startControle;
+  DateTime? endControle;
+  DateTime? dateModif;
+  String modifiedByBase;
+  DateTime? dateModifAgence;
+  DateTime? dateModifLaptop;
+
+  TEntreRealSite({
+    required this.codeAffaire,
+    required this.codeSite,
+    required this.codeEntreprise,
+    this.dateDebutService,
+    this.dateFinService,
+    required this.etat,
+    required this.nom,
+    required this.utiliserREP,
+    required this.startControle,
+    this.endControle,
+    this.dateModif,
+    required this.modifiedByBase,
+    this.dateModifAgence,
+    this.dateModifLaptop,
+  });
+
+  factory TEntreRealSite.fromJson(Map<String, dynamic> json) {
+    return TEntreRealSite(
+      codeAffaire: json['Code_Affaire'],
+      codeSite: json['Code_Site'],
+      codeEntreprise: json['codeEntreprise'],
+      dateDebutService: json['DateDebutSerive'] != null
+          ? DateTime.parse(json['DateDebutSerive'])
+          : null,
+      dateFinService: json['DateFinService'] != null
+          ? DateTime.parse(json['DateFinService'])
+          : null,
+      etat: json['Etat'],
+      nom: json['nom'],
+      utiliserREP: json['UtiliserREP'],
+      startControle: json['StartControle'],
+      endControle: json['endControle'] != null
+          ? DateTime.parse(json['endControle'])
+          : null,
+      dateModif: json['DateModif'] != null
+          ? DateTime.parse(json['DateModif'])
+          : null,
+      modifiedByBase: json['ModifiedByBase'],
+      dateModifAgence: json['DateModifAgence'] != null
+          ? DateTime.parse(json['DateModifAgence'])
+          : null,
+      dateModifLaptop: json['DateModifLaptop'] != null
+          ? DateTime.parse(json['DateModifLaptop'])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'Code_Affaire': codeAffaire,
+      'Code_Site': codeSite,
+      'codeEntreprise': codeEntreprise,
+      'DateDebutSerive': dateDebutService?.toIso8601String(),
+      'DateFinService': dateFinService?.toIso8601String(),
+      'Etat': etat,
+      'nom': nom,
+      'UtiliserREP': utiliserREP,
+      'StartControle': startControle,
+      'endControle': endControle?.toIso8601String(),
+      'DateModif': dateModif?.toIso8601String(),
+      'ModifiedByBase': modifiedByBase,
+      'DateModifAgence': dateModifAgence?.toIso8601String(),
+      'DateModifLaptop': dateModifLaptop?.toIso8601String(),
+    };
+  }
 }
 class Entreprise {
-  final String code;
+  final String? code;
   final String nom;
 
-  Entreprise({required this.code, required this.nom});
+  Entreprise({ this.code, required this.nom});
 
   factory Entreprise.fromJson(Map<String, dynamic> json) {
     return Entreprise(
       code: json['codeEntreprise']?.toString() ?? '',
-      nom: json['nom']?.toString() ?? '',
+   nom: json['nom'] as String? ?? 'Entreprise inconnue',
     );
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'codeEntreprise': code,
+      'nom': nom,
+    };
   }
 }
 
@@ -324,19 +401,46 @@ class Predefini {
 }
 
 class ElementPredefini {
-  final int value;
-  final String label;
+  final int id;              // obligatoire maintenant
+  final String code;          // C.1
+  final String designation;   // Stabilité générale
+  final String mission;       // M1
+  final String type;          // Bâtiment
 
-  ElementPredefini({required this.value, required this.label});
+  const ElementPredefini({
+    required this.id,
+    required this.code,
+    required this.designation,
+    required this.mission,
+    required this.type,
+  });
+factory ElementPredefini.fromJson(Map<String, dynamic> json) {
+  // On prend id OU value si id est null
+  final int parsedId = json['id'] ?? json['value'] ?? 0;
 
-  factory ElementPredefini.fromJson(Map<String, dynamic> json) {
-    return ElementPredefini(
-      value: json['value'] ?? 0,
-      label: json['label']?.toString() ?? '',
-    );
-  }
+  return ElementPredefini(
+    id: parsedId,
+    code: json['code'] as String? ?? '',
+    designation: json['designation'] as String? ?? 'Inconnue',
+    mission: json['mission'] as String? ?? '',
+    type: json['type'] as String? ?? '',
+  );
 }
+Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'code': code,
+      'designation': designation,
+      'mission': mission,
+      'type': type,
+    };
+  }
+  // Optionnel : pour l'affichage dans les Dropdown ou ListTile
+  String get label => "$code - $designation"; // ex: "C.1 - Stabilité générale"
 
+  @override
+  String toString() => label;
+}
 
 class Bloc {
   final String value;
@@ -369,33 +473,105 @@ final String type;
     );
   }
 }
+class PartieOuvrage {
+  final String? id;
+  final String? designation;
+
+  PartieOuvrage({this.id, this.designation});
+
+  factory PartieOuvrage.fromJson(Map<String, dynamic>? json) {
+    if (json == null) return PartieOuvrage();
+    return PartieOuvrage(
+      id: json['id']?.toString() ?? json['Id']?.toString(),
+      designation: json['designation']?.toString() ?? json['designation']?.toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'designation': designation,
+      };
+}
+class Interventionuser {
+  final String Matricule;
+  final String Nom;
+  final String Prenom;
+  final String NomDR;
+
+
+
+  Interventionuser({
+    required this.Matricule,
+    required this.Nom,
+    required this.Prenom,
+    required this.NomDR,
+  
+  });
+
+  factory Interventionuser.fromJson(Map<String, dynamic> json) {
+    return Interventionuser(
+      Matricule: json['Matricule'] ?? '',
+      Nom: json['Nom'] ?? '',
+      Prenom: json['Prénom'] ?? '',
+      NomDR: json['Nom_DR'] ?? '',
+  
+    );
+  }
+
+   Map<String, dynamic> toJson() => {
+        'Matricule': Matricule,
+        'Nom': Nom,
+        'Prénom': Prenom,
+        'Nom_DR': NomDR,
+       
+      };
+ 
+} 
+
 class Elemouvrage {
   final String nom;
   final String axe;
   final String file;
   final String niveau;
+   //final String peid;
+   final String bloc;
 final String famille;
+
+ final PartieOuvrage? partieOuvrage;
   Elemouvrage({
     required this.nom,
     required this.axe,
     required this.file,
     required this.niveau,
+    // required this.peid,
+    required this.bloc,
     required this.famille,
+        this.partieOuvrage,
   });
 
   factory Elemouvrage.fromJson(Map<String, dynamic> json) {
     return Elemouvrage(
-      nom: json['elem_nom'] ?? '',
-      axe: json['elem_axe'] ?? '',
-      file: json['elem_file'] ?? '',
-      niveau: json['elem_niveau'] ?? '',
-      famille: json['elem_famille'] ?? '',
+      nom: json['elem_nom']?.toString() ?? json['nom']?.toString() ?? '',
+      axe: json['elem_axe']?.toString() ?? json['axe']?.toString() ?? '',
+      file: json['elem_file']?.toString() ?? json['file']?.toString() ?? '',
+      niveau: json['elem_niveau']?.toString() ?? json['niveau']?.toString() ?? '',
+      // peid: json['pe_id']?.toString() ?? json['peid']?.toString() ?? '',
+      bloc: json['elem_bloc']?.toString() ?? json['bloc']?.toString() ?? '',
+      famille: json['elem_famille']?.toString() ?? json['famille']?.toString() ?? '',
     );
   }
 
- 
+   Map<String, dynamic> toJson() => {
+        'nom': nom,
+        'axe': axe,
+        'file': file,
+        'niveau': niveau,
+        //'peid': peid,
+        'famille': famille,
+        'partieOuvrage': partieOuvrage?.toJson(),
+      };
   String get label {
-    String details = [axe, file, niveau]
+    String details = [axe, file, niveau,bloc]
         .where((e) => e.isNotEmpty)
         .join(" - ");
     return details.isEmpty ? nom : "$nom ($details)";
@@ -428,10 +604,19 @@ class ModesProduction {
   ModesProduction({required this.value, required this.label});
 
   factory ModesProduction.fromJson(Map<String, dynamic> json) {
+    final dynamic raw = json['value'];
+    final intVal = raw is int ? raw : int.tryParse(raw?.toString() ?? '') ?? 0;
     return ModesProduction(
-      value: json['value'] ?? 0,
+      value: intVal,
       label: json['label']?.toString() ?? '',
     );
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'value': value,
+      'label': label,
+    };
   }
 }
 class Carrieres {
@@ -459,6 +644,13 @@ class ClasseCarrieres {
       value: int.tryParse(json['value'].toString()) ?? 0,
       label: json['label']?.toString() ?? '',
     );
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'value': value,
+      'label': label,
+    };
   }
 }
 
@@ -489,6 +681,13 @@ class TypeCiments {
       label: json['label']?.toString() ?? '',
     );
   }
+
+  Map<String, Object?> toJson() {
+    return {
+      'value': value,
+      'label': label,
+    };
+  }
 }
 
 
@@ -517,6 +716,13 @@ class TypeAdjuvants {
       value: int.tryParse(json['value'].toString()) ?? 0,
       label: json['label']?.toString() ?? '',
     );
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'value': value,
+      'label': label,
+    };
   }
 }
 class TypeEprouvette{
@@ -547,7 +753,14 @@ final String value;
     );
   }
 
-
+  Map<String, Object?> toJson() {
+    return {
+      'value': value,
+      'label': label,
+      'eprv_id': eprvid,
+      'eprv_type': eprvlabel,
+    };
+  }
 }
 
 class BlocElemSelection {
@@ -563,7 +776,7 @@ class Constituant {
   final int fbDosage;
   final int? fbDmin;
   final int? fbDmax;
-  final String fbConstituant;
+  final String? fbConstituant;
   final String fbPrelevement;
   final String fbAffaire;
   final String fbSite;
@@ -600,7 +813,7 @@ class Constituant {
       fbDosage: json['fb_dosage'] ?? 0,
       fbDmin: json['fb_dmin'] != null ? int.tryParse(json['fb_dmin'].toString()) : null,
       fbDmax: json['fb_dmax'] != null ? int.tryParse(json['fb_dmax'].toString()) : null,
-      fbConstituant: json['fb_constituant']?.toString() ?? '',
+      fbConstituant: json['fb_constituant'] != null ? json['fb_constituant'].toString() : null,
       fbPrelevement: json['fb_prelevement']?.toString() ?? '',
       fbAffaire: json['fb_affaire']?.toString() ?? '',
       fbSite: json['fb_site']?.toString() ?? '',
@@ -608,6 +821,23 @@ class Constituant {
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
       updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
     );
+  }
+   Map<String, dynamic> toJson() {
+    return {
+      'fb_id': fbId,
+      'fb_provenance': fbProvenance,
+      'fb_type': fbType,
+      'fb_dosage': fbDosage,
+      'fb_dmin': fbDmin,
+      'fb_dmax': fbDmax,
+      'fb_constituant': fbConstituant,
+      'fb_prelevement': fbPrelevement,
+      'fb_affaire': fbAffaire,
+      'fb_site': fbSite,
+      'fb_pv': fbPv,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
   }
 }
 class Eprouvette {
@@ -749,6 +979,22 @@ class Eprouvette {
       updatedAt: json['updated_at']?.toString(),
       createdAt: json['created_at']?.toString(),
       motifNonEcrasement: json['Motif_non_ecrasement']?.toString(),
+    );
+  }
+
+}class SelectedConstituant {
+  final Constituant constituant;
+  double dosageReel; // ← l'utilisateur peut modifier ce champ
+
+  SelectedConstituant({
+    required this.constituant,
+    required this.dosageReel,
+  });
+
+  SelectedConstituant copyWith({double? dosageReel}) {
+    return SelectedConstituant(
+      constituant: constituant,
+      dosageReel: dosageReel ?? this.dosageReel,
     );
   }
 }

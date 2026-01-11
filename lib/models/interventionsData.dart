@@ -19,7 +19,7 @@ class InterventionData {
   final List<dynamic> typesEprouvettes;
   final List<dynamic> modesCure;
   final Map<String, dynamic> chargeAffaire;
-
+final Map<String, dynamic> interventionuser;
   InterventionData({
     required this.elementsOuvrages,
     required this.constituants,
@@ -41,8 +41,8 @@ class InterventionData {
     required this.typesEprouvettes,
     required this.modesCure,
     required this.chargeAffaire,
-    
-  
+required this.interventionuser,
+
   });
 
   factory InterventionData.fromJson(Map<String, dynamic> json) {
@@ -67,7 +67,7 @@ class InterventionData {
       typesEprouvettes: json['types_eprouvettes'] ?? [],
       modesCure: json['modes_cure'] ?? [],
       chargeAffaire: json['charge_affaire'] ?? {},
-    
+interventionuser:  json['user'] ?? {},
     );
   }
 }

@@ -89,4 +89,31 @@ class GlobalProvider extends ChangeNotifier {
     return true;
   }
   TextEditingController get localisationInputController => _localisationInputController;
+
+  bool _isSyncing = false;
+  int _syncCompleted = 0;
+  int _syncTotal = 0;
+
+  bool get isSyncing => _isSyncing;
+  int get syncCompleted => _syncCompleted;
+  int get syncTotal => _syncTotal;
+
+  void startSync(int total) {
+    _isSyncing = true;
+    _syncCompleted = 0;
+    _syncTotal = total;
+    notifyListeners();
+  }
+
+  void updateSyncProgress(int completed, int total) {
+    _isSyncing = true;
+    _syncCompleted = completed;
+    _syncTotal = total;
+    notifyListeners();
+  }
+
+  void finishSync() {
+    _isSyncing = false;
+    notifyListeners();
+  }
 }

@@ -21,9 +21,18 @@ class ClasseBeton {
   ClasseBeton({required this.value, required this.label});
 
   factory ClasseBeton.fromJson(Map<String, dynamic> json) {
+    final dynamic raw = json['value'];
+    final intVal = raw is int ? raw : int.tryParse(raw?.toString() ?? '') ?? 0;
     return ClasseBeton(
-      value: json['value'] ?? 0,
+      value: intVal,
       label: json['label']?.toString() ?? '',
     );
+  }
+
+  Map<String, Object?> toJson() {
+    return {
+      'value': value,
+      'label': label,
+    };
   }
 }

@@ -15,13 +15,15 @@ class PreviewPVPage extends StatelessWidget {
       'logo': logo.buffer.asUint8List(),
       'pe_id': pvData['pe_id'] ?? '—',
       'date': pvData['created_at'] ?? '—',
+      'date_validation_laboratoire_item': pvData['date_validation_laboratoire_it'] ?? '—',
       'user': pvData['user_code'] ?? '—',
-      'userNom': pvData['Nom_DR_Laboratoire'] ?? '',
-      'userPrenom': pvData['Structure_Laboratoire'] ?? '',
+      'userNom': pvData['user']?['Nom'] ?? '', // Fetch user name
+      'userPrenom': pvData['user']?['Prenom'] ?? '', // Fetch user first name
       'intitule': pvData['Intitule_Affaire'] ?? '',
       'codeAffaire': pvData['Code_Affaire'] ?? '',
       'codeSite': pvData['Code_Site'] ?? '',
-      'entreprise': pvData['Entreprise'] ?? '',
+      'direction': pvData['Nom_DR'] ?? '',
+      'entreprise': pvData['Entreprise']?['Nom'] ?? '', // Display only the name of the company
       'dateCoulage': pvData['DateCoulage'] ?? '',
       'classe': pvData['Classe_Beton'] ?? '',
       'elements': (pvData['elements'] ?? []) as List,

@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mgtrisque_visitepreliminaire/screens/interventions_screen.dart';
 import 'package:mgtrisque_visitepreliminaire/services/auth.dart';
+import 'package:mgtrisque_visitepreliminaire/services/sync.dart';
+import 'package:mgtrisque_visitepreliminaire/services/global_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -61,9 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               const SizedBox(height: 30),
-
-              
-              Text(
+ Text(
                 'Connexion',
                 style: const TextStyle(
                   fontSize: 34,
@@ -74,7 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
              
               const SizedBox(height: 40),
 
-              
               Container(
                 width: size.width * 0.85,
                 padding: const EdgeInsets.all(24),
@@ -288,10 +287,11 @@ class _LoginScreenState extends State<LoginScreen> {
     };
 
     if (_formKey.currentState!.validate()) {
-      
-      
       final bool hasInternet = await _hasInternetConnection();
       final bool isLocallyChecked = Provider.of<Auth>(context, listen: false).isLocally;
+
+      // Stocker le mode hors ligne
+      await storage.write(key: 'offline_mode', value: (!hasInternet || isLocallyChecked).toString());
 
       if (!hasInternet && !isLocallyChecked) {
         setState(() => isSigning = false);
@@ -316,16 +316,41 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      final result =
-          await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
+      final result = await Provider.of<Auth>(context, listen: false).login(credentials: credentials);
       final token = await storage.read(key: 'token');
 
+      // if (result == 200 || result == 201) {
+      //   Provider.of<Auth>(context, listen: false).setIsLocally = false;
+      //   await storage.write(key: 'isLocally', value: true.toString().toLowerCase());
       if (result == 200 || result == 201) {
-        Provider.of<Auth>(context, listen: false).setIsLocally = true;
-        await storage.write(key: 'isLocally', value: true.toString().toLowerCase());
+        Provider.of<Auth>(context, listen: false).setIsLocally = false;
+        await storage.write(key: 'isLocally', value: "false");
+
+        final gp = Provider.of<GlobalProvider>(context, listen: false);
+        
+        // Lancer la synchronisation des données de référence (setup data)
+        InterventionsService().fetchAndSaveSetupData();
+
+        InterventionsService().preloadAllInterventions(
+          batchSize: 8,
+          onStart: (total) {
+            gp.startSync(total);
+          },
+          onProgress: (completed, total) {
+            gp.updateSyncProgress(completed, total);
+          },
+          onDone: () {
+            gp.finishSync();
+          },
+        );
 
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AffairesScreen(isNotFirstTime: '')),
+          MaterialPageRoute(
+            builder: (context) => AffairesScreen(
+              isNotFirstTime: '',
+              isOffline: !hasInternet || isLocallyChecked, // Passer isOffline
+            ),
+          ),
         );
       } else {
         setState(() {
